@@ -67,6 +67,9 @@ export default function LoginPage() {
             계정이 없으신가요?{" "}
             <a href="/signup" style={{ color: "#ff6b23", textDecoration: "none", fontWeight: 500 }}>회원가입</a>
           </div>
+          <div style={{ textAlign: "center", marginTop: 12, fontSize: 12, fontFamily: "Noto Sans KR, sans-serif" }}>
+            <a href="/forgot-password" style={{ color: "#8892a4", textDecoration: "none" }}>비밀번호를 잊으셨나요?</a>
+          </div>
         </div>
       </div>
     </div>
