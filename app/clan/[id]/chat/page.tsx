@@ -38,11 +38,19 @@ export default function ClanChatPage() {
       if (!mem) { router.push(`/clan/${id}`); return; }
       setIsMember(true);
 
-      const { data: chatData } = await supabase.from("clan_chats").select("*, profiles(nickname)").eq("clan_id", id).order("created_at", { ascending: true }).limit(100);
-      setChats(chatData || []);
+      const { data: chatData } = await supabase.from("clan_chats").select("*").eq("clan_id", id).order("created_at", { ascending: true }).limit(100);
+      const chatsWithProfiles = await Promise.all((chatData || []).map(async (c: any) => {
+        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", c.user_id).single();
+        return { ...c, profiles: prof };
+      }));
+      setChats(chatsWithProfiles);
 
-      const { data: noticeData } = await supabase.from("clan_notices").select("*, profiles(nickname)").eq("clan_id", id).order("created_at", { ascending: false });
-      setNotices(noticeData || []);
+      const { data: noticeData } = await supabase.from("clan_notices").select("*").eq("clan_id", id).order("created_at", { ascending: false });
+      const noticesWithProfiles = await Promise.all((noticeData || []).map(async (n: any) => {
+        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", n.user_id).single();
+        return { ...n, profiles: prof };
+      }));
+      setNotices(noticesWithProfiles);
     };
     load();
 
