@@ -102,7 +102,12 @@ export default function ClanDetailPage() {
                   {hasRequested ? "신청 완료" : joining ? "신청 중..." : "가입 신청"}
                 </button>
               )}
-              {isOwner && <span style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 1 }}>내 클랜</span>}
+              {isOwner && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                  <span style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 1 }}>내 클랜</span>
+                  <a href={`/clan/${id}/manage`} style={{ background: "rgba(255,107,35,0.15)", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>클랜 관리</a>
+                </div>
+              )}
               {isMember && !isOwner && <span style={{ fontSize: 12, color: "#4caf50", fontFamily: "Rajdhani, sans-serif", letterSpacing: 1 }}>가입된 클랜</span>}
             </div>
           </div>
