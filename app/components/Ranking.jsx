@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 
 const tierColors = {
-  "마스터+": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7", "플래티넘": "#b0bec5",
+  "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7", "플래티넘": "#b0bec5",
   "골드": "#ffd54f", "실버": "#90a4ae", "브론즈": "#a1887f",
 };
 

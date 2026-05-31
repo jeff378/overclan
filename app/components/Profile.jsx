@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 const members = [
-  { name: "Zenith", role: "클랜장", tier: "마스터+", hero: "트레이서", wins: 18, joinDate: "시즌 1", online: true },
-  { name: "IronFist", role: "부클랜장", tier: "마스터+", hero: "라인하르트", wins: 16, joinDate: "시즌 1", online: true },
+  { name: "Zenith", role: "클랜장", tier: "마스터", hero: "트레이서", wins: 18, joinDate: "시즌 1", online: true },
+  { name: "IronFist", role: "부클랜장", tier: "마스터", hero: "라인하르트", wins: 16, joinDate: "시즌 1", online: true },
   { name: "NightHawk", role: "클랜원", tier: "다이아", hero: "위도우메이커", wins: 12, joinDate: "시즌 2", online: false },
   { name: "StarBlaze", role: "클랜원", tier: "다이아", hero: "메르시", wins: 14, joinDate: "시즌 2", online: true },
   { name: "ColdWave", role: "클랜원", tier: "플래티넘", hero: "겐지", wins: 9, joinDate: "시즌 3", online: false },
-  { name: "DawnRider", role: "클랜원", tier: "마스터+", hero: "아나", wins: 17, joinDate: "시즌 1", online: true },
+  { name: "DawnRider", role: "클랜원", tier: "마스터", hero: "아나", wins: 17, joinDate: "시즌 1", online: true },
 ];
 
 const battles = [
@@ -17,7 +17,7 @@ const battles = [
 ];
 
 const tierColors = {
-  "마스터+": "#ff6b23",
+  "마스터": "#ff6b23",
   "다이아": "#4fc3f7",
   "플래티넘": "#b0bec5",
 };
@@ -124,7 +124,7 @@ export default function OverClanProfile() {
                   <span style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%)" }}>PRO</span>
                 </div>
                 <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-                  <span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.4)", color: "#ff6b23" }}>마스터+</span>
+                  <span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.4)", color: "#ff6b23" }}>마스터</span>
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>경쟁</span>
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>저녁</span>
                 </div>

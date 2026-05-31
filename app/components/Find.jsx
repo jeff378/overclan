@@ -4,7 +4,7 @@ import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 
 const tierColors = {
-  "마스터+": { color: "#ff6b23", border: "rgba(255,107,35,0.4)" },
+  "마스터": { color: "#ff6b23", border: "rgba(255,107,35,0.4)" },
   "다이아": { color: "#4fc3f7", border: "rgba(79,195,247,0.4)" },
   "플래티넘": { color: "#b0bec5", border: "rgba(176,190,197,0.4)" },
   "골드": { color: "#ffd54f", border: "rgba(255,213,79,0.4)" },
@@ -83,7 +83,7 @@ export default function OverClanFind() {
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>티어</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {["전체", "챔피언", "그랜드마스터", "마스터+", "다이아", "플래티넘", "골드", "실버", "브론즈"].map(t => (
+                {["전체", "챔피언", "그랜드마스터", "마스터", "다이아", "플래티넘", "골드", "실버", "브론즈"].map(t => (
                   <button key={t} className={`filter-btn ${tierFilter === t ? "active" : ""}`} onClick={() => setTierFilter(t)} style={{ textAlign: "left" }}>{t}</button>
                 ))}
               </div>

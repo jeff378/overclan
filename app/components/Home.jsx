@@ -14,10 +14,10 @@ const HexPattern = () => (
 );
 
 const clans = [
-  { name: "Phoenix Squad", tag: "PHNX", tier: "마스터+", members: 24, wins: 18, rank: 1, badge: "🔥" },
+  { name: "Phoenix Squad", tag: "PHNX", tier: "마스터", members: 24, wins: 18, rank: 1, badge: "🔥" },
   { name: "Iron Wolves", tag: "IRON", tier: "다이아", members: 19, wins: 14, rank: 2, badge: "🐺" },
   { name: "Storm Legion", tag: "STRM", tier: "플래티넘", members: 31, wins: 11, rank: 3, badge: "⚡" },
-  { name: "Silent Edge", tag: "EDGE", tier: "마스터+", members: 12, wins: 9, rank: 4, badge: "🗡️" },
+  { name: "Silent Edge", tag: "EDGE", tier: "마스터", members: 12, wins: 9, rank: 4, badge: "🗡️" },
 ];
 
 const stats = [
@@ -187,7 +187,7 @@ export default function Home() {
                       <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, opacity: 0.7 }}>[{clan.tag}]</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
-                      <span className="tier-tag" style={{ borderColor: clan.tier === "마스터+" ? "rgba(255,107,35,0.5)" : "rgba(79,195,247,0.3)", color: clan.tier === "마스터+" ? "#ff6b23" : "#4fc3f7", fontSize: 10 }}>{clan.tier}</span>
+                      <span className="tier-tag" style={{ borderColor: clan.tier === "마스터" ? "rgba(255,107,35,0.5)" : "rgba(79,195,247,0.3)", color: clan.tier === "마스터" ? "#ff6b23" : "#4fc3f7", fontSize: 10 }}>{clan.tier}</span>
                       <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.members}명</span>
                     </div>
                   </div>
