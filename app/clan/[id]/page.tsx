@@ -46,6 +46,21 @@ export default function ClanDetailPage() {
 
   const handleJoin = async () => {
     if (!user) { router.push("/login?redirect=" + encodeURIComponent(window.location.pathname)); return; }
+    
+    // 이미 다른 클랜에 가입했는지 확인
+    const { data: existingMember } = await supabase.from("clan_members").select("clan_id, clans(name)").eq("user_id", user.id).single();
+    if (existingMember) {
+      alert("이미 클랜에 가입되어 있어요. 마이페이지에서 탈퇴 후 다른 클랜에 가입할 수 있어요.");
+      return;
+    }
+
+    // 이미 대기 중인 신청이 있는지 확인
+    const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();
+    if (existingRequest) {
+      alert("이미 다른 클랜에 가입 신청 중이에요.");
+      return;
+    }
+
     setJoining(true);
     await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id });
     setHasRequested(true);
