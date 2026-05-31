@@ -25,6 +25,12 @@ export default function MyPage() {
     load();
   }, []);
 
+  const handleLeave = async (clanId: string, clanName: string) => {
+    if (!confirm(`"${clanName}" 클랜에서 탈퇴할까요?`)) return;
+    await supabase.from("clan_members").delete().eq("clan_id", clanId).eq("user_id", profile.id);
+    setMyClans(prev => prev.filter(m => m.clans?.id !== clanId));
+  };
+
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", fontSize: 18, letterSpacing: 2 }}>LOADING...</div>

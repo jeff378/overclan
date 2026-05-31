@@ -77,7 +77,10 @@ export default function ClanManagePage() {
             <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
             <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>클랜 관리</h1>
           </div>
-          <a href={`/clan/${id}`} className="btn-back">← 클랜 페이지</a>
+          <div style={{ display: "flex", gap: 8 }}>
+            <a href={`/clan/${id}/edit`} style={{ background: "rgba(255,107,35,0.15)", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>클랜 수정</a>
+            <a href={`/clan/${id}`} className="btn-back">← 클랜 페이지</a>
+          </div>
         </div>
 
         {loading ? (
