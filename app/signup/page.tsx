@@ -28,20 +28,30 @@ export default function SignupPage() {
       email,
       password,
       options: {
+        emailRedirectTo: undefined,
         data: { nickname, battletag }
       }
     });
 
     if (signupError) {
-      setError("회원가입에 실패했어요. 다시 시도해주세요.");
-    } else if (data.user) {
-      // 프로필 저장
-      await supabase.from("profiles").insert({
+      console.error(signupError);
+      if (signupError.message.includes("already registered")) {
+        setError("이미 가입된 이메일이에요. 로그인해주세요.");
+      } else {
+        setError(`오류: ${signupError.message}`);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (data.user) {
+      const { error: profileError } = await supabase.from("profiles").upsert({
         id: data.user.id,
         nickname,
         battletag,
         email,
       });
+      if (profileError) console.error("프로필 저장 오류:", profileError);
       router.push("/");
     }
     setLoading(false);
@@ -63,7 +73,6 @@ export default function SignupPage() {
       `}</style>
 
       <div style={{ width: "100%", maxWidth: 420, padding: "0 24px" }}>
-        {/* 로고 */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <svg width="48" height="54" viewBox="0 0 32 36" style={{ marginBottom: 12 }}>
             <polygon points="16,2 30,10 30,26 16,34 2,26 2,10" fill="none" stroke="#ff6b23" strokeWidth="1.5"/>
