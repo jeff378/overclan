@@ -25,12 +25,17 @@ export default function ClanDetailPage() {
       const { data: clanData } = await supabase.from("clans").select("*").eq("id", id).single();
       setClan(clanData);
 
-      const { data: membersData } = await supabase.from("clan_members").select("*, profiles(nickname, battletag)").eq("clan_id", id);
-      setMembers(membersData || []);
+      const { data: membersData } = await supabase.from("clan_members").select("*").eq("clan_id", id);
+      // 각 클랜원의 프로필 가져오기
+      const membersWithProfiles = await Promise.all((membersData || []).map(async (m) => {
+        const { data: profile } = await supabase.from("profiles").select("nickname, battletag").eq("id", m.user_id).single();
+        return { ...m, profiles: profile };
+      }));
+      setMembers(membersWithProfiles);
 
       if (currentUser) {
         setIsOwner(clanData?.owner_id === currentUser.id);
-        setIsMember(!!(membersData?.some(m => m.user_id === currentUser.id)));
+        setIsMember(!!(membersWithProfiles?.some((m: any) => m.user_id === currentUser.id)));
         const { data: req } = await supabase.from("clan_requests").select("*").eq("clan_id", id).eq("user_id", currentUser.id).single();
         setHasRequested(!!req);
       }
