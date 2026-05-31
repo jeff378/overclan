@@ -129,7 +129,7 @@ export default function Home() {
           ) : (
             <div style={{ display: "flex", gap: 12 }}>
               <a href="/login"><button className="btn-secondary">로그인</button></a>
-              <a href="/signup"><button className="btn-primary">클랜 만들기</button></a>
+              <a href="/signup"><a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary">클랜 만들기</button></a></a>
             </div>
           )}
         </nav>
@@ -149,8 +149,8 @@ export default function Home() {
             오버워치 최초의 클랜 플랫폼.<br/>혼자였던 게임이 함께하는 전쟁이 된다.
           </p>
           <div className="animate-in delay-2" style={{ display: "flex", gap: 12, marginTop: 36 }}>
-            <button className="btn-primary">클랜 만들기</button>
-            <button className="btn-secondary">클랜 찾기</button>
+            <a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary">클랜 만들기</button></a>
+            <a href="/find" style={{textDecoration:"none"}}><button className="btn-secondary">클랜 찾기</button></a>
           </div>
           <div className="animate-in delay-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 60, maxWidth: 600 }}>
             {stats.map(stat => (
@@ -208,7 +208,7 @@ export default function Home() {
           <h2 style={{ fontSize: 40, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", letterSpacing: -1, marginBottom: 12 }}>혼자 하는 오버워치는 이제 그만</h2>
           <p style={{ fontSize: 15, color: "#8892a4", marginBottom: 32, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>클랜을 만들고, 대전에 참여하고, 명예를 쌓아라.</p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-            <button className="btn-primary" style={{ padding: "14px 36px", fontSize: 15 }}>무료로 클랜 만들기</button>
+            <a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary" style={{ padding: "14px 36px", fontSize: 15 }}>무료로 클랜 만들기</button></a>
             <button className="btn-secondary" style={{ padding: "14px 36px", fontSize: 15 }}>클랜 둘러보기</button>
           </div>
         </section>

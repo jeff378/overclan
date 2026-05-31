@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
-export default function Navbar({ active }) {
+export default function Navbar({ active = "" }) {
   const [user, setUser] = useState(null);
   const [nickname, setNickname] = useState("");
 
