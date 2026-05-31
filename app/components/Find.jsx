@@ -83,7 +83,7 @@ export default function OverClanFind() {
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>티어</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {["전체", "마스터+", "다이아", "플래티넘", "골드", "실버", "브론즈"].map(t => (
+                {["전체", "챔피언", "그랜드마스터", "마스터+", "다이아", "플래티넘", "골드", "실버", "브론즈"].map(t => (
                   <button key={t} className={`filter-btn ${tierFilter === t ? "active" : ""}`} onClick={() => setTierFilter(t)} style={{ textAlign: "left" }}>{t}</button>
                 ))}
               </div>

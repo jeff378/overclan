@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
-const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터+"];
+const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터+", "그랜드마스터", "챔피언"];
 const TIMES = ["아침", "저녁", "밤", "새벽", "주말"];
 const STYLES = ["경쟁", "캐주얼", "친목"];
 
