@@ -1,0 +1,164 @@
+"use client";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
+import Navbar from "../components/Navbar";
+
+export default function PatchPage() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ title: "", content: "", patch_version: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState<any>(null);
+  const [comments, setComments] = useState<any[]>([]);
+  const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      setUser(userData.user);
+      const { data } = await supabase.from("patch_posts").select("*, profiles(nickname)").order("created_at", { ascending: false });
+      setPosts(data || []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const loadComments = async (postId: string) => {
+    const { data } = await supabase.from("patch_comments").select("*, profiles(nickname)").eq("post_id", postId).order("created_at", { ascending: true });
+    setComments(data || []);
+  };
+
+  const handlePost = async () => {
+    if (!form.title || !form.content) return;
+    setSubmitting(true);
+    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id }).select("*, profiles(nickname)").single();
+    if (data) setPosts(prev => [data, ...prev]);
+    setForm({ title: "", content: "", patch_version: "" });
+    setShowForm(false);
+    setSubmitting(false);
+  };
+
+  const handleComment = async () => {
+    if (!comment.trim() || !selected) return;
+    const { data } = await supabase.from("patch_comments").insert({ post_id: selected.id, user_id: user.id, content: comment }).select("*, profiles(nickname)").single();
+    if (data) setComments(prev => [...prev, data]);
+    setComment("");
+  };
+
+  const handleSelect = (post: any) => {
+    setSelected(post);
+    loadComments(post.id);
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 9px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); }
+        .post-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 20px 24px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); margin-bottom: 8px; }
+        .post-card:hover, .post-card.active { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
+        .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
+        .input:focus { border-color: #ff6b23; }
+        .input::placeholder { color: #8892a4; }
+        textarea.input { resize: vertical; min-height: 120px; }
+        .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
+        .comment-row { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .patch-tag { background: rgba(255,107,35,0.15); color: #ff6b23; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
+      `}</style>
+
+      <Navbar />
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
+            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>패치노트 토론장</h1>
+          </div>
+          {user && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "글 작성"}</button>}
+        </div>
+
+        {showForm && (
+          <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: "28px", marginBottom: 24 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12 }}>
+                <div>
+                  <label className="label">제목</label>
+                  <input className="input" placeholder="패치 내용이나 의견을 제목으로 입력해주세요" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                </div>
+                <div>
+                  <label className="label">패치 버전</label>
+                  <input className="input" placeholder="예: 1.2.3" style={{ width: 120 }} value={form.patch_version} onChange={e => setForm({ ...form, patch_version: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <label className="label">내용</label>
+                <textarea className="input" placeholder="패치에 대한 의견을 자유롭게 적어주세요" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+              </div>
+              <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "등록하기"}</button>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
+          {/* 글 목록 */}
+          <div>
+            {loading ? (
+              <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
+            ) : posts.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+                아직 글이 없어요. 첫 번째 토론을 시작해보세요!
+              </div>
+            ) : posts.map(post => (
+              <div key={post.id} className={`post-card ${selected?.id === post.id ? "active" : ""}`} onClick={() => handleSelect(post)}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  {post.patch_version && <span className="patch-tag">v{post.patch_version}</span>}
+                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{post.title}</span>
+                </div>
+                <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", display: "flex", gap: 12 }}>
+                  <span>{post.profiles?.nickname}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString("ko-KR")}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 상세 & 댓글 */}
+          {selected && (
+            <div style={{ background: "rgba(13,20,35,0.8)", border: "1px solid rgba(255,107,35,0.15)", padding: "28px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                <div>
+                  {selected.patch_version && <span className="patch-tag" style={{ marginBottom: 8, display: "inline-block" }}>v{selected.patch_version}</span>}
+                  <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700 }}>{selected.title}</h2>
+                  <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 4 }}>{selected.profiles?.nickname} · {new Date(selected.created_at).toLocaleDateString("ko-KR")}</div>
+                </div>
+                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 18 }}>✕</button>
+              </div>
+              <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap" }}>{selected.content}</p>
+
+              {/* 댓글 */}
+              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1, marginBottom: 12, color: "#8892a4" }}>댓글 {comments.length}</div>
+              <div style={{ maxHeight: 300, overflowY: "auto", marginBottom: 16 }}>
+                {comments.map(c => (
+                  <div key={c.id} className="comment-row">
+                    <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "Rajdhani, sans-serif" }}>{c.profiles?.nickname}</div>
+                    <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6 }}>{c.content}</div>
+                  </div>
+                ))}
+              </div>
+              {user && (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input className="input" placeholder="댓글을 입력하세요" value={comment} onChange={e => setComment(e.target.value)} onKeyDown={e => e.key === "Enter" && handleComment()} style={{ flex: 1 }} />
+                  <button className="btn-primary" onClick={handleComment}>등록</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

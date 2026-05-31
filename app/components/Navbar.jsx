@@ -27,6 +27,8 @@ export default function Navbar({ active = "" }) {
     { label: "클랜대전", href: "/battle" },
     { label: "랭킹", href: "/ranking" },
     { label: "명예의 전당", href: "/hall" },
+    { label: "패치노트", href: "/patch" },
+    { label: "핵 제보", href: "/replay" },
   ];
 
   return (
