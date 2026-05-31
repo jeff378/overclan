@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import Navbar from "./Navbar";
 
 const HexPattern = () => (
   <svg className="hex-pattern" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -97,42 +98,7 @@ export default function Home() {
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse at 20% 20%, rgba(255,107,35,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(79,195,247,0.04) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1 }}>
-        {/* 네비게이션 */}
-        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 48px", borderBottom: "1px solid rgba(255,107,35,0.1)", background: "rgba(8,12,20,0.8)", backdropFilter: "blur(12px)", position: "sticky", top: 0, zIndex: 100 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <svg width="32" height="36" viewBox="0 0 32 36">
-                <polygon points="16,2 30,10 30,26 16,34 2,26 2,10" fill="none" stroke="#ff6b23" strokeWidth="1.5"/>
-                <polygon points="16,8 24,13 24,23 16,28 8,23 8,13" fill="rgba(255,107,35,0.2)" stroke="#ff6b23" strokeWidth="1"/>
-                <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
-              </svg>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: 3, fontFamily: "Rajdhani, sans-serif" }}>
-                <span className="glow-orange">OVER</span><span style={{ color: "#e8eaf0" }}>CLAN</span>
-              </span>
-            </div>
-            <div style={{ display: "flex", gap: 28, marginLeft: 16 }}>
-              {["클랜 찾기", "클랜대전", "랭킹", "명예의 전당"].map(item => (
-                <span key={item} className="nav-link">{item}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* 로그인 상태에 따라 다르게 표시 */}
-          {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div className="user-badge">
-                <div style={{ width: 8, height: 8, background: "#4caf50", borderRadius: "50%", boxShadow: "0 0 6px #4caf50" }} />
-                <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, color: "#e8eaf0" }}>{nickname || "클랜원"}</span>
-              </div>
-              <button className="btn-logout" onClick={handleLogout}>로그아웃</button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", gap: 12 }}>
-              <a href="/login"><button className="btn-secondary">로그인</button></a>
-              <a href="/signup"><a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary">클랜 만들기</button></a></a>
-            </div>
-          )}
-        </nav>
+        <Navbar />
 
         {/* 히어로 섹션 */}
         <section style={{ padding: "80px 48px 64px", maxWidth: 1200, margin: "0 auto" }}>
