@@ -64,10 +64,10 @@ export default function Navbar({ active = "" }) {
 
       {user ? (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div className="user-badge">
+          <a href="/mypage" className="user-badge" style={{ textDecoration: "none" }}>
             <div style={{ width: 8, height: 8, background: "#4caf50", borderRadius: "50%", boxShadow: "0 0 6px #4caf50" }} />
             <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, color: "#e8eaf0" }}>{nickname || "클랜원"}</span>
-          </div>
+          </a>
           <button className="btn-logout" onClick={handleLogout}>로그아웃</button>
         </div>
       ) : (
