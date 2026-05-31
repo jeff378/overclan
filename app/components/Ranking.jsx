@@ -55,9 +55,16 @@ export default function OverClanRanking() {
 
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 36 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-            <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>시즌 랭킹</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
+              <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>시즌 랭킹</h1>
+            </div>
+            <div style={{ display: "flex", gap: 12, marginLeft: 8 }}>
+              <span style={{ fontSize: 11, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(76,175,80,0.1)", padding: "3px 10px", borderRadius: 2 }}>정규전 승리 +3점</span>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 2 }}>무승부 +1점</span>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 2 }}>친선전 미반영</span>
+            </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             {["전체", "소규모", "중규모", "대규모"].map(l => (

@@ -57,23 +57,37 @@ export default function OverClanBattle() {
       status: "완료", clan1_score: clan1Score, clan2_score: clan2Score, winner_id: winnerId
     }).eq("id", battle.id);
 
-    if (winnerId) {
-      const { data: winner } = await supabase.from("clans").select("wins, points").eq("id", winnerId).single();
-      if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1, points: (winner.points || 0) + 100 }).eq("id", winnerId);
-      const { data: loser } = await supabase.from("clans").select("losses, points").eq("id", loserId).single();
-      if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1, points: Math.max(0, (loser.points || 0) - 20) }).eq("id", loserId);
+    // 축구 승점제: 정규전만 승점 반영 (승리 3점 / 무승부 1점 / 패배 0점)
+    if (battle.type === "정규") {
+      if (winnerId) {
+        const { data: winner } = await supabase.from("clans").select("wins, points").eq("id", winnerId).single();
+        if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1, points: (winner.points || 0) + 3 }).eq("id", winnerId);
+        const { data: loser } = await supabase.from("clans").select("losses, points").eq("id", loserId).single();
+        if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1 }).eq("id", loserId);
+      } else {
+        // 무승부: 양쪽 +1점
+        for (const clanId of [battle.clan1_id, battle.clan2_id]) {
+          const { data: c } = await supabase.from("clans").select("points").eq("id", clanId).single();
+          if (c) await supabase.from("clans").update({ points: (c.points || 0) + 1 }).eq("id", clanId);
+        }
+      }
     } else {
-      // 무승부: 양쪽 +30
-      for (const clanId of [battle.clan1_id, battle.clan2_id]) {
-        const { data: c } = await supabase.from("clans").select("points").eq("id", clanId).single();
-        if (c) await supabase.from("clans").update({ points: (c.points || 0) + 30 }).eq("id", clanId);
+      // 친선전: 승패 기록만, 승점 미반영
+      if (winnerId) {
+        const { data: winner } = await supabase.from("clans").select("wins").eq("id", winnerId).single();
+        if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1 }).eq("id", winnerId);
+        const { data: loser } = await supabase.from("clans").select("losses").eq("id", loserId).single();
+        if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1 }).eq("id", loserId);
       }
     }
 
     setBattles(prev => prev.filter(b => b.id !== battle.id));
     const { data: recent } = await supabase.from("clan_battles").select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge), winner:clans!winner_id(name)").eq("status", "완료").order("created_at", { ascending: false }).limit(10);
     setRecentBattles(recent || []);
-    alert(`결과 등록 완료! ${winnerId ? "승리 +100PT / 패배 -20PT" : "무승부 +30PT"}`);
+    const msg = battle.type === "정규"
+      ? winnerId ? "정규전 결과 등록! 승리 +3점 / 패배 0점" : "정규전 무승부! 양쪽 +1점"
+      : "친선전 결과 등록! (승점 미반영)";
+    alert(msg);
   };
 
   return (
