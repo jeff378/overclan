@@ -69,8 +69,11 @@ export default function ClanChatPage() {
 
   const handleNotice = async () => {
     if (!noticeTitle || !noticeContent) return;
-    const { data } = await supabase.from("clan_notices").insert({ clan_id: id, user_id: user.id, title: noticeTitle, content: noticeContent }).select("*, profiles(nickname)").single();
-    if (data) setNotices(prev => [data, ...prev]);
+    const { data } = await supabase.from("clan_notices").insert({ clan_id: id, user_id: user.id, title: noticeTitle, content: noticeContent }).select().single();
+    if (data) {
+      const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+      setNotices(prev => [{ ...data, profiles: prof }, ...prev]);
+    }
     setNoticeTitle(""); setNoticeContent(""); setShowNoticeForm(false);
   };
 

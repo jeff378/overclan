@@ -33,8 +33,11 @@ export default function PatchPage() {
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSubmitting(true);
-    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id }).select("*, profiles(nickname)").single();
-    if (data) setPosts(prev => [data, ...prev]);
+    const { data, error } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id }).select().single();
+    if (data) {
+      const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+      setPosts(prev => [{ ...data, profiles: prof }, ...prev]);
+    }
     setForm({ title: "", content: "", patch_version: "" });
     setShowForm(false);
     setSubmitting(false);
@@ -42,8 +45,11 @@ export default function PatchPage() {
 
   const handleComment = async () => {
     if (!comment.trim() || !selected) return;
-    const { data } = await supabase.from("patch_comments").insert({ post_id: selected.id, user_id: user.id, content: comment }).select("*, profiles(nickname)").single();
-    if (data) setComments(prev => [...prev, data]);
+    const { data } = await supabase.from("patch_comments").insert({ post_id: selected.id, user_id: user.id, content: comment }).select().single();
+    if (data) {
+      const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+      setComments(prev => [...prev, { ...data, profiles: prof }]);
+    }
     setComment("");
   };
 
