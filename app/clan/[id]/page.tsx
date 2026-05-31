@@ -45,7 +45,7 @@ export default function ClanDetailPage() {
   }, [id]);
 
   const handleJoin = async () => {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { router.push("/login?redirect=" + encodeURIComponent(window.location.pathname)); return; }
     setJoining(true);
     await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id });
     setHasRequested(true);

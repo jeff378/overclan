@@ -14,24 +14,11 @@ const HexPattern = () => (
   </svg>
 );
 
-const clans = [
-  { name: "Phoenix Squad", tag: "PHNX", tier: "마스터", members: 24, wins: 18, rank: 1, badge: "🔥" },
-  { name: "Iron Wolves", tag: "IRON", tier: "다이아", members: 19, wins: 14, rank: 2, badge: "🐺" },
-  { name: "Storm Legion", tag: "STRM", tier: "플래티넘", members: 31, wins: 11, rank: 3, badge: "⚡" },
-  { name: "Silent Edge", tag: "EDGE", tier: "마스터", members: 12, wins: 9, rank: 4, badge: "🗡️" },
-];
-
-const stats = [
-  { label: "활성 클랜", value: "1,247" },
-  { label: "총 클랜원", value: "18,392" },
-  { label: "이번 시즌 클랜전", value: "3,841" },
-];
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState("전체");
   const [scanLine, setScanLine] = useState(0);
-  const [user, setUser] = useState(null);
-  const [nickname, setNickname] = useState("");
+  const [stats, setStats] = useState({ clans: 0, members: 0, battles: 0 });
+  const [topClans, setTopClans] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,21 +28,31 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUser(data.user);
-        supabase.from("profiles").select("nickname").eq("id", data.user.id).single().then(({ data: profile }) => {
-          if (profile) setNickname(profile.nickname);
-        });
-      }
-    });
+    const loadStats = async () => {
+      const { count: clanCount } = await supabase.from("clans").select("*", { count: "exact", head: true });
+      const { count: memberCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true });
+      const { count: battleCount } = await supabase.from("clan_battles").select("*", { count: "exact", head: true });
+      setStats({ clans: clanCount || 0, members: memberCount || 0, battles: battleCount || 0 });
+
+      const { data: clans } = await supabase.from("clans").select("*, clan_members(count)").order("points", { ascending: false }).limit(4);
+      setTopClans(clans || []);
+    };
+    loadStats();
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setNickname("");
-  };
+  const statItems = [
+    { label: "활성 클랜", value: stats.clans.toLocaleString() },
+    { label: "총 클랜원", value: stats.members.toLocaleString() },
+    { label: "총 클랜대전", value: stats.battles.toLocaleString() },
+  ];
+
+  const filtered = activeTab === "전체" ? topClans : topClans.filter(c => {
+    const count = c.clan_members?.[0]?.count || 0;
+    if (activeTab === "소규모") return count <= 10;
+    if (activeTab === "중규모") return count > 10 && count <= 25;
+    if (activeTab === "대규모") return count > 25;
+    return true;
+  });
 
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", position: "relative", overflow: "hidden" }}>
@@ -64,47 +61,39 @@ export default function Home() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .hex-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         .glow-orange { color: #ff6b23; text-shadow: 0 0 20px rgba(255,107,35,0.6); }
-        .nav-link { color: #8892a4; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; cursor: pointer; }
-        .nav-link:hover { color: #ff6b23; }
         .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,107,35,0.4); }
         .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 11px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-secondary:hover { background: rgba(255,107,35,0.1); }
-        .clan-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 20px 24px; position: relative; transition: all 0.3s; cursor: pointer; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
-        .clan-card:hover { border-color: rgba(255,107,35,0.5); background: rgba(20,30,50,0.9); transform: translateX(4px); box-shadow: -4px 0 0 #ff6b23, 0 0 30px rgba(255,107,35,0.15); }
+        .clan-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 20px 24px; position: relative; transition: all 0.3s; cursor: pointer; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); text-decoration: none; color: inherit; display: block; }
+        .clan-card:hover { border-color: rgba(255,107,35,0.5); background: rgba(20,30,50,0.9); transform: translateX(4px); box-shadow: -4px 0 0 #ff6b23; }
         .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
-        .tab-btn:hover { color: #ff6b23; }
-        .stat-card { background: rgba(13,20,35,0.6); border: 1px solid rgba(79,195,247,0.15); padding: 20px 24px; text-align: center; position: relative; clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); }
+        .stat-card { background: rgba(13,20,35,0.6); border: 1px solid rgba(79,195,247,0.15); padding: 20px 24px; text-align: center; clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); }
         .rank-badge { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
         .tier-tag { font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
         .hero-title { font-size: clamp(48px, 8vw, 96px); font-weight: 700; line-height: 0.9; letter-spacing: -2px; font-family: 'Rajdhani', sans-serif; }
         .scan-line { position: fixed; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,107,35,0.3), transparent); pointer-events: none; z-index: 1; }
-        .user-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,107,35,0.08); border: 1px solid rgba(255,107,35,0.2); padding: 8px 16px; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
-        .btn-logout { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: color 0.2s; }
-        .btn-logout:hover { color: #ef5350; }
         @keyframes pulse-glow { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-in { animation: fadeInUp 0.6s ease forwards; }
         .delay-1 { animation-delay: 0.1s; opacity: 0; }
         .delay-2 { animation-delay: 0.2s; opacity: 0; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; }
-        .delay-4 { animation-delay: 0.4s; opacity: 0; }
         .live-dot { width: 6px; height: 6px; background: #4caf50; border-radius: 50%; animation: pulse-glow 1.5s infinite; box-shadow: 0 0 8px #4caf50; }
       `}</style>
 
       <HexPattern />
       <div className="scan-line" style={{ top: `${scanLine}%` }} />
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse at 20% 20%, rgba(255,107,35,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(79,195,247,0.04) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse at 20% 20%, rgba(255,107,35,0.06) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
 
       <div style={{ position: "relative", zIndex: 1 }}>
         <Navbar />
 
-        {/* 히어로 섹션 */}
         <section style={{ padding: "80px 48px 64px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
             <div className="live-dot" />
-            <span style={{ fontSize: 11, letterSpacing: 3, color: "#4caf50", fontWeight: 600 }}>SEASON 3 진행중</span>
+            <span style={{ fontSize: 11, letterSpacing: 3, color: "#4caf50", fontWeight: 600 }}>SEASON 1 진행중</span>
           </div>
           <div className="hero-title animate-in">
             <div style={{ color: "#e8eaf0" }}>같이 싸울</div>
@@ -115,11 +104,13 @@ export default function Home() {
             오버워치 최초의 클랜 플랫폼.<br/>혼자였던 게임이 함께하는 전쟁이 된다.
           </p>
           <div className="animate-in delay-2" style={{ display: "flex", gap: 12, marginTop: 36 }}>
-            <a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary">클랜 만들기</button></a>
-            <a href="/find" style={{textDecoration:"none"}}><button className="btn-secondary">클랜 찾기</button></a>
+            <a href="/clan/create" style={{ textDecoration: "none" }}><button className="btn-primary">클랜 만들기</button></a>
+            <a href="/find" style={{ textDecoration: "none" }}><button className="btn-secondary">클랜 찾기</button></a>
           </div>
+
+          {/* 실제 DB 통계 */}
           <div className="animate-in delay-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 60, maxWidth: 600 }}>
-            {stats.map(stat => (
+            {statItems.map(stat => (
               <div key={stat.label} className="stat-card">
                 <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23", letterSpacing: 1 }}>{stat.value}</div>
                 <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{stat.label}</div>
@@ -141,31 +132,37 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {clans.map((clan, i) => (
-              <div key={clan.name} className={`clan-card animate-in delay-${i + 1}`}>
-                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                  <div className="rank-badge" style={{ background: clan.rank === 1 ? "#ff6b23" : clan.rank === 2 ? "#8892a4" : clan.rank === 3 ? "#cd7f32" : "#1a2535", color: clan.rank <= 3 ? "#fff" : "#8892a4", fontSize: 12, fontWeight: 700 }}>{clan.rank}</div>
-                  <div style={{ fontSize: 28 }}>{clan.badge}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>
-                      <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, opacity: 0.7 }}>[{clan.tag}]</span>
+
+          {filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
+              아직 클랜이 없어요. 첫 번째 클랜을 만들어보세요!
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {filtered.map((clan, i) => (
+                <a key={clan.id} href={`/clan/${clan.id}`} className="clan-card">
+                  <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                    <div className="rank-badge" style={{ background: i === 0 ? "#ff6b23" : i === 1 ? "#8892a4" : i === 2 ? "#cd7f32" : "#1a2535", color: i < 3 ? "#fff" : "#8892a4", fontSize: 12, fontWeight: 700 }}>{i + 1}</div>
+                    <div style={{ fontSize: 28 }}>{clan.badge}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>
+                        <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, opacity: 0.7 }}>[{clan.tag}]</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
+                        <span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.4)", color: "#ff6b23", fontSize: 10 }}>{clan.tier}</span>
+                        <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.clan_members?.[0]?.count || 0}명</span>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
-                      <span className="tier-tag" style={{ borderColor: clan.tier === "마스터" ? "rgba(255,107,35,0.5)" : "rgba(79,195,247,0.3)", color: clan.tier === "마스터" ? "#ff6b23" : "#4fc3f7", fontSize: 10 }}>{clan.tier}</span>
-                      <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.members}명</span>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23" }}>{clan.wins || 0}승</div>
+                      <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 1 }}>{clan.points || 0} PT</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23" }}>{clan.wins}승</div>
-                    <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 1 }}>이번 시즌</div>
-                  </div>
-                  <div style={{ color: "#ff6b23", fontSize: 18, opacity: 0.4, marginLeft: 8 }}>›</div>
-                </div>
-              </div>
-            ))}
-          </div>
+                </a>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* CTA */}
@@ -174,12 +171,11 @@ export default function Home() {
           <h2 style={{ fontSize: 40, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", letterSpacing: -1, marginBottom: 12 }}>혼자 하는 오버워치는 이제 그만</h2>
           <p style={{ fontSize: 15, color: "#8892a4", marginBottom: 32, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>클랜을 만들고, 대전에 참여하고, 명예를 쌓아라.</p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-            <a href="/clan/create" style={{textDecoration:"none"}}><button className="btn-primary" style={{ padding: "14px 36px", fontSize: 15 }}>무료로 클랜 만들기</button></a>
-            <button className="btn-secondary" style={{ padding: "14px 36px", fontSize: 15 }}>클랜 둘러보기</button>
+            <a href="/clan/create" style={{ textDecoration: "none" }}><button className="btn-primary" style={{ padding: "14px 36px", fontSize: 15 }}>무료로 클랜 만들기</button></a>
+            <a href="/find" style={{ textDecoration: "none" }}><button className="btn-secondary" style={{ padding: "14px 36px", fontSize: 15 }}>클랜 둘러보기</button></a>
           </div>
         </section>
 
-        {/* 푸터 */}
         <footer style={{ padding: "28px 48px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>© 2025 OVERCLAN — 비공식 팬 플랫폼</span>
           <div style={{ display: "flex", gap: 24 }}>

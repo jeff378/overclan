@@ -51,14 +51,29 @@ export default function OverClanBattle() {
 
   const handleResult = async (battle, clan1Score, clan2Score) => {
     const winnerId = clan1Score > clan2Score ? battle.clan1_id : clan2Score > clan1Score ? battle.clan2_id : null;
-    await supabase.from("clan_battles").update({ status: "완료", clan1_score: clan1Score, clan2_score: clan2Score, winner_id: winnerId }).eq("id", battle.id);
+    const loserId = winnerId === battle.clan1_id ? battle.clan2_id : battle.clan1_id;
+
+    await supabase.from("clan_battles").update({
+      status: "완료", clan1_score: clan1Score, clan2_score: clan2Score, winner_id: winnerId
+    }).eq("id", battle.id);
+
     if (winnerId) {
-      const loserId = winnerId === battle.clan1_id ? battle.clan2_id : battle.clan1_id;
-      await supabase.rpc("increment_wins", { clan_id: winnerId });
-      await supabase.rpc("increment_losses", { clan_id: loserId });
+      const { data: winner } = await supabase.from("clans").select("wins, points").eq("id", winnerId).single();
+      if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1, points: (winner.points || 0) + 100 }).eq("id", winnerId);
+      const { data: loser } = await supabase.from("clans").select("losses, points").eq("id", loserId).single();
+      if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1, points: Math.max(0, (loser.points || 0) - 20) }).eq("id", loserId);
+    } else {
+      // 무승부: 양쪽 +30
+      for (const clanId of [battle.clan1_id, battle.clan2_id]) {
+        const { data: c } = await supabase.from("clans").select("points").eq("id", clanId).single();
+        if (c) await supabase.from("clans").update({ points: (c.points || 0) + 30 }).eq("id", clanId);
+      }
     }
+
     setBattles(prev => prev.filter(b => b.id !== battle.id));
-    alert("결과가 등록됐어요!");
+    const { data: recent } = await supabase.from("clan_battles").select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge), winner:clans!winner_id(name)").eq("status", "완료").order("created_at", { ascending: false }).limit(10);
+    setRecentBattles(recent || []);
+    alert(`결과 등록 완료! ${winnerId ? "승리 +100PT / 패배 -20PT" : "무승부 +30PT"}`);
   };
 
   return (

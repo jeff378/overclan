@@ -69,7 +69,7 @@ export default function OverClanFind() {
               {filtered.length}개의 클랜이 새로운 클랜원을 기다리고 있어요.
             </p>
           </div>
-          <a href="/clan/create" className="btn-create">+ 클랜 만들기</a>
+          <a href="/clan/create" className="btn-create" onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }}>
