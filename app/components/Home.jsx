@@ -97,11 +97,10 @@ export default function Home() {
           </div>
           <div className="hero-title animate-in">
             <div style={{ color: "#e8eaf0" }}>같이 싸울</div>
-            <div className="glow-orange">클랜</div>
-            <div style={{ color: "#e8eaf0" }}>을 찾아라</div>
+            <div><span className="glow-orange">클랜</span><span style={{ color: "#e8eaf0" }}>을 찾아라</span></div>
           </div>
           <p className="animate-in delay-1" style={{ marginTop: 24, fontSize: 16, color: "#8892a4", lineHeight: 1.7, maxWidth: 480, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
-            오버워치 최초의 클랜 플랫폼.<br/>혼자였던 게임이 함께하는 전쟁이 된다.
+            오버워치를 같이 할 클랜을 찾아보세요.
           </p>
           <div className="animate-in delay-2" style={{ display: "flex", gap: 12, marginTop: 36 }}>
             <a href="/clan/create" style={{ textDecoration: "none" }}><button className="btn-primary">클랜 만들기</button></a>
