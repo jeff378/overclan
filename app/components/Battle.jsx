@@ -3,243 +3,495 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 
+const STATUS_LABEL = {
+  "신청중": { label: "수락 대기", color: "#ffd54f" },
+  "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
+  "멤버모집": { label: "멤버 모집중", color: "#ff6b23" },
+  "대전준비": { label: "대전 준비", color: "#4caf50" },
+  "결과입력": { label: "결과 입력중", color: "#ff6b23" },
+  "완료": { label: "완료", color: "#8892a4" },
+};
+
+const ROLE_CONFIG = {
+  "탱커": { icon: "🛡️", color: "#4fc3f7", max: 1 },
+  "딜러": { icon: "⚔️", color: "#ff6b23", max: 2 },
+  "힐러": { icon: "💊", color: "#4caf50", max: 2 },
+};
+
 export default function OverClanBattle() {
-  const [activeTab, setActiveTab] = useState("예정 대전");
+  const [activeTab, setActiveTab] = useState("진행중");
   const [battles, setBattles] = useState([]);
-  const [recentBattles, setRecentBattles] = useState([]);
-  const [myClans, setMyClans] = useState([]);
-  const [allClans, setAllClans] = useState([]);
+  const [completedBattles, setCompletedBattles] = useState([]);
   const [user, setUser] = useState(null);
+  const [myClan, setMyClan] = useState(null);
+  const [allClans, setAllClans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ clan1_id: "", clan2_id: "", type: "친선", scheduled_at: "" });
-  const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [volunteers, setVolunteers] = useState([]);
+  const [myVolunteer, setMyVolunteer] = useState(null);
+  const [myProfile, setMyProfile] = useState(null);
+
+  // 신청 폼
+  const [form, setForm] = useState({
+    clan2_id: "", type: "친선전",
+    date1: "", date2: "", date3: ""
+  });
+
+  // 결과 입력
+  const [resultForm, setResultForm] = useState({ score1: "", score2: "", screenshot: "" });
+  const [submittingResult, setSubmittingResult] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
 
-      const { data: upcoming } = await supabase.from("clan_battles").select("*, clan1:clans!clan1_id(name,badge,tier), clan2:clans!clan2_id(name,badge,tier)").eq("status", "대기중").order("scheduled_at", { ascending: true });
-      setBattles(upcoming || []);
+      if (userData.user) {
+        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", userData.user.id).single();
+        setMyProfile(prof);
+        const { data: mem } = await supabase.from("clan_members").select("clan_id, clans(id,name,badge,tier)").eq("user_id", userData.user.id).single();
+        if (mem) setMyClan(mem.clans);
+      }
 
-      const { data: recent } = await supabase.from("clan_battles").select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge), winner:clans!winner_id(name)").eq("status", "완료").order("created_at", { ascending: false }).limit(10);
-      setRecentBattles(recent || []);
-
-      const { data: allC } = await supabase.from("clans").select("id, name, badge");
+      const { data: allC } = await supabase.from("clans").select("id,name,badge,tier");
       setAllClans(allC || []);
 
-      if (userData.user) {
-        const { data: mems } = await supabase.from("clan_members").select("clan_id, clans(id, name, badge)").eq("user_id", userData.user.id);
-        setMyClans(mems?.map(m => m.clans) || []);
-      }
+      await loadBattles();
       setLoading(false);
     };
     load();
   }, []);
 
-  const handleSubmit = async () => {
-    if (!form.clan1_id || !form.clan2_id || !form.scheduled_at) return;
-    if (form.clan1_id === form.clan2_id) { alert("같은 클랜끼리는 대전할 수 없어요."); return; }
-    setSubmitting(true);
-    const { data } = await supabase.from("clan_battles").insert({ ...form }).select("*, clan1:clans!clan1_id(name,badge,tier), clan2:clans!clan2_id(name,badge,tier)").single();
-    if (data) setBattles(prev => [data, ...prev]);
-    setShowForm(false);
-    setForm({ clan1_id: "", clan2_id: "", type: "친선", scheduled_at: "" });
-    setSubmitting(false);
+  const loadBattles = async () => {
+    const { data: active } = await supabase.from("clan_battles")
+      .select("*, clan1:clans!clan1_id(id,name,badge,tier), clan2:clans!clan2_id(id,name,badge,tier)")
+      .neq("status", "완료").order("created_at", { ascending: false });
+    setBattles(active || []);
+
+    const { data: done } = await supabase.from("clan_battles")
+      .select("*, clan1:clans!clan1_id(id,name,badge), clan2:clans!clan2_id(id,name,badge), winner:clans!winner_id(name)")
+      .eq("status", "완료").order("created_at", { ascending: false }).limit(20);
+    setCompletedBattles(done || []);
   };
 
-  const handleResult = async (battle, clan1Score, clan2Score) => {
-    const winnerId = clan1Score > clan2Score ? battle.clan1_id : clan2Score > clan1Score ? battle.clan2_id : null;
-    const loserId = winnerId === battle.clan1_id ? battle.clan2_id : battle.clan1_id;
+  const loadVolunteers = async (battleId) => {
+    const { data } = await supabase.from("battle_volunteers")
+      .select("*").eq("battle_id", battleId);
+    const withProfiles = await Promise.all((data || []).map(async v => {
+      const { data: prof } = await supabase.from("profiles").select("nickname, battletag").eq("id", v.user_id).single();
+      return { ...v, profiles: prof };
+    }));
+    setVolunteers(withProfiles);
+    if (user) setMyVolunteer(withProfiles.find(v => v.user_id === user.id) || null);
+  };
 
+  const handleSelectBattle = async (battle) => {
+    setSelected(battle);
+    setMyVolunteer(null);
+    await loadVolunteers(battle.id);
+  };
+
+  // 대전 신청
+  const handleRequest = async () => {
+    if (!form.clan2_id || !form.date1) { alert("상대 클랜과 날짜를 입력해주세요."); return; }
+    const dates = [form.date1, form.date2, form.date3].filter(Boolean);
+    const { data } = await supabase.from("clan_battles").insert({
+      clan1_id: myClan.id, clan2_id: form.clan2_id,
+      type: form.type, status: "신청중",
+      proposed_dates: dates, created_by: user.id
+    }).select("*, clan1:clans!clan1_id(id,name,badge,tier), clan2:clans!clan2_id(id,name,badge,tier)").single();
+    if (data) setBattles(prev => [data, ...prev]);
+    setShowForm(false);
+    setForm({ clan2_id: "", type: "친선전", date1: "", date2: "", date3: "" });
+    alert("대전 신청을 보냈어요!");
+  };
+
+  // 날짜 수락
+  const handleAcceptDate = async (battle, date) => {
     await supabase.from("clan_battles").update({
-      status: "완료", clan1_score: clan1Score, clan2_score: clan2Score, winner_id: winnerId
+      status: "멤버모집", confirmed_date: date
     }).eq("id", battle.id);
+    await loadBattles();
+    setSelected(prev => ({ ...prev, status: "멤버모집", confirmed_date: date }));
+    alert("날짜가 확정됐어요! 멤버 모집을 시작하세요.");
+  };
 
-    // 축구 승점제: 정규전만 승점 반영 (승리 3점 / 무승부 1점 / 패배 0점)
-    if (battle.type === "정규") {
-      if (winnerId) {
-        const { data: winner } = await supabase.from("clans").select("wins, points").eq("id", winnerId).single();
-        if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1, points: (winner.points || 0) + 3 }).eq("id", winnerId);
-        const { data: loser } = await supabase.from("clans").select("losses, points").eq("id", loserId).single();
-        if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1 }).eq("id", loserId);
-      } else {
-        // 무승부: 양쪽 +1점
-        for (const clanId of [battle.clan1_id, battle.clan2_id]) {
-          const { data: c } = await supabase.from("clans").select("points").eq("id", clanId).single();
-          if (c) await supabase.from("clans").update({ points: (c.points || 0) + 1 }).eq("id", clanId);
+  // 자원 신청
+  const handleVolunteer = async (roles) => {
+    if (!user || !selected) return;
+    if (myVolunteer) {
+      await supabase.from("battle_volunteers").update({ roles }).eq("id", myVolunteer.id);
+    } else {
+      await supabase.from("battle_volunteers").insert({
+        battle_id: selected.id, clan_id: myClan.id, user_id: user.id, roles
+      });
+    }
+    await loadVolunteers(selected.id);
+  };
+
+  // 멤버 확정
+  const handleConfirmMember = async (volunteerId, role) => {
+    await supabase.from("battle_volunteers").update({ is_confirmed: true, confirmed_role: role }).eq("id", volunteerId);
+    await loadVolunteers(selected.id);
+    // 5명 다 확정됐는지 체크
+    const { data: confirmed } = await supabase.from("battle_volunteers").select("*").eq("battle_id", selected.id).eq("is_confirmed", true);
+    if ((confirmed || []).length >= 10) {
+      await supabase.from("clan_battles").update({ status: "대전준비" }).eq("id", selected.id);
+    }
+  };
+
+  // 결과 입력
+  const handleResult = async () => {
+    if (resultForm.score1 === "" || resultForm.score2 === "") { alert("점수를 입력해주세요."); return; }
+    setSubmittingResult(true);
+    const isClan1 = selected.clan1_id === myClan?.id;
+    const updateData = isClan1
+      ? { clan1_result: `${resultForm.score1}-${resultForm.score2}`, clan1_screenshot: resultForm.screenshot, status: "결과입력" }
+      : { clan2_result: `${resultForm.score1}-${resultForm.score2}`, clan2_screenshot: resultForm.screenshot, status: "결과입력" };
+    await supabase.from("clan_battles").update(updateData).eq("id", selected.id);
+
+    // 양쪽 다 입력했는지 확인
+    const { data: updated } = await supabase.from("clan_battles").select("*").eq("id", selected.id).single();
+    if (updated.clan1_result && updated.clan2_result) {
+      if (updated.clan1_result === updated.clan2_result) {
+        const [s1, s2] = updated.clan1_result.split("-").map(Number);
+        const winnerId = s1 > s2 ? updated.clan1_id : s2 > s1 ? updated.clan2_id : null;
+        await supabase.from("clan_battles").update({ status: "완료", winner_id: winnerId, clan1_score: s1, clan2_score: s2 }).eq("id", selected.id);
+        if (updated.type === "정규전") {
+          if (winnerId) {
+            const loserId = winnerId === updated.clan1_id ? updated.clan2_id : updated.clan1_id;
+            const { data: w } = await supabase.from("clans").select("wins,points").eq("id", winnerId).single();
+            if (w) await supabase.from("clans").update({ wins: (w.wins||0)+1, points: (w.points||0)+3 }).eq("id", winnerId);
+            const { data: l } = await supabase.from("clans").select("losses").eq("id", loserId).single();
+            if (l) await supabase.from("clans").update({ losses: (l.losses||0)+1 }).eq("id", loserId);
+          } else {
+            for (const cid of [updated.clan1_id, updated.clan2_id]) {
+              const { data: c } = await supabase.from("clans").select("points").eq("id", cid).single();
+              if (c) await supabase.from("clans").update({ points: (c.points||0)+1 }).eq("id", cid);
+            }
+          }
         }
+        alert("결과가 확정됐어요!");
+      } else {
+        await supabase.from("clan_battles").update({ is_disputed: true, status: "결과입력" }).eq("id", selected.id);
+        alert("양쪽 결과가 일치하지 않아요. 분쟁으로 처리됩니다.");
       }
     } else {
-      // 친선전: 승패 기록만, 승점 미반영
-      if (winnerId) {
-        const { data: winner } = await supabase.from("clans").select("wins").eq("id", winnerId).single();
-        if (winner) await supabase.from("clans").update({ wins: (winner.wins || 0) + 1 }).eq("id", winnerId);
-        const { data: loser } = await supabase.from("clans").select("losses").eq("id", loserId).single();
-        if (loser) await supabase.from("clans").update({ losses: (loser.losses || 0) + 1 }).eq("id", loserId);
-      }
+      alert("결과를 입력했어요. 상대 클랜의 입력을 기다리세요.");
     }
+    setResultForm({ score1: "", score2: "", screenshot: "" });
+    setSubmittingResult(false);
+    await loadBattles();
+  };
 
-    setBattles(prev => prev.filter(b => b.id !== battle.id));
-    const { data: recent } = await supabase.from("clan_battles").select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge), winner:clans!winner_id(name)").eq("status", "완료").order("created_at", { ascending: false }).limit(10);
-    setRecentBattles(recent || []);
-    const msg = battle.type === "정규"
-      ? winnerId ? "정규전 결과 등록! 승리 +3점 / 패배 0점" : "정규전 무승부! 양쪽 +1점"
-      : "친선전 결과 등록! (승점 미반영)";
-    alert(msg);
+  const isMyBattle = (battle) => myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id);
+  const isOpponent = (battle) => myClan && battle.clan2_id === myClan.id;
+  const scrimTitle = (battle) => `[오버클랜] ${battle.clan1?.name} vs ${battle.clan2?.name}`;
+
+  const getMyClanVolunteers = () => volunteers.filter(v => v.clan_id === myClan?.id);
+  const getOpponentVolunteers = () => volunteers.filter(v => v.clan_id !== myClan?.id && selected && (v.clan_id === selected.clan1_id || v.clan_id === selected.clan2_id));
+  const getConfirmedByRole = (clanId) => {
+    const confirmed = volunteers.filter(v => v.clan_id === clanId && v.is_confirmed);
+    return { "탱커": confirmed.filter(v => v.confirmed_role === "탱커"), "딜러": confirmed.filter(v => v.confirmed_role === "딜러"), "힐러": confirmed.filter(v => v.confirmed_role === "힐러") };
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
-        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 11px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
+        .btn-sm:hover { background: rgba(255,107,35,0.1); }
+        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
-        .battle-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.12); padding: 24px 28px; transition: all 0.3s; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); margin-bottom: 10px; }
-        .type-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
-        .select { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
+        .battle-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 18px 22px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
+        .battle-card:hover, .battle-card.active { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
+        .battle-card.mine { border-color: rgba(255,107,35,0.25); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
+        .input:focus { border-color: #ff6b23; }
+        .select { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
-        @keyframes glow-pulse { 0%, 100% { text-shadow: 0 0 10px rgba(255,107,35,0.5); } 50% { text-shadow: 0 0 20px rgba(255,107,35,0.9); } }
-        .vs-text { font-size: 20px; font-weight: 700; color: #ff6b23; font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; animation: glow-pulse 2s infinite; }
+        .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .role-btn { padding: 8px 16px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
+        .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .member-slot { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+        .member-slot.confirmed { border-color: rgba(76,175,80,0.3); }
+        .empty-slot { background: rgba(13,20,35,0.3); border: 1px dashed rgba(255,255,255,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+        .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
+        @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
+        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
       `}</style>
 
       <Navbar active="클랜대전" />
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 32px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 36 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-            <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>클랜대전</h1>
+            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>클랜대전</h1>
           </div>
-          {user && myClans.length > 0 && (
-            <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-              {showForm ? "취소" : "대전 신청"}
-            </button>
-          )}
+          {myClan && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "대전 신청"}</button>}
         </div>
 
         {/* 대전 신청 폼 */}
         {showForm && (
-          <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: "28px", marginBottom: 28 }}>
-            <h3 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, letterSpacing: 2, marginBottom: 20 }}>클랜대전 신청</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+          <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 24, marginBottom: 20 }}>
+            <h3 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 18, color: "#ff6b23" }}>클랜대전 신청</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
               <div>
-                <label className="label">우리 클랜</label>
-                <select className="select" value={form.clan1_id} onChange={e => setForm({ ...form, clan1_id: e.target.value })}>
-                  <option value="">클랜 선택</option>
-                  {myClans.map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="label">상대 클랜</label>
+                <label className="label">상대 클랜 *</label>
                 <select className="select" value={form.clan2_id} onChange={e => setForm({ ...form, clan2_id: e.target.value })}>
                   <option value="">클랜 선택</option>
-                  {allClans.filter(c => c.id !== form.clan1_id).map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
+                  {allClans.filter(c => c.id !== myClan?.id).map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
                 </select>
               </div>
               <div>
                 <label className="label">대전 종류</label>
                 <select className="select" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-                  <option value="친선">친선</option>
-                  <option value="정규">정규</option>
+                  <option value="친선전">친선전</option>
+                  <option value="정규전">정규전 (승점 반영)</option>
                 </select>
               </div>
-              <div>
-                <label className="label">날짜 & 시간</label>
-                <input className="input" type="datetime-local" value={form.scheduled_at} onChange={e => setForm({ ...form, scheduled_at: e.target.value })} />
-              </div>
             </div>
-            <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? "신청 중..." : "신청하기"}
-            </button>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+              {[1,2,3].map(n => (
+                <div key={n}>
+                  <label className="label">희망 날짜 {n}{n===1?" *":""}</label>
+                  <input className="input" type="datetime-local" value={form[`date${n}`]} onChange={e => setForm({ ...form, [`date${n}`]: e.target.value })} />
+                </div>
+              ))}
+            </div>
+            <button className="btn-primary" onClick={handleRequest}>신청 보내기</button>
           </div>
         )}
 
         {/* 탭 */}
-        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 24, display: "flex" }}>
-          {["예정 대전", "최근 대전 결과"].map(tab => (
-            <button key={tab} className={`tab-btn ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab)}>{tab}</button>
+        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex" }}>
+          {["진행중", "완료된 대전"].map(t => (
+            <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>{t}</button>
           ))}
         </div>
 
         {loading ? (
           <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
-        ) : activeTab === "예정 대전" ? (
-          battles.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
-              예정된 대전이 없어요. 첫 번째 클랜대전을 신청해보세요!
-            </div>
-          ) : battles.map(b => (
-            <div key={b.id} className="battle-card">
-              <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 32 }}>{b.clan1?.badge}</span>
-                  <div>
-                    <div style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{b.clan1?.name}</div>
-                    <div style={{ fontSize: 11, color: "#8892a4" }}>{b.clan1?.tier}</div>
-                  </div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div className="vs-text">VS</div>
-                  <span className="type-tag" style={{ background: b.type === "정규" ? "rgba(255,107,35,0.15)" : "rgba(255,255,255,0.05)", color: b.type === "정규" ? "#ff6b23" : "#8892a4" }}>{b.type}</span>
-                </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, justifyContent: "flex-end", flexDirection: "row-reverse" }}>
-                  <span style={{ fontSize: 32 }}>{b.clan2?.badge}</span>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{b.clan2?.name}</div>
-                    <div style={{ fontSize: 11, color: "#8892a4" }}>{b.clan2?.tier}</div>
-                  </div>
-                </div>
-                <div style={{ borderLeft: "1px solid rgba(255,107,35,0.1)", paddingLeft: 20, textAlign: "right", minWidth: 120 }}>
-                  <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
-                    {b.scheduled_at ? new Date(b.scheduled_at).toLocaleDateString("ko-KR", { month: "long", day: "numeric" }) : "날짜 미정"}
-                  </div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
-                    {b.scheduled_at ? new Date(b.scheduled_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }) : ""}
-                  </div>
-                  {user && myClans.some(c => c.id === b.clan1_id || c.id === b.clan2_id) && (
-                    <button onClick={() => {
-                      const s1 = parseInt(prompt("우리 클랜 점수?") || "0");
-                      const s2 = parseInt(prompt("상대 클랜 점수?") || "0");
-                      handleResult(b, s1, s2);
-                    }} style={{ marginTop: 8, background: "rgba(255,107,35,0.15)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "4px 12px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-                      결과 입력
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
         ) : (
-          recentBattles.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 완료된 대전이 없어요.</div>
-          ) : recentBattles.map(b => (
-            <div key={b.id} className="battle-card">
-              <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 28 }}>{b.clan1?.badge}</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
-                  {b.winner_id === b.clan1_id && <span style={{ fontSize: 10, color: "#4caf50", fontWeight: 700 }}>WIN</span>}
-                </div>
-                <div style={{ textAlign: "center", minWidth: 80 }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{b.clan1_score} - {b.clan2_score}</div>
-                  <span className="type-tag" style={{ background: b.type === "정규" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.04)", color: b.type === "정규" ? "#ff6b23" : "#8892a4", fontSize: 9 }}>{b.type}</span>
-                </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, justifyContent: "flex-end" }}>
-                  {b.winner_id === b.clan2_id && <span style={{ fontSize: 10, color: "#4caf50", fontWeight: 700 }}>WIN</span>}
-                  <span style={{ fontSize: 16, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
-                  <span style={{ fontSize: 28 }}>{b.clan2?.badge}</span>
-                </div>
-              </div>
+          <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.6fr" : "1fr", gap: 20 }}>
+
+            {/* 대전 목록 */}
+            <div>
+              {activeTab === "진행중" && (
+                battles.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>진행중인 클랜대전이 없어요.</div>
+                ) : battles.map(b => (
+                  <div key={b.id} className={`battle-card ${selected?.id === b.id ? "active" : ""} ${isMyBattle(b) ? "mine" : ""}`} onClick={() => handleSelectBattle(b)}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                      <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{b.clan1?.name}</span>
+                      <span className="vs">VS</span>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{b.clan2?.name}</span>
+                      <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <span className="status-tag" style={{ background: `${STATUS_LABEL[b.status]?.color}22`, color: STATUS_LABEL[b.status]?.color, border: `1px solid ${STATUS_LABEL[b.status]?.color}44` }}>{STATUS_LABEL[b.status]?.label}</span>
+                      <span className="status-tag" style={{ background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{b.type}</span>
+                      {isMyBattle(b) && <span style={{ fontSize: 10, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>내 클랜</span>}
+                      {b.is_disputed && <span style={{ fontSize: 10, color: "#ef5350", fontWeight: 700 }}>⚠️ 분쟁</span>}
+                    </div>
+                  </div>
+                ))
+              )}
+
+              {activeTab === "완료된 대전" && (
+                completedBattles.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>완료된 대전이 없어요.</div>
+                ) : completedBattles.map(b => (
+                  <div key={b.id} className="battle-card">
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
+                      <div style={{ textAlign: "center", minWidth: 60 }}>
+                        <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700 }}>{b.clan1_score} - {b.clan2_score}</div>
+                      </div>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
+                      <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-          ))
+
+            {/* 상세 패널 */}
+            {selected && (
+              <div className="detail-panel">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                      <span style={{ fontSize: 28 }}>{selected.clan1?.badge}</span>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700 }}>{selected.clan1?.name}</span>
+                      <span className="vs">VS</span>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700 }}>{selected.clan2?.name}</span>
+                      <span style={{ fontSize: 28 }}>{selected.clan2?.badge}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <span className="status-tag" style={{ background: `${STATUS_LABEL[selected.status]?.color}22`, color: STATUS_LABEL[selected.status]?.color, border: `1px solid ${STATUS_LABEL[selected.status]?.color}44` }}>{STATUS_LABEL[selected.status]?.label}</span>
+                      <span className="status-tag" style={{ background: selected.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: selected.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{selected.type}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 18 }}>✕</button>
+                </div>
+
+                {/* 스크림방 제목 */}
+                {(selected.status === "대전준비" || selected.status === "멤버모집") && (
+                  <div className="scrim-box" style={{ marginBottom: 16 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1, marginBottom: 4 }}>스크림방 제목 (복사해서 사용하세요)</div>
+                      <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#ff6b23" }}>{scrimTitle(selected)}</div>
+                    </div>
+                    <button className="btn-sm" onClick={() => { navigator.clipboard.writeText(scrimTitle(selected)); alert("복사됐어요!"); }}>복사</button>
+                  </div>
+                )}
+
+                {/* 신청중 - 날짜 선택 */}
+                {selected.status === "신청중" && isOpponent(selected) && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 10 }}>상대 클랜이 제안한 날짜 중 하나를 선택해주세요.</div>
+                    {(selected.proposed_dates || []).map((date, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.1)", padding: "10px 14px", marginBottom: 6 }}>
+                        <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>{new Date(date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                        <button className="btn-green" onClick={() => handleAcceptDate(selected, date)}>이 날짜로 확정</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {selected.status === "신청중" && !isOpponent(selected) && (
+                  <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    상대 클랜의 날짜 수락을 기다리고 있어요.
+                  </div>
+                )}
+
+                {/* 확정 날짜 표시 */}
+                {selected.confirmed_date && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "10px 14px", background: "rgba(76,175,80,0.06)", border: "1px solid rgba(76,175,80,0.2)" }}>
+                    <span style={{ fontSize: 12, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>📅 확정 날짜</span>
+                    <span style={{ fontSize: 13, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif" }}>
+                      {new Date(selected.confirmed_date).toLocaleString("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                )}
+
+                {/* 멤버 모집 */}
+                {(selected.status === "멤버모집" || selected.status === "대전준비") && isMyBattle(selected) && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 10, fontWeight: 600 }}>멤버 구성 (탱커1 / 딜러2 / 힐러2)</div>
+
+                    {/* 내 클랜 라인업 */}
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, color: "#ff6b23", letterSpacing: 1, marginBottom: 8, fontWeight: 600 }}>
+                        {myClan?.badge} {myClan?.name} 출전 명단
+                      </div>
+                      {Object.entries(ROLE_CONFIG).map(([role, cfg]) => {
+                        const confirmed = volunteers.filter(v => v.clan_id === myClan?.id && v.is_confirmed && v.confirmed_role === role);
+                        const available = volunteers.filter(v => v.clan_id === myClan?.id && !v.is_confirmed && v.roles?.includes(role));
+                        return (
+                          <div key={role} style={{ marginBottom: 8 }}>
+                            <div style={{ fontSize: 10, color: cfg.color, letterSpacing: 1, marginBottom: 4, fontWeight: 700 }}>{cfg.icon} {role} ({confirmed.length}/{cfg.max})</div>
+                            {confirmed.map(v => (
+                              <div key={v.id} className="member-slot confirmed">
+                                <span style={{ fontSize: 16 }}>{cfg.icon}</span>
+                                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
+                                <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{v.profiles?.battletag}</span>
+                              </div>
+                            ))}
+                            {confirmed.length < cfg.max && available.map(v => (
+                              <div key={v.id} className="member-slot" style={{ justifyContent: "space-between" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 14 }}>{cfg.icon}</span>
+                                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>
+                                </div>
+                                {myClan && selected && (selected.clan1_id === myClan.id || selected.clan2_id === myClan.id) && (
+                                  <button className="btn-green" style={{ fontSize: 10 }} onClick={() => handleConfirmMember(v.id, role)}>확정</button>
+                                )}
+                              </div>
+                            ))}
+                            {confirmed.length < cfg.max && available.length === 0 && (
+                              <div className="empty-slot"><span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Noto Sans KR, sans-serif" }}>자원자 없음</span></div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* 자원 신청 버튼 */}
+                    {!myVolunteer && user && (
+                      <div style={{ marginTop: 12 }}>
+                        <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 1, marginBottom: 8, fontWeight: 600 }}>역할군 선택 후 자원 신청 (중복 가능)</div>
+                        <VolunteerForm onSubmit={handleVolunteer} />
+                      </div>
+                    )}
+                    {myVolunteer && !myVolunteer.is_confirmed && (
+                      <div style={{ fontSize: 12, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif", marginTop: 8 }}>✅ 자원 신청 완료 — 클랜장의 확정을 기다리세요.</div>
+                    )}
+                  </div>
+                )}
+
+                {/* 결과 입력 */}
+                {(selected.status === "대전준비" || selected.status === "결과입력") && isMyBattle(selected) && (
+                  <div style={{ marginTop: 16, borderTop: "1px solid rgba(255,107,35,0.1)", paddingTop: 16 }}>
+                    <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>결과 입력</div>
+                    {((myClan?.id === selected.clan1_id && !selected.clan1_result) || (myClan?.id === selected.clan2_id && !selected.clan2_result)) ? (
+                      <div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                          <div>
+                            <label className="label">우리 팀 승수</label>
+                            <input className="input" type="number" min="0" max="9" placeholder="0" value={resultForm.score1} onChange={e => setResultForm({ ...resultForm, score1: e.target.value })} />
+                          </div>
+                          <div>
+                            <label className="label">상대 팀 승수</label>
+                            <input className="input" type="number" min="0" max="9" placeholder="0" value={resultForm.score2} onChange={e => setResultForm({ ...resultForm, score2: e.target.value })} />
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: 10 }}>
+                          <label className="label">스크린샷 URL (선택)</label>
+                          <input className="input" placeholder="이미지 URL 붙여넣기" value={resultForm.screenshot} onChange={e => setResultForm({ ...resultForm, screenshot: e.target.value })} />
+                        </div>
+                        <button className="btn-primary" onClick={handleResult} disabled={submittingResult}>{submittingResult ? "입력 중..." : "결과 제출"}</button>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: 12, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif" }}>✅ 결과 입력 완료 — 상대 클랜의 입력을 기다리세요.</div>
+                    )}
+                    {selected.is_disputed && (
+                      <div style={{ marginTop: 10, fontSize: 12, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>⚠️ 양쪽 결과가 일치하지 않아요. 관리자에게 문의해주세요.</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function VolunteerForm({ onSubmit }) {
+  const [selected, setSelected] = useState([]);
+  const toggle = (role) => setSelected(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+      {Object.entries(ROLE_CONFIG).map(([role, cfg]) => (
+        <button key={role} className="role-btn" onClick={() => toggle(role)} style={{
+          background: selected.includes(role) ? `${cfg.color}22` : "rgba(13,20,35,0.8)",
+          borderColor: selected.includes(role) ? cfg.color : "rgba(255,255,255,0.1)",
+          color: selected.includes(role) ? cfg.color : "#8892a4",
+        }}>{cfg.icon} {role}</button>
+      ))}
+      <button className="btn-primary" onClick={() => selected.length > 0 && onSubmit(selected)} disabled={selected.length === 0}>자원 신청</button>
     </div>
   );
 }
