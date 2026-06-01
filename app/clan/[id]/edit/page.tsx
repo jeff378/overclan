@@ -142,26 +142,6 @@ export default function EditClanPage() {
             <input type="range" min={5} max={50} value={form.max_members} onChange={e => setForm({ ...form, max_members: Number(e.target.value) })} style={{ width: "100%", accentColor: "#ff6b23" }} />
           </div>
           <div>
-            <label className="label">슬로건 (한 줄 소개)</label>
-            <input className="input" placeholder="클랜을 한 줄로 표현해보세요" value={form.slogan} onChange={e => setForm({ ...form, slogan: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">가입 조건</label>
-            <textarea className="input" style={{minHeight:"80px", resize:"vertical"}} placeholder="나이, 티어, 마이크 여부 등 가입 조건을 적어주세요" value={form.join_condition} onChange={e => setForm({ ...form, join_condition: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">디스코드 초대 링크</label>
-            <input className="input" placeholder="https://discord.gg/..." value={form.discord_link} onChange={e => setForm({ ...form, discord_link: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">배너 색상</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <input type="color" value={form.banner_color} onChange={e => setForm({ ...form, banner_color: e.target.value })} style={{ width: 48, height: 36, border: "1px solid rgba(255,107,35,0.2)", background: "transparent", cursor: "pointer", padding: 2 }} />
-              <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜 프로필 배너 색상</span>
-              <div style={{ width: 60, height: 24, background: `linear-gradient(135deg, ${form.banner_color}, #080c14)`, borderRadius: 2 }} />
-            </div>
-          </div>
-          <div>
             <label className="label">클랜 슬로건</label>
             <input className="input" placeholder="클랜을 한 줄로 표현해보세요" value={form.slogan} onChange={e => setForm({ ...form, slogan: e.target.value })} />
           </div>
