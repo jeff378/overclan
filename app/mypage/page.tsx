@@ -72,11 +72,24 @@ export default function MyPage() {
             <div style={{ width: 64, height: 64, background: "rgba(255,107,35,0.15)", border: "2px solid rgba(255,107,35,0.4)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
               👤
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{profile?.nickname}</div>
               <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{profile?.battletag}</div>
-              <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2 }}>{profile?.email}</div>
+              <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                {profile?.tier && (
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", background: "rgba(255,107,35,0.15)", color: "#ff6b23", border: "1px solid rgba(255,107,35,0.3)", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{profile.tier}</span>
+                )}
+                {(profile?.roles || []).map((r: string) => (
+                  <span key={r} style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", background: "rgba(255,255,255,0.05)", color: "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>
+                    {r === "탱커" ? "🛡️" : r === "딜러" ? "⚔️" : "💊"} {r}
+                  </span>
+                ))}
+                {profile?.main_hero && (
+                  <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>주력: {profile.main_hero}</span>
+                )}
+              </div>
             </div>
+            <a href="/profile-edit" style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", alignSelf: "flex-start" }}>프로필 수정</a>
           </div>
         </div>
 
