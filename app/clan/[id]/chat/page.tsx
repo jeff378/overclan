@@ -122,14 +122,12 @@ export default function ClanChatPage() {
               <a href={`/clan/${id}`} style={{ fontSize: 11, color: "#8892a4", textDecoration: "none" }}>← 클랜 페이지</a>
             </div>
           </div>
-          {isOwner && activeTab === "공지" && (
-            <button className="btn-small" onClick={() => setShowNoticeForm(!showNoticeForm)}>{showNoticeForm ? "취소" : "+ 공지 작성"}</button>
-          )}
+  
         </div>
 
         {/* 탭 */}
         <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex" }}>
-          {["채팅", "공지"].map(tab => (
+          {["채팅"].map(tab => (
             <button key={tab} className={`tab-btn ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab)}>{tab}</button>
           ))}
         </div>
@@ -161,36 +159,7 @@ export default function ClanChatPage() {
           </div>
         )}
 
-        {/* 공지 탭 */}
-        {activeTab === "공지" && (
-          <div>
-            {showNoticeForm && (
-              <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: "24px", marginBottom: 20 }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <input className="input" placeholder="공지 제목" value={noticeTitle} onChange={e => setNoticeTitle(e.target.value)} />
-                  <textarea className="input" placeholder="공지 내용" value={noticeContent} onChange={e => setNoticeContent(e.target.value)} />
-                  <button className="btn-primary" onClick={handleNotice} style={{ alignSelf: "flex-start" }}>공지 등록</button>
-                </div>
-              </div>
-            )}
-            {notices.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 공지가 없어요.</div>
-            ) : notices.map(n => (
-              <div key={n.id} className="notice-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 6 }}>📢 {n.title}</div>
-                    <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{n.content}</p>
-                    <div style={{ fontSize: 11, color: "#8892a4", marginTop: 10, fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</div>
-                  </div>
-                  {isOwner && (
-                    <button onClick={() => handleDeleteNotice(n.id)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 16, opacity: 0.5 }}>✕</button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+
       </div>
     </div>
   );

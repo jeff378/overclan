@@ -318,22 +318,7 @@ export default function ClanDetailPage() {
 
         {/* 공지 탭 */}
         {activeTab === "공지" && (
-          <div>
-            {notices.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 공지가 없어요.</div>
-            ) : notices.map(n => (
-              <div key={n.id} style={{ background: "rgba(13,20,35,0.7)", border: "1px solid rgba(255,107,35,0.1)", padding: "20px 24px", marginBottom: 8, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 14 }}>📢</span>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{n.title}</span>
-                </div>
-                <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap", marginBottom: 12 }}>{n.content}</p>
-                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
-                  {n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}
-                </div>
-              </div>
-            ))}
-          </div>
+          <NoticeTab notices={notices} setNotices={setNotices} isOwner={isOwner} user={user} clanId={id as string} />
         )}
 
         {/* 대전 기록 탭 */}
@@ -363,6 +348,68 @@ export default function ClanDetailPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handlePost = async () => {
+    if (!title || !content) return;
+    setSaving(true);
+    const { data } = await supabase.from("clan_notices").insert({ clan_id: clanId, user_id: user.id, title, content }).select().single();
+    if (data) {
+      const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+      setNotices((prev: any[]) => [{ ...data, profiles: prof }, ...prev]);
+    }
+    setTitle(""); setContent(""); setShowForm(false); setSaving(false);
+  };
+
+  const handleDelete = async (noticeId: string) => {
+    if (!confirm("공지를 삭제할까요?")) return;
+    await supabase.from("clan_notices").delete().eq("id", noticeId);
+    setNotices((prev: any[]) => prev.filter((n: any) => n.id !== noticeId));
+  };
+
+  return (
+    <div>
+      {isOwner && (
+        <div style={{ marginBottom: 16 }}>
+          {!showForm ? (
+            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>
+              + 공지 작성
+            </button>
+          ) : (
+            <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 20, marginBottom: 12 }}>
+              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="공지 제목" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", marginBottom: 10 }} />
+              <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="공지 내용" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", minHeight: 100, resize: "vertical", marginBottom: 10 }} />
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={handlePost} disabled={saving} style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>{saving ? "등록 중..." : "등록"}</button>
+                <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      {notices.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 공지가 없어요.</div>
+      ) : notices.map((n: any) => (
+        <div key={n.id} style={{ background: "rgba(13,20,35,0.7)", border: "1px solid rgba(255,107,35,0.1)", padding: "20px 24px", marginBottom: 8, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 14 }}>📢</span>
+              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{n.title}</span>
+            </div>
+            {isOwner && <button onClick={() => handleDelete(n.id)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 14, opacity: 0.5 }}>🗑</button>}
+          </div>
+          <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap", marginBottom: 12 }}>{n.content}</p>
+          <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</div>
+        </div>
+      ))}
     </div>
   );
 }
