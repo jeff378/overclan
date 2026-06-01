@@ -41,7 +41,7 @@ export default function ClanDetailPage() {
 
       const { data: membersData } = await supabase.from("clan_members").select("*").eq("clan_id", id);
       const membersWithProfiles = await Promise.all((membersData || []).map(async (m) => {
-        const { data: profile } = await supabase.from("profiles").select("nickname, battletag, tier, roles").eq("id", m.user_id).single();
+        const { data: profile } = await supabase.from("profiles").select("nickname, battletag, tier, roles, tier_tank, tier_dps, tier_support").eq("id", m.user_id).single();
         return { ...m, profiles: profile };
       }));
       setMembers(membersWithProfiles);
@@ -252,21 +252,41 @@ export default function ClanDetailPage() {
                 ))}
               </div>
 
-              {/* 역할군 분포 */}
-              <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>역할군 구성</div>
+              {/* 역할군별 티어 분포 */}
+              <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>역할군별 티어</div>
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "16px 20px", marginBottom: 16 }}>
-                {Object.keys(roleDist).length === 0 ? (
-                  <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>역할군 정보 없음</div>
-                ) : Object.entries(ROLE_CONFIG).map(([role, cfg]) => (
-                  <div key={role} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 14 }}>{cfg.icon}</span>
-                    <span style={{ fontSize: 12, color: cfg.color, fontWeight: 700, minWidth: 40, fontFamily: "Rajdhani, sans-serif" }}>{role}</span>
-                    <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                      <div style={{ width: `${((roleDist[role] || 0) / members.length) * 100}%`, height: "100%", background: cfg.color, borderRadius: 2 }} />
+                {[
+                  { role: "탱커", icon: "🛡️", color: "#4fc3f7", key: "tier_tank" },
+                  { role: "딜러", icon: "⚔️", color: "#ff6b23", key: "tier_dps" },
+                  { role: "힐러", icon: "💊", color: "#4caf50", key: "tier_support" },
+                ].map(({ role, icon, color, key }) => {
+                  const tierMembers = members.filter(m => m.profiles?.[key]);
+                  const tierCounts = tierMembers.reduce((acc: Record<string, number>, m) => {
+                    const t = m.profiles?.[key];
+                    if (t) acc[t] = (acc[t] || 0) + 1;
+                    return acc;
+                  }, {});
+                  return (
+                    <div key={role} style={{ marginBottom: 14 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                        <span style={{ fontSize: 14 }}>{icon}</span>
+                        <span style={{ fontSize: 12, color, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{role}</span>
+                        <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{tierMembers.length}명</span>
+                      </div>
+                      {tierMembers.length === 0 ? (
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "Noto Sans KR, sans-serif", paddingLeft: 20 }}>정보 없음</div>
+                      ) : (
+                        <div style={{ paddingLeft: 20, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          {Object.entries(tierCounts).map(([tier, count]) => (
+                            <span key={tier} style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", background: `${TIER_COLORS[tier]}22`, color: TIER_COLORS[tier] || "#8892a4", border: `1px solid ${TIER_COLORS[tier]}44`, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>
+                              {tier} {count as number}명
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif" }}>{roleDist[role] || 0}명</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* 클랜원 수 바 */}
@@ -292,22 +312,28 @@ export default function ClanDetailPage() {
         {/* 클랜원 탭 */}
         {activeTab === "클랜원" && (
           <div>
-            <div style={{ display: "grid", gridTemplateColumns: "80px 2fr 1fr 1fr 1fr", gap: 12, padding: "8px 18px", fontSize: 11, color: "#8892a4", letterSpacing: 1, fontWeight: 600, marginBottom: 6 }}>
-              <span>역할</span><span>닉네임</span><span>배틀태그</span><span>티어</span><span>직책</span>
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr 80px", gap: 12, padding: "8px 18px", fontSize: 11, color: "#8892a4", letterSpacing: 1, fontWeight: 600, marginBottom: 6 }}>
+              <span>닉네임</span><span>직책</span><span>역할군별 티어</span><span>배틀태그</span>
             </div>
             {members.map(m => (
-              <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "80px 2fr 1fr 1fr 1fr", gap: 12, alignItems: "center" }}>
-                <div style={{ display: "flex", gap: 4 }}>
-                  {(m.profiles?.roles || []).length === 0 ? (
-                    <span style={{ fontSize: 11, color: "#8892a4" }}>-</span>
-                  ) : (m.profiles?.roles || []).map((r: string) => (
-                    <span key={r} style={{ fontSize: 14 }}>{ROLE_CONFIG[r]?.icon}</span>
-                  ))}
-                </div>
+              <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr 80px", gap: 12, alignItems: "center" }}>
                 <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{m.profiles?.nickname || "유저"}</span>
-                <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{m.profiles?.battletag}</span>
-                <span style={{ fontSize: 11, color: TIER_COLORS[m.profiles?.tier] || "#8892a4", fontWeight: 700 }}>{m.profiles?.tier || "-"}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)", color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>{m.role}</span>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {[
+                    { icon: "🛡️", key: "tier_tank", color: "#4fc3f7" },
+                    { icon: "⚔️", key: "tier_dps", color: "#ff6b23" },
+                    { icon: "💊", key: "tier_support", color: "#4caf50" },
+                  ].filter(r => m.profiles?.[r.key]).map(r => (
+                    <span key={r.key} style={{ fontSize: 11, display: "flex", alignItems: "center", gap: 3, padding: "2px 8px", background: `${TIER_COLORS[m.profiles?.[r.key]]}22`, color: TIER_COLORS[m.profiles?.[r.key]] || "#8892a4", border: `1px solid ${TIER_COLORS[m.profiles?.[r.key]]}44`, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>
+                      {r.icon} {m.profiles?.[r.key]}
+                    </span>
+                  ))}
+                  {!m.profiles?.tier_tank && !m.profiles?.tier_dps && !m.profiles?.tier_support && (
+                    <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>정보 없음</span>
+                  )}
+                </div>
+                <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{m.profiles?.battletag}</span>
               </div>
             ))}
           </div>
