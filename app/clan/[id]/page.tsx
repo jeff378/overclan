@@ -22,7 +22,7 @@ export default function ClanDetailPage() {
   const [clan, setClan] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
   const [recentBattles, setRecentBattles] = useState<any[]>([]);
-  const [latestNotice, setLatestNotice] = useState<any>(null);
+  const [notices, setNotices] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isMember, setIsMember] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -54,9 +54,14 @@ export default function ClanDetailPage() {
         .limit(5);
       setRecentBattles(battles || []);
 
-      const { data: notice } = await supabase.from("clan_notices")
-        .select("*").eq("clan_id", id).order("created_at", { ascending: false }).limit(1).single();
-      setLatestNotice(notice);
+      const { data: noticeData } = await supabase.from("clan_notices")
+        .select("*, profiles(nickname)").eq("clan_id", id).order("created_at", { ascending: false });
+      // profiles 조인
+      const noticesWithProfiles = await Promise.all((noticeData || []).map(async (n: any) => {
+        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", n.user_id).single();
+        return { ...n, profiles: prof };
+      }));
+      setNotices(noticesWithProfiles);
 
       if (userData.user) {
         setIsOwner(clanData?.owner_id === userData.user.id);
@@ -204,7 +209,7 @@ export default function ClanDetailPage() {
 
         {/* 탭 */}
         <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 24, display: "flex" }}>
-          {["소개", "클랜원", "대전 기록"].map(t => (
+          {["소개", "클랜원", "공지", "대전 기록"].map(t => (
             <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
           ))}
         </div>
@@ -229,16 +234,7 @@ export default function ClanDetailPage() {
                 </>
               )}
 
-              {/* 최근 공지 */}
-              {latestNotice && (
-                <>
-                  <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>📢 최근 공지</div>
-                  <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.12)", padding: "16px 20px" }}>
-                    <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{latestNotice.title}</div>
-                    <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6 }}>{latestNotice.content.slice(0, 80)}{latestNotice.content.length > 80 ? "..." : ""}</p>
-                  </div>
-                </>
-              )}
+
             </div>
 
             {/* 구성 정보 */}
@@ -315,6 +311,26 @@ export default function ClanDetailPage() {
                 <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{m.profiles?.battletag}</span>
                 <span style={{ fontSize: 11, color: TIER_COLORS[m.profiles?.tier] || "#8892a4", fontWeight: 700 }}>{m.profiles?.tier || "-"}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)", color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>{m.role}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 공지 탭 */}
+        {activeTab === "공지" && (
+          <div>
+            {notices.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 공지가 없어요.</div>
+            ) : notices.map(n => (
+              <div key={n.id} style={{ background: "rgba(13,20,35,0.7)", border: "1px solid rgba(255,107,35,0.1)", padding: "20px 24px", marginBottom: 8, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 14 }}>📢</span>
+                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{n.title}</span>
+                </div>
+                <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap", marginBottom: 12 }}>{n.content}</p>
+                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+                  {n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}
+                </div>
               </div>
             ))}
           </div>
