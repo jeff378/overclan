@@ -177,13 +177,10 @@ export default function ClanDetailPage() {
               )}
               {isOwner && (
                 <div style={{ display: "flex", gap: 8 }}>
-                  <a href={`/clan/${id}/chat`} className="btn-sm">채팅방</a>
                   <a href={`/clan/${id}/manage`} className="btn-sm">클랜 관리</a>
                 </div>
               )}
-              {isMember && !isOwner && (
-                <a href={`/clan/${id}/chat`} className="btn-sm">채팅방</a>
-              )}
+
             </div>
           </div>
         </div>
