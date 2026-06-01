@@ -320,29 +320,7 @@ export default function ClanDetailPage() {
 
         {/* 대전 기록 탭 */}
         {activeTab === "대전 기록" && (
-          <div>
-            {recentBattles.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 완료된 대전이 없어요.</div>
-            ) : recentBattles.map(b => {
-              const isClan1 = b.clan1_id === id;
-              const myScore = isClan1 ? b.clan1_score : b.clan2_score;
-              const opScore = isClan1 ? b.clan2_score : b.clan1_score;
-              const opClan = isClan1 ? b.clan2 : b.clan1;
-              const isWin = b.winner_id === id;
-              const isDraw = !b.winner_id;
-              return (
-                <div key={b.id} className="battle-row">
-                  <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", background: isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.1)" : "rgba(239,83,80,0.1)", color: isWin ? "#4caf50" : isDraw ? "#ffd54f" : "#ef5350", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>
-                    {isWin ? "승" : isDraw ? "무" : "패"}
-                  </span>
-                  <span style={{ fontSize: 22 }}>{opClan?.badge}</span>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
-                  <span style={{ fontSize: 10, color: b.type === "정규전" ? "#ff6b23" : "#8892a4", fontWeight: 700, letterSpacing: 1 }}>{b.type}</span>
-                </div>
-              );
-            })}
-          </div>
+          <BattleTab battles={recentBattles} clanId={id as string} />
         )}
       </div>
     </div>
@@ -407,6 +385,73 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
           <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function BattleTab({ battles, clanId }: any) {
+  const [filter, setFilter] = useState("전체");
+  const filtered = filter === "전체" ? battles : battles.filter((b: any) => b.type === filter);
+
+  const wins = filtered.filter((b: any) => b.winner_id === clanId).length;
+  const losses = filtered.filter((b: any) => b.winner_id && b.winner_id !== clanId).length;
+  const draws = filtered.filter((b: any) => !b.winner_id).length;
+
+  return (
+    <div>
+      {/* 필터 + 요약 */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {["전체", "정규전", "친선전"].map(f => (
+            <button key={f} onClick={() => setFilter(f)} style={{
+              background: filter === f ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)",
+              border: `1px solid ${filter === f ? "#ff6b23" : "rgba(255,107,35,0.15)"}`,
+              color: filter === f ? "#ff6b23" : "#8892a4",
+              padding: "6px 16px",
+              fontFamily: "Rajdhani, sans-serif",
+              fontSize: 12, fontWeight: 700, letterSpacing: 1,
+              cursor: "pointer",
+              clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
+              transition: "all 0.2s",
+            }}>{f}</button>
+          ))}
+        </div>
+        {filtered.length > 0 && (
+          <div style={{ display: "flex", gap: 16, fontSize: 13, fontFamily: "Rajdhani, sans-serif" }}>
+            <span style={{ color: "#4caf50", fontWeight: 700 }}>{wins}승</span>
+            <span style={{ color: "#ef5350", fontWeight: 700 }}>{losses}패</span>
+            <span style={{ color: "#ffd54f", fontWeight: 700 }}>{draws}무</span>
+            <span style={{ color: "#8892a4" }}>총 {filtered.length}경기</span>
+          </div>
+        )}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+          {filter === "전체" ? "아직 완료된 대전이 없어요." : `${filter} 기록이 없어요.`}
+        </div>
+      ) : filtered.map((b: any) => {
+        const isClan1 = b.clan1_id === clanId;
+        const myScore = isClan1 ? b.clan1_score : b.clan2_score;
+        const opScore = isClan1 ? b.clan2_score : b.clan1_score;
+        const opClan = isClan1 ? b.clan2 : b.clan1;
+        const isWin = b.winner_id === clanId;
+        const isDraw = !b.winner_id;
+        return (
+          <div key={b.id} style={{ background: "rgba(13,20,35,0.6)", border: `1px solid ${isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.08)" : "rgba(239,83,80,0.1)"}`, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", background: isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.1)" : "rgba(239,83,80,0.1)", color: isWin ? "#4caf50" : isDraw ? "#ffd54f" : "#ef5350", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", minWidth: 28, textAlign: "center" }}>
+              {isWin ? "승" : isDraw ? "무" : "패"}
+            </span>
+            <span style={{ fontSize: 22 }}>{opClan?.badge}</span>
+            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
+            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
+            <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", minWidth: 70, textAlign: "right" }}>
+              {new Date(b.created_at).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
