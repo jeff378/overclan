@@ -17,7 +17,8 @@ export default function EditClanPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
-    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30
+    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30,
+    discord_link: "", slogan: "", join_condition: "", banner_color: "#1a1f35",
   });
 
   useEffect(() => {
@@ -29,7 +30,11 @@ export default function EditClanPage() {
       setForm({
         name: clan.name, tag: clan.tag, description: clan.description || "",
         badge: clan.badge, tier: clan.tier, play_time: clan.play_time,
-        style: clan.style, max_members: clan.max_members
+        style: clan.style, max_members: clan.max_members,
+        discord_link: clan.discord_link || "",
+        slogan: clan.slogan || "",
+        join_condition: clan.join_condition || "",
+        banner_color: clan.banner_color || "#1a1f35",
       });
       setLoading(false);
     };
@@ -41,7 +46,11 @@ export default function EditClanPage() {
     setSaving(true);
     setError("");
     const { error: updateError } = await supabase.from("clans").update({
-      ...form, tag: form.tag.toUpperCase()
+      name: form.name, tag: form.tag.toUpperCase(), description: form.description,
+      badge: form.badge, tier: form.tier, play_time: form.play_time,
+      style: form.style, max_members: form.max_members,
+      discord_link: form.discord_link, slogan: form.slogan,
+      join_condition: form.join_condition, banner_color: form.banner_color,
     }).eq("id", id);
     if (updateError) { setError("저장에 실패했어요. 다시 시도해주세요."); setSaving(false); return; }
     router.push(`/clan/${id}`);
@@ -131,6 +140,26 @@ export default function EditClanPage() {
           <div>
             <label className="label">최대 클랜원 수: {form.max_members}명</label>
             <input type="range" min={5} max={50} value={form.max_members} onChange={e => setForm({ ...form, max_members: Number(e.target.value) })} style={{ width: "100%", accentColor: "#ff6b23" }} />
+          </div>
+          <div>
+            <label className="label">슬로건 (한 줄 소개)</label>
+            <input className="input" placeholder="클랜을 한 줄로 표현해보세요" value={form.slogan} onChange={e => setForm({ ...form, slogan: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">가입 조건</label>
+            <textarea className="input" style={{minHeight:"80px", resize:"vertical"}} placeholder="나이, 티어, 마이크 여부 등 가입 조건을 적어주세요" value={form.join_condition} onChange={e => setForm({ ...form, join_condition: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">디스코드 초대 링크</label>
+            <input className="input" placeholder="https://discord.gg/..." value={form.discord_link} onChange={e => setForm({ ...form, discord_link: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">배너 색상</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <input type="color" value={form.banner_color} onChange={e => setForm({ ...form, banner_color: e.target.value })} style={{ width: 48, height: 36, border: "1px solid rgba(255,107,35,0.2)", background: "transparent", cursor: "pointer", padding: 2 }} />
+              <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜 프로필 배너 색상</span>
+              <div style={{ width: 60, height: 24, background: `linear-gradient(135deg, ${form.banner_color}, #080c14)`, borderRadius: 2 }} />
+            </div>
           </div>
           {error && <div style={{ fontSize: 13, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}
           <div style={{ display: "flex", gap: 12 }}>
