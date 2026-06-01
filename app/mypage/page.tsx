@@ -31,6 +31,17 @@ export default function MyPage() {
     setMyClans(prev => prev.filter(m => m.clans?.id !== clanId));
   };
 
+  const handleDeleteClan = async (clanId: string, clanName: string) => {
+    const confirm1 = confirm(`"${clanName}" 클랜을 삭제할까요?
+모든 클랜원, 대전 기록이 함께 삭제돼요.`);
+    if (!confirm1) return;
+    const input = window.prompt("확인을 위해 클랜명을 입력해주세요:");
+    if (input !== clanName) { alert("클랜명이 일치하지 않아요."); return; }
+    await supabase.from("clans").delete().eq("id", clanId);
+    setMyClans(prev => prev.filter(m => m.clans?.id !== clanId));
+    alert("클랜이 삭제됐어요.");
+  };
+
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", fontSize: 18, letterSpacing: 2 }}>LOADING...</div>

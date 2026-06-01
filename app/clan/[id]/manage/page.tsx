@@ -9,15 +9,27 @@ export default function ClanManagePage() {
   const router = useRouter();
   const [requests, setRequests] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
+  const [clanName, setClanName] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const handleDeleteClan = async () => {
+    const confirm1 = confirm(`"${clanName}" 클랜을 정말 삭제할까요?\n이 작업은 되돌릴 수 없어요.`);
+    if (!confirm1) return;
+    const input = window.prompt("확인을 위해 클랜명을 입력해주세요:");
+    if (input !== clanName) { alert("클랜명이 일치하지 않아요."); return; }
+    await supabase.from("clans").delete().eq("id", id);
+    alert("클랜이 삭제됐어요.");
+    router.push("/");
+  };
 
   useEffect(() => {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) { router.push("/login"); return; }
 
-      const { data: clan } = await supabase.from("clans").select("owner_id").eq("id", id).single();
+      const { data: clan } = await supabase.from("clans").select("owner_id, name").eq("id", id).single();
       if (clan?.owner_id !== userData.user.id) { router.push("/"); return; }
+      setClanName(clan?.name || "");
 
       const { data: reqs } = await supabase.from("clan_requests").select("*").eq("clan_id", id).eq("status", "대기중");
       const reqsWithProfiles = await Promise.all((reqs || []).map(async (r) => {
@@ -134,6 +146,17 @@ export default function ClanManagePage() {
             </div>
           </>
         )}
+
+        {/* 클랜 삭제 */}
+        <div style={{ marginTop: 48, padding: 24, border: "1px solid rgba(239,83,80,0.2)", background: "rgba(239,83,80,0.04)" }}>
+          <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#ef5350", marginBottom: 8, letterSpacing: 1 }}>⚠️ 위험 구역</div>
+          <p style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 16, lineHeight: 1.6 }}>
+            클랜을 삭제하면 모든 클랜원, 대전 기록, 채팅이 함께 삭제돼요.<br/>이 작업은 되돌릴 수 없어요.
+          </p>
+          <button onClick={handleDeleteClan} style={{ background: "rgba(239,83,80,0.15)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", padding: "10px 24px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>
+            클랜 삭제
+          </button>
+        </div>
       </div>
     </div>
   );
