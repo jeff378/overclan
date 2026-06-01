@@ -161,6 +161,27 @@ export default function EditClanPage() {
               <div style={{ width: 60, height: 24, background: `linear-gradient(135deg, ${form.banner_color}, #080c14)`, borderRadius: 2 }} />
             </div>
           </div>
+          <div>
+            <label className="label">클랜 슬로건</label>
+            <input className="input" placeholder="클랜을 한 줄로 표현해보세요" value={form.slogan} onChange={e => setForm({ ...form, slogan: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">가입 조건</label>
+            <textarea className="input" style={{minHeight: "80px", resize: "vertical"}} placeholder="나이, 티어, 마이크 필수 여부 등 가입 조건을 적어주세요" value={form.join_condition} onChange={e => setForm({ ...form, join_condition: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">디스코드 초대 링크</label>
+            <input className="input" placeholder="https://discord.gg/..." value={form.discord_link} onChange={e => setForm({ ...form, discord_link: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">배너 색상</label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              {["#1a1f35", "#1a2535", "#1f1a35", "#1a3525", "#35251a", "#0d1f2d"].map(c => (
+                <div key={c} onClick={() => setForm({ ...form, banner_color: c })} style={{ width: 32, height: 32, background: c, border: form.banner_color === c ? "2px solid #ff6b23" : "2px solid transparent", borderRadius: 4, cursor: "pointer" }} />
+              ))}
+              <input type="color" value={form.banner_color} onChange={e => setForm({ ...form, banner_color: e.target.value })} style={{ width: 32, height: 32, border: "none", background: "none", cursor: "pointer" }} />
+            </div>
+          </div>
           {error && <div style={{ fontSize: 13, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}
           <div style={{ display: "flex", gap: 12 }}>
             <button className="btn-primary" onClick={handleSave} disabled={saving}>{saving ? "저장 중..." : "저장하기"}</button>
