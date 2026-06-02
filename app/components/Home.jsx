@@ -176,7 +176,7 @@ export default function Home() {
         </section>
 
         <footer style={{ padding: "28px 48px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>© 2025 OVERCLAN — 비공식 팬 플랫폼</span>
+          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>© 2026 OVERCLAN — 비공식 팬 플랫폼</span>
           <div style={{ display: "flex", gap: 24 }}>
             {[
               { label: "이용약관", href: "/terms" },
