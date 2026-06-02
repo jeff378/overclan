@@ -178,8 +178,12 @@ export default function Home() {
         <footer style={{ padding: "28px 48px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>© 2025 OVERCLAN — 비공식 팬 플랫폼</span>
           <div style={{ display: "flex", gap: 24 }}>
-            {["이용약관", "개인정보처리방침", "문의하기"].map(item => (
-              <span key={item} style={{ fontSize: 11, color: "#8892a4", cursor: "pointer", letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{item}</span>
+            {[
+              { label: "이용약관", href: "/terms" },
+              { label: "개인정보처리방침", href: "/privacy" },
+              { label: "문의하기", href: "/contact" },
+            ].map(item => (
+              <a key={item.label} href={item.href} style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif", transition: "color 0.2s" }}>{item.label}</a>
             ))}
           </div>
         </footer>
