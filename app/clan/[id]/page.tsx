@@ -189,17 +189,17 @@ export default function ClanDetailPage() {
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px" }}>
 
         {/* 통계 카드 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 28 }}>
           {[
             { label: "클랜원", value: `${members.length}/${clan.max_members}` },
-            { label: "정규전 승", value: clan.wins || 0 },
-            { label: "정규전 패", value: clan.losses || 0 },
+            { label: "승", value: clan.wins || 0 },
+            { label: "패", value: clan.losses || 0 },
             { label: "승점", value: `${clan.points || 0}pt` },
             { label: "승률", value: `${winRate}%` },
           ].map(s => (
             <div key={s.label} className="stat-box">
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{s.label}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, letterSpacing: 0.5, fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap" }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -213,7 +213,7 @@ export default function ClanDetailPage() {
 
         {/* 소개 탭 */}
         {activeTab === "소개" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
             {/* 클랜 소개 */}
             <div>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 소개</div>
@@ -312,11 +312,11 @@ export default function ClanDetailPage() {
         {/* 클랜원 탭 */}
         {activeTab === "클랜원" && (
           <div>
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr 80px", gap: 12, padding: "8px 18px", fontSize: 11, color: "#8892a4", letterSpacing: 1, fontWeight: 600, marginBottom: 6 }}>
-              <span>닉네임</span><span>직책</span><span>역할군별 티어</span><span>배틀태그</span>
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, padding: "8px 18px", fontSize: 11, color: "#8892a4", letterSpacing: 1, fontWeight: 600, marginBottom: 6 }}>
+              <span>닉네임</span><span>직책</span><span>역할군별 티어</span>
             </div>
             {members.map(m => (
-              <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr 80px", gap: 12, alignItems: "center" }}>
+              <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, alignItems: "center" }}>
                 <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{m.profiles?.nickname || "유저"}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)", color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>{m.role}</span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -333,7 +333,7 @@ export default function ClanDetailPage() {
                     <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>정보 없음</span>
                   )}
                 </div>
-                <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{m.profiles?.battletag}</span>
+
               </div>
             ))}
           </div>
@@ -481,3 +481,4 @@ function BattleTab({ battles, clanId }: any) {
     </div>
   );
 }
+// 모바일 스타일은 이미 page.tsx style 태그에 추가
