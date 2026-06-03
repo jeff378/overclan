@@ -1,5 +1,10 @@
 import type { Metadata } from 'next'
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   title: 'OVERCLAN - 오버워치 클랜 플랫폼',
   description: '오버워치 최초의 클랜 플랫폼. 클랜을 만들고, 대전에 참여하고, 명예를 쌓아라.',

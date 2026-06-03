@@ -53,6 +53,11 @@ export default function OverClanFind() {
         .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
         .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-join:hover { background: rgba(255,107,35,0.15); }
+        @media (max-width: 768px) {
+          .find-grid { grid-template-columns: 1fr !important; }
+          .filter-panel { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 12px !important; }
+          .filter-panel > div { flex: 1 1 calc(50% - 6px) !important; min-width: 140px; }
+        }
         .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
       `}</style>
 
