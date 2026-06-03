@@ -6,6 +6,7 @@ export default function Navbar({ active = "" }) {
   const [user, setUser] = useState(null);
   const [nickname, setNickname] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authLoaded, setAuthLoaded] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -13,7 +14,10 @@ export default function Navbar({ active = "" }) {
         setUser(data.user);
         supabase.from("profiles").select("nickname").eq("id", data.user.id).single().then(({ data: profile }) => {
           if (profile) setNickname(profile.nickname);
+          setAuthLoaded(true);
         });
+      } else {
+        setAuthLoaded(true);
       }
     });
   }, []);
@@ -78,7 +82,7 @@ export default function Navbar({ active = "" }) {
           </div>
         </div>
 
-        <div className="desktop-auth" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="desktop-auth" style={{ display: "flex", alignItems: "center", gap: 10, visibility: authLoaded ? "visible" : "hidden" }}>
           {user ? (
             <>
               <a href="/mypage" className="user-badge">

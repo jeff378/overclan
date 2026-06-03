@@ -463,7 +463,18 @@ export default function OverClanBattle() {
                         <button className="btn-primary" onClick={handleResult} disabled={submittingResult}>{submittingResult ? "입력 중..." : "결과 제출"}</button>
                       </div>
                     ) : (
-                      <div style={{ fontSize: 12, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif" }}>✅ 결과 입력 완료 — 상대 클랜의 입력을 기다리세요.</div>
+                      <div>
+                        <div style={{ fontSize: 12, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8 }}>✅ 결과 입력 완료 — 상대 클랜의 입력을 기다리세요.</div>
+                        {/* 24시간 이내 수정 가능 */}
+                        {(() => {
+                          const myResult = myClan?.id === selected.clan1_id ? selected.clan1_result : selected.clan2_result;
+                          const createdAt = new Date(selected.created_at);
+                          const canEdit = (Date.now() - createdAt.getTime()) < 24 * 60 * 60 * 1000;
+                          return canEdit && myResult ? (
+                            <button onClick={() => { supabase.from("clan_battles").update(myClan?.id === selected.clan1_id ? { clan1_result: null } : { clan2_result: null }).eq("id", selected.id).then(() => loadBattles()); }} style={{ background: "none", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "6px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>수정하기 (24시간 이내)</button>
+                          ) : null;
+                        })()}
+                      </div>
                     )}
                     {selected.is_disputed && (
                       <div style={{ marginTop: 10, fontSize: 12, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>⚠️ 양쪽 결과가 일치하지 않아요. 관리자에게 문의해주세요.</div>

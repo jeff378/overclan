@@ -379,21 +379,20 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
   return (
     <div>
       {isOwner && (
-        <div style={{ marginBottom: 16 }}>
-          {!showForm ? (
-            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>
-              + 공지 작성
-            </button>
-          ) : (
-            <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 20, marginBottom: 12 }}>
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="공지 제목" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", marginBottom: 10 }} />
-              <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="공지 내용" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", minHeight: 100, resize: "vertical", marginBottom: 10 }} />
-              <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={handlePost} disabled={saving} style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>{saving ? "등록 중..." : "등록"}</button>
-                <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
-              </div>
-            </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+          {!showForm && (
+            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>+ 공지 작성</button>
           )}
+        </div>
+      )}
+      {isOwner && showForm && (
+        <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 20, marginBottom: 16 }}>
+          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="공지 제목" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", marginBottom: 10 }} />
+          <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="공지 내용" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", minHeight: 100, resize: "vertical", marginBottom: 10 }} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={handlePost} disabled={saving} style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>{saving ? "등록 중..." : "등록"}</button>
+            <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
+          </div>
         </div>
       )}
       {notices.length === 0 ? (
@@ -461,6 +460,8 @@ function BattleTab({ battles, clanId }: any) {
         const myScore = isClan1 ? b.clan1_score : b.clan2_score;
         const opScore = isClan1 ? b.clan2_score : b.clan1_score;
         const opClan = isClan1 ? b.clan2 : b.clan1;
+              const opName = opClan?.name || '삭제된 클랜';
+              const opBadge = opClan?.badge || '⚔️';
         const isWin = b.winner_id === clanId;
         const isDraw = !b.winner_id;
         return (

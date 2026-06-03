@@ -77,18 +77,20 @@ export default function NoticePage() {
             <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
             <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>오버클랜 공지사항</h1>
           </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             {CATEGORIES.map(c => (
               <button key={c} className={`filter-btn ${filter === c ? "active" : ""}`} onClick={() => setFilter(c)}>{c}</button>
             ))}
+            {isAdmin && !showForm && (
+              <button className="btn-primary" onClick={() => setShowForm(true)} style={{ marginLeft: 8 }}>+ 공지 작성</button>
+            )}
+            {isAdmin && showForm && (
+              <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", marginLeft: 8 }}>취소</button>
+            )}
           </div>
         </div>
 
-        {isAdmin && (
-          <div style={{ marginBottom: 16 }}>
-            {!showForm ? (
-              <button className="btn-primary" onClick={() => setShowForm(true)}>+ 공지 작성</button>
-            ) : (
+        {isAdmin && showForm && (
               <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 24, marginBottom: 16 }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, marginBottom: 10 }}>
                   <input className="input" placeholder="공지 제목" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
@@ -102,8 +104,6 @@ export default function NoticePage() {
                   <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 20px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
                 </div>
               </div>
-            )}
-          </div>
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 20 }}>

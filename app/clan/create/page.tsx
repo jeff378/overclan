@@ -20,9 +20,25 @@ export default function CreateClanPage() {
   });
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push("/login");
-      else setUser(data.user);
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { router.push("/login"); return; }
+      setUser(data.user);
+
+      // 이미 클랜장인지 확인
+      const { data: existingClans } = await supabase.from("clans").select("id, name").eq("owner_id", data.user.id).limit(1);
+      if (existingClans && existingClans.length > 0) {
+        alert(`이미 "${existingClans[0].name}" 클랜을 운영 중이에요. 클랜은 1개만 만들 수 있어요.`);
+        router.push(`/clan/${existingClans[0].id}`);
+        return;
+      }
+
+      // 이미 다른 클랜에 가입했는지 확인
+      const { data: existingMembers } = await supabase.from("clan_members").select("clan_id").eq("user_id", data.user.id).limit(1);
+      if (existingMembers && existingMembers.length > 0) {
+        alert("이미 클랜에 가입되어 있어요. 탈퇴 후 새 클랜을 만들 수 있어요.");
+        router.push("/mypage");
+        return;
+      }
     });
   }, []);
 
