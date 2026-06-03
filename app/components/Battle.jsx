@@ -50,8 +50,8 @@ export default function OverClanBattle() {
       if (userData.user) {
         const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", userData.user.id).single();
         setMyProfile(prof);
-        const { data: mem } = await supabase.from("clan_members").select("clan_id, clans(id,name,badge,tier)").eq("user_id", userData.user.id).single();
-        if (mem) setMyClan(mem.clans);
+        const { data: mems } = await supabase.from("clan_members").select("clan_id, clans(id,name,badge,tier)").eq("user_id", userData.user.id).limit(1);
+        if (mems && mems.length > 0) setMyClan(mems[0].clans);
       }
 
       const { data: allC } = await supabase.from("clans").select("id,name,badge,tier");
@@ -331,11 +331,15 @@ export default function OverClanBattle() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                      <span style={{ fontSize: 28 }}>{selected.clan1?.badge}</span>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700 }}>{selected.clan1?.name}</span>
+                      <a href={`/clan/${selected.clan1_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit" }}>
+                        <span style={{ fontSize: 24 }}>{selected.clan1?.badge}</span>
+                        <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan1?.name}</span>
+                      </a>
                       <span className="vs">VS</span>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700 }}>{selected.clan2?.name}</span>
-                      <span style={{ fontSize: 28 }}>{selected.clan2?.badge}</span>
+                      <a href={`/clan/${selected.clan2_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit" }}>
+                        <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan2?.name}</span>
+                        <span style={{ fontSize: 24 }}>{selected.clan2?.badge}</span>
+                      </a>
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
                       <span className="status-tag" style={{ background: `${STATUS_LABEL[selected.status]?.color}22`, color: STATUS_LABEL[selected.status]?.color, border: `1px solid ${STATUS_LABEL[selected.status]?.color}44` }}>{STATUS_LABEL[selected.status]?.label}</span>
@@ -359,19 +363,36 @@ export default function OverClanBattle() {
                 {/* 신청중 - 날짜 선택 */}
                 {selected.status === "신청중" && isOpponent(selected) && (
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 10 }}>상대 클랜이 제안한 날짜 중 하나를 선택해주세요.</div>
-                    {(selected.proposed_dates || []).map((date, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.1)", padding: "10px 14px", marginBottom: 6 }}>
-                        <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>{new Date(date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                        <button className="btn-green" onClick={() => handleAcceptDate(selected, date)}>이 날짜로 확정</button>
+                    <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 10, fontWeight: 600 }}>📅 날짜를 선택해주세요</div>
+                    {(selected.proposed_dates || []).length === 0 ? (
+                      <div style={{ fontSize: 12, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>제안된 날짜가 없어요.</div>
+                    ) : (selected.proposed_dates || []).map((date, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.15)", padding: "12px 14px", marginBottom: 6, gap: 10 }}>
+                        <div>
+                          <div style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, color: "#e8eaf0", fontWeight: 500 }}>
+                            {new Date(date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })}
+                          </div>
+                          <div style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 12, color: "#8892a4", marginTop: 2 }}>
+                            {new Date(date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                          </div>
+                        </div>
+                        <button className="btn-green" onClick={() => handleAcceptDate(selected, date)}>✓ 확정</button>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {selected.status === "신청중" && !isOpponent(selected) && (
-                  <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                    상대 클랜의 날짜 수락을 기다리고 있어요.
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      ⏳ 상대 클랜의 날짜 수락을 기다리고 있어요.
+                    </div>
+                    <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 4 }}>제안한 날짜</div>
+                    {(selected.proposed_dates || []).map((date, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", padding: "6px 10px", marginBottom: 4, background: "rgba(255,255,255,0.03)" }}>
+                        {new Date(date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })} {new Date(date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                      </div>
+                    ))}
                   </div>
                 )}
 
