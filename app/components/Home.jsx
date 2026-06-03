@@ -81,6 +81,17 @@ export default function Home() {
         .delay-2 { animation-delay: 0.2s; opacity: 0; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; }
         .live-dot { width: 6px; height: 6px; background: #4caf50; border-radius: 50%; animation: pulse-glow 1.5s infinite; box-shadow: 0 0 8px #4caf50; }
+        .mobile-only { display: none; }
+        @media (max-width: 768px) {
+          .desktop-only { display: none; }
+          .mobile-only { display: inline; }
+          .hero-title { font-size: clamp(36px, 12vw, 72px) !important; }
+          .stat-card { padding: 14px 10px !important; }
+          .stat-card > div:first-child { font-size: 22px !important; }
+          .stat-card > div:last-child { font-size: 10px !important; white-space: nowrap; }
+          .clan-card { padding: 14px 16px !important; }
+          .tab-btn { padding: 6px 10px !important; font-size: 11px !important; letter-spacing: 0.5px !important; }
+        }
       `}</style>
 
       <HexPattern />
@@ -90,7 +101,7 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 1 }}>
         <Navbar />
 
-        <section style={{ padding: "80px 48px 64px", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px) clamp(32px, 5vw, 64px)", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
             <div className="live-dot" />
             <span style={{ fontSize: 11, letterSpacing: 3, color: "#4caf50", fontWeight: 600 }}>SEASON 1 진행중</span>
@@ -119,15 +130,15 @@ export default function Home() {
         </section>
 
         {/* 랭킹 섹션 */}
-        <section style={{ padding: "0 48px 80px", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ padding: "0 clamp(16px, 4vw, 48px) clamp(40px, 6vw, 80px)", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
               <h2 style={{ fontSize: 16, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", fontFamily: "Rajdhani, sans-serif" }}>시즌 랭킹</h2>
             </div>
             <div style={{ display: "flex", gap: 4 }}>
-              {["전체", "소규모", "중규모", "대규모"].map(tab => (
-                <button key={tab} className={`tab-btn ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab)}>{tab}</button>
+              {[{k:"전체",v:"전체"},{k:"소규모",v:"소"},{k:"중규모",v:"중"},{k:"대규모",v:"대"}].map(tab => (
+                <button key={tab.k} className={`tab-btn ${activeTab === tab.k ? "active" : ""}`} onClick={() => setActiveTab(tab.k)} style={{minWidth: 0}}><span className="desktop-only">{tab.k}</span><span className="mobile-only">{tab.v}</span></button>
               ))}
             </div>
           </div>
