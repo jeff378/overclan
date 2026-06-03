@@ -16,8 +16,7 @@ function renderText(text: string) {
             ? <strong key={j} style={{ color: "#e8eaf0", fontWeight: 700 }}>{part.slice(2, -2)}</strong>
             : <span key={j}>{part}</span>
         )}
-        {i < text.split("
-").length - 1 && <br />}
+        {i < text.split("\n").length - 1 && <br />}
       </span>
     );
   });
