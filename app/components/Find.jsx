@@ -69,7 +69,7 @@ export default function OverClanFind() {
       <Navbar active="클랜 찾기" />
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "clamp(20px,4vw,48px)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20, gap: 10 }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
@@ -79,7 +79,7 @@ export default function OverClanFind() {
               {filtered.length}개의 클랜이 새로운 클랜원을 기다리고 있어요.
             </p>
           </div>
-          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", alignSelf: "flex-start" }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
+          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", flexShrink: 0 }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
         </div>
 
         {/* 모바일 필터 - 가로 스크롤 탭 */}
