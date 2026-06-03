@@ -363,7 +363,16 @@ export default function OverClanBattle() {
                 {/* 신청중 - 날짜 선택 */}
                 {selected.status === "신청중" && isOpponent(selected) && (
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 10, fontWeight: 600 }}>📅 날짜를 선택해주세요</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                      <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 600 }}>📅 날짜를 선택해주세요</div>
+                      <button onClick={async () => {
+                        if (!confirm("대전 신청을 거절할까요?")) return;
+                        await supabase.from("clan_battles").delete().eq("id", selected.id);
+                        setSelected(null);
+                        await loadBattles();
+                        alert("대전 신청을 거절했어요.");
+                      }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>거절</button>
+                    </div>
                     {(selected.proposed_dates || []).length === 0 ? (
                       <div style={{ fontSize: 12, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>제안된 날짜가 없어요.</div>
                     ) : (selected.proposed_dates || []).map((date, i) => (
@@ -384,8 +393,16 @@ export default function OverClanBattle() {
 
                 {selected.status === "신청중" && !isOpponent(selected) && (
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8, padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                      ⏳ 상대 클랜의 날짜 수락을 기다리고 있어요.
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                      <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", flex: 1, marginRight: 8 }}>
+                        ⏳ 상대 클랜의 날짜 수락을 기다리고 있어요.
+                      </div>
+                      <button onClick={async () => {
+                        if (!confirm("대전 신청을 취소할까요?")) return;
+                        await supabase.from("clan_battles").delete().eq("id", selected.id);
+                        setSelected(null);
+                        await loadBattles();
+                      }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>신청 취소</button>
                     </div>
                     <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 4 }}>제안한 날짜</div>
                     {(selected.proposed_dates || []).map((date, i) => (
@@ -423,10 +440,18 @@ export default function OverClanBattle() {
                           <div key={role} style={{ marginBottom: 8 }}>
                             <div style={{ fontSize: 10, color: cfg.color, letterSpacing: 1, marginBottom: 4, fontWeight: 700 }}>{cfg.icon} {role} ({confirmed.length}/{cfg.max})</div>
                             {confirmed.map(v => (
-                              <div key={v.id} className="member-slot confirmed">
-                                <span style={{ fontSize: 16 }}>{cfg.icon}</span>
-                                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
-                                <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{v.profiles?.battletag}</span>
+                              <div key={v.id} className="member-slot confirmed" style={{ justifyContent: "space-between" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 16 }}>{cfg.icon}</span>
+                                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
+                                  <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{v.profiles?.battletag}</span>
+                                </div>
+                                {myClan && (selected.clan1_id === myClan.id || selected.clan2_id === myClan.id) && (
+                                  <button onClick={async () => {
+                                    await supabase.from("battle_volunteers").update({ is_confirmed: false, confirmed_role: null }).eq("id", v.id);
+                                    await loadVolunteers(selected.id);
+                                  }} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "3px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: 0.7 }}>확정 취소</button>
+                                )}
                               </div>
                             ))}
                             {confirmed.length < cfg.max && available.map(v => (
