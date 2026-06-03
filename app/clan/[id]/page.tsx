@@ -7,8 +7,7 @@ import Navbar from "../../components/Navbar";
 // 간단한 마크다운 렌더러
 function renderText(text: string) {
   if (!text) return null;
-  return text.split("
-").map((line, i) => {
+  return text.split("\n").map((line, i) => {
     const parts = line.split(/(\*\*[^*]+\*\*)/g);
     return (
       <span key={i}>

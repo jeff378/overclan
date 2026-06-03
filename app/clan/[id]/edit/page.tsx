@@ -115,14 +115,10 @@ export default function EditClanPage() {
               {/* 툴바 */}
               <div style={{ display: "flex", gap: 4, padding: "8px 10px", borderBottom: "1px solid rgba(255,107,35,0.1)", flexWrap: "wrap" }}>
                 {[
-                  { label: "B", title: "굵게", wrap: ["**", "**"] },
-                  { label: "줄바꿈", title: "줄 바꾸기", insert: "
-" },
-                  { label: "• 목록", title: "목록", insert: "
-• " },
-                  { label: "📌", title: "구분선", insert: "
-───────────
-" },
+                  { label: "B", title: "굵게", wrap: ["**", "**"], insert: null },
+                  { label: "줄바꿈", title: "줄 바꾸기", wrap: null, insert: "\n" },
+                  { label: "• 목록", title: "목록", wrap: null, insert: "\n• " },
+                  { label: "📌", title: "구분선", wrap: null, insert: "\n───────────\n" },
                 ].map(btn => (
                   <button key={btn.label} title={btn.title} type="button"
                     onClick={() => {
