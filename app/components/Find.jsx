@@ -50,7 +50,7 @@ export default function OverClanFind() {
         .search-input { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 20px 12px 44px; font-family: 'Rajdhani', sans-serif; font-size: 14px; letter-spacing: 1px; outline: none; width: 100%; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); transition: border-color 0.2s; }
         .search-input:focus { border-color: #ff6b23; }
         .search-input::placeholder { color: #8892a4; }
-        .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
+        .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); white-space: nowrap; }
         .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-join:hover { background: rgba(255,107,35,0.15); }
         .mobile-filters { display: none; }
@@ -79,7 +79,7 @@ export default function OverClanFind() {
               {filtered.length}개의 클랜이 새로운 클랜원을 기다리고 있어요.
             </p>
           </div>
-          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px" }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
+          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", alignSelf: "flex-start" }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
         </div>
 
         {/* 모바일 필터 - 가로 스크롤 탭 */}
@@ -156,28 +156,27 @@ export default function OverClanFind() {
               </div>
             ) : filtered.map(clan => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="clan-card">
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
-                  <div style={{ fontSize: 36 }}>{clan.badge}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>
-                      <span style={{ fontSize: 11, color: "#ff6b23", opacity: 0.6, fontWeight: 600 }}>[{clan.tag}]</span>
-                    </div>
-                    <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                      <span className="tier-tag" style={{ borderColor: tierColors[clan.tier]?.border || "rgba(255,107,35,0.3)", color: tierColors[clan.tier]?.color || "#ff6b23" }}>{clan.tier}</span>
-                      <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.style}</span>
-                      <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.play_time}</span>
-                    </div>
-                    <p style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, lineHeight: 1.6 }}>{clan.description}</p>
-                  </div>
-                  <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
-                    <div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
-                        {clan.clan_members?.[0]?.count || 0} / {clan.max_members}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                  <div style={{ fontSize: 32, flexShrink: 0 }}>{clan.badge}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                        <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>
+                        <span style={{ fontSize: 11, color: "#ff6b23", opacity: 0.6, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
                       </div>
-                      <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>클랜원</div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
+                          {clan.clan_members?.[0]?.count || 0}/{clan.max_members}
+                        </div>
+                        <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>클랜원</div>
+                      </div>
                     </div>
-                    <span className="btn-join">상세보기</span>
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "nowrap", overflow: "hidden" }}>
+                      <span className="tier-tag" style={{ borderColor: tierColors[clan.tier]?.border || "rgba(255,107,35,0.3)", color: tierColors[clan.tier]?.color || "#ff6b23", flexShrink: 0 }}>{clan.tier}</span>
+                      <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.style}</span>
+                      <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.play_time}</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.description}</p>
                   </div>
                 </div>
               </a>
