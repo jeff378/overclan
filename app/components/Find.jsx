@@ -113,6 +113,7 @@ export default function OverClanFind() {
                 <button key={t} className={`filter-btn ${styleFilter === t ? "active" : ""}`} onClick={() => setStyleFilter(t)}>{t}</button>
               ))}
             </div>
+          </div>
           </div>}
         </div>
 
