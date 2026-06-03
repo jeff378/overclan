@@ -111,7 +111,42 @@ export default function EditClanPage() {
           </div>
           <div>
             <label className="label">클랜 소개 *</label>
-            <textarea className="input" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+            <div style={{ border: "1px solid rgba(255,107,35,0.2)", background: "rgba(13,20,35,0.9)" }}>
+              {/* 툴바 */}
+              <div style={{ display: "flex", gap: 4, padding: "8px 10px", borderBottom: "1px solid rgba(255,107,35,0.1)", flexWrap: "wrap" }}>
+                {[
+                  { label: "B", title: "굵게", wrap: ["**", "**"] },
+                  { label: "줄바꿈", title: "줄 바꾸기", insert: "
+" },
+                  { label: "• 목록", title: "목록", insert: "
+• " },
+                  { label: "📌", title: "구분선", insert: "
+───────────
+" },
+                ].map(btn => (
+                  <button key={btn.label} title={btn.title} type="button"
+                    onClick={() => {
+                      const ta = document.getElementById("desc-editor") as HTMLTextAreaElement;
+                      const start = ta.selectionStart, end = ta.selectionEnd;
+                      const selected = form.description.slice(start, end);
+                      let newText = form.description;
+                      if (btn.wrap) {
+                        newText = form.description.slice(0, start) + btn.wrap[0] + selected + btn.wrap[1] + form.description.slice(end);
+                      } else if (btn.insert) {
+                        newText = form.description.slice(0, start) + btn.insert + form.description.slice(end);
+                      }
+                      setForm({ ...form, description: newText });
+                      setTimeout(() => { ta.focus(); ta.setSelectionRange(start + (btn.wrap ? btn.wrap[0].length : btn.insert!.length), end + (btn.wrap ? btn.wrap[0].length : btn.insert!.length)); }, 0);
+                    }}
+                    style={{ background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.15)", color: "#ff6b23", padding: "3px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", borderRadius: 2 }}>
+                    {btn.label}
+                  </button>
+                ))}
+                <span style={{ fontSize: 10, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", alignSelf: "center", marginLeft: 4 }}>**텍스트** → 굵게</span>
+              </div>
+              <textarea id="desc-editor" className="input" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                style={{ border: "none", minHeight: 140, resize: "vertical" }} placeholder="클랜을 소개하는 글을 작성해주세요." />
+            </div>
           </div>
           <div>
             <label className="label">주요 티어</label>

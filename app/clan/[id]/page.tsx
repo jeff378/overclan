@@ -4,6 +4,26 @@ import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 
+// 간단한 마크다운 렌더러
+function renderText(text: string) {
+  if (!text) return null;
+  return text.split("
+").map((line, i) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/g);
+    return (
+      <span key={i}>
+        {parts.map((part, j) =>
+          part.startsWith("**") && part.endsWith("**")
+            ? <strong key={j} style={{ color: "#e8eaf0", fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+            : <span key={j}>{part}</span>
+        )}
+        {i < text.split("
+").length - 1 && <br />}
+      </span>
+    );
+  });
+}
+
 const TIER_COLORS: Record<string, string> = {
   "챔피언": "#ffd700", "그랜드마스터": "#ff9800", "마스터": "#ff6b23",
   "다이아": "#4fc3f7", "플래티넘": "#b0bec5", "골드": "#ffd54f",
@@ -218,7 +238,7 @@ export default function ClanDetailPage() {
             <div>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 소개</div>
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "18px 20px", marginBottom: 16 }}>
-                <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{clan.description || "클랜 소개가 없어요."}</p>
+                <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8 }}>{clan.description ? renderText(clan.description) : "클랜 소개가 없어요."}</p>
               </div>
 
               {/* 가입 조건 */}
@@ -226,7 +246,7 @@ export default function ClanDetailPage() {
                 <>
                   <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>가입 조건</div>
                   <div style={{ background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.15)", padding: "16px 20px", marginBottom: 16 }}>
-                    <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{clan.join_condition}</p>
+                    <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8 }}>{renderText(clan.join_condition)}</p>
                   </div>
                 </>
               )}
