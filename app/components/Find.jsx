@@ -19,6 +19,7 @@ export default function OverClanFind() {
   const [tierFilter, setTierFilter] = useState("전체");
   const [timeFilter, setTimeFilter] = useState("전체");
   const [styleFilter, setStyleFilter] = useState("전체");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     const fetchClans = async () => {
@@ -75,15 +76,20 @@ export default function OverClanFind() {
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
               <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>클랜 찾기</h1>
             </div>
-            <p style={{ fontSize: 13, color: "#8892a4", marginLeft: 15, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
-              {filtered.length}개의 클랜이 새로운 클랜원을 기다리고 있어요.
+            <p style={{ fontSize: 13, color: "#8892a4", marginLeft: 15, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, whiteSpace: "nowrap" }}>
+              현재 <span style={{ color: "#ff6b23", fontWeight: 700, fontSize: 15, fontFamily: "Rajdhani, sans-serif" }}>{filtered.length}</span>개의 클랜이 모집 중이에요.
             </p>
           </div>
           <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", flexShrink: 0 }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
         </div>
 
-        {/* 모바일 필터 - 가로 스크롤 탭 */}
+        {/* 모바일 필터 - 토글 */}
         <div className="mobile-filters">
+          <button onClick={() => setFilterOpen(!filterOpen)} style={{ display: "flex", alignItems: "center", gap: 8, background: filterOpen ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)", border: `1px solid ${filterOpen ? "#ff6b23" : "rgba(255,107,35,0.2)"}`, color: filterOpen ? "#ff6b23" : "#8892a4", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", marginBottom: 10 }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+            필터 {(tierFilter !== "전체" || timeFilter !== "전체" || styleFilter !== "전체") ? "•" : ""}
+          </button>
+          {filterOpen && <div>
           <div style={{ marginBottom: 8 }}>
             <div className="mobile-filter-label">티어</div>
             <div className="mobile-filter-row">
@@ -107,7 +113,7 @@ export default function OverClanFind() {
                 <button key={t} className={`filter-btn ${styleFilter === t ? "active" : ""}`} onClick={() => setStyleFilter(t)}>{t}</button>
               ))}
             </div>
-          </div>
+          </div>}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }} className="find-grid">
