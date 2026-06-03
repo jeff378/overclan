@@ -53,32 +53,65 @@ export default function OverClanFind() {
         .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
         .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-join:hover { background: rgba(255,107,35,0.15); }
+        .mobile-filters { display: none; }
         @media (max-width: 768px) {
           .find-grid { grid-template-columns: 1fr !important; }
-          .filter-panel { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 12px !important; }
-          .filter-panel > div { flex: 1 1 calc(50% - 6px) !important; min-width: 140px; }
+          .desktop-filters { display: none !important; }
+          .mobile-filters { display: block !important; margin-bottom: 16px; }
+          .mobile-filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+          .mobile-filter-row::-webkit-scrollbar { display: none; }
+          .mobile-filter-row .filter-btn { white-space: nowrap; flex-shrink: 0; padding: 6px 12px; font-size: 11px; }
+          .mobile-filter-label { font-size: 10px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; }
         }
         .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
       `}</style>
 
       <Navbar active="클랜 찾기" />
 
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 36 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "clamp(20px,4vw,48px)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-              <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>클랜 찾기</h1>
+              <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>클랜 찾기</h1>
             </div>
-            <p style={{ fontSize: 14, color: "#8892a4", marginLeft: 15, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
+            <p style={{ fontSize: 13, color: "#8892a4", marginLeft: 15, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
               {filtered.length}개의 클랜이 새로운 클랜원을 기다리고 있어요.
             </p>
           </div>
-          <a href="/clan/create" className="btn-create" onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
+          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px" }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }}>
-          <div>
+        {/* 모바일 필터 - 가로 스크롤 탭 */}
+        <div className="mobile-filters">
+          <div style={{ marginBottom: 8 }}>
+            <div className="mobile-filter-label">티어</div>
+            <div className="mobile-filter-row">
+              {["전체","챔피언","그랜드마스터","마스터","다이아","플래티넘","골드","실버","브론즈"].map(t => (
+                <button key={t} className={`filter-btn ${tierFilter === t ? "active" : ""}`} onClick={() => setTierFilter(t)}>{t}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            <div className="mobile-filter-label">활동 시간</div>
+            <div className="mobile-filter-row">
+              {["전체","아침","저녁","밤","새벽","주말"].map(t => (
+                <button key={t} className={`filter-btn ${timeFilter === t ? "active" : ""}`} onClick={() => setTimeFilter(t)}>{t}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div className="mobile-filter-label">성향</div>
+            <div className="mobile-filter-row">
+              {["전체","경쟁","캐주얼","친목"].map(t => (
+                <button key={t} className={`filter-btn ${styleFilter === t ? "active" : ""}`} onClick={() => setStyleFilter(t)}>{t}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }} className="find-grid">
+          <div className="desktop-filters">
             <div style={{ position: "relative", marginBottom: 28 }}>
               <svg style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", opacity: 0.4 }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b23" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
