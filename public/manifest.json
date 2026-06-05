@@ -1,0 +1,26 @@
+{
+  "name": "오버클랜 - 오버워치 클랜 플랫폼",
+  "short_name": "오버클랜",
+  "description": "오버워치를 같이 할 클랜을 찾아보세요.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080c14",
+  "theme_color": "#ff6b23",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "social"],
+  "lang": "ko"
+}
