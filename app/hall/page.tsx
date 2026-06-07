@@ -35,7 +35,7 @@ export default function HallOfFamePage() {
 
       <Navbar active="명예의 전당" />
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 32px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 32px", minHeight: "calc(100vh - 61px)" }}>
         {/* 헤더 */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
           <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
