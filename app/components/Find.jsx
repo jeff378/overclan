@@ -155,11 +155,15 @@ export default function OverClanFind() {
             {loading ? (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
             ) : filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4" }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-                <div style={{ fontFamily: "Noto Sans KR, sans-serif" }}>
-                  {clans.length === 0 ? "아직 클랜이 없어요. 첫 번째 클랜을 만들어보세요!" : "검색 결과가 없어요."}
+              <div style={{ textAlign: "center", padding: "60px 20px", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
+                <div style={{ fontSize: 40, marginBottom: 14 }}>{clans.length === 0 ? "⚔️" : "🔍"}</div>
+                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0", marginBottom: 8 }}>
+                  {clans.length === 0 ? "아직 클랜이 없어요." : "조건에 맞는 클랜이 없어요."}
                 </div>
+                <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 20 }}>
+                  {clans.length === 0 ? "첫 번째 클랜의 주인공이 되어보세요!" : "필터를 바꿔보거나 직접 클랜을 만들어보세요."}
+                </div>
+                <a href="/clan/create" style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "10px 24px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)", display: "inline-block" }}>+ 클랜 만들기</a>
               </div>
             ) : filtered.map(clan => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="clan-card">
