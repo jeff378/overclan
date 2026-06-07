@@ -9,14 +9,32 @@ export default function Navbar({ active = "" }) {
   const [authLoaded, setAuthLoaded] = useState(false);
 
   useEffect(() => {
+    // 캐시된 auth 상태 먼저 적용 (깜빡임 방지)
+    try {
+      const cachedNickname = sessionStorage.getItem("oc_nickname");
+      const cachedUser = sessionStorage.getItem("oc_user");
+      if (cachedNickname && cachedUser) {
+        setNickname(cachedNickname);
+        setUser(JSON.parse(cachedUser));
+        setAuthLoaded(true);
+      }
+    } catch(e) {}
+
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser(data.user);
+        try { sessionStorage.setItem("oc_user", JSON.stringify({ id: data.user.id, email: data.user.email })); } catch(e) {}
         supabase.from("profiles").select("nickname").eq("id", data.user.id).single().then(({ data: profile }) => {
-          if (profile) setNickname(profile.nickname);
+          if (profile) {
+            setNickname(profile.nickname);
+            try { sessionStorage.setItem("oc_nickname", profile.nickname); } catch(e) {}
+          }
           setAuthLoaded(true);
         });
       } else {
+        try { sessionStorage.removeItem("oc_nickname"); sessionStorage.removeItem("oc_user"); } catch(e) {}
+        setUser(null);
+        setNickname("");
         setAuthLoaded(true);
       }
     });
@@ -24,6 +42,7 @@ export default function Navbar({ active = "" }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    try { sessionStorage.removeItem("oc_nickname"); sessionStorage.removeItem("oc_user"); } catch(e) {}
     window.location.href = "/";
   };
 
