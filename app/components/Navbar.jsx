@@ -93,7 +93,7 @@ export default function Navbar({ active = "" }) {
       `}</style>
 
       {/* 데스크탑 네브 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 32px", height: 61 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
             <svg width="26" height="30" viewBox="0 0 32 36">
@@ -112,8 +112,14 @@ export default function Navbar({ active = "" }) {
           </div>
         </div>
 
-        <div className="desktop-auth" style={{ display: "flex", alignItems: "center", gap: 10, visibility: authLoaded ? "visible" : "hidden" }}>
-          {user ? (
+        <div className="desktop-auth" style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 180, justifyContent: "flex-end" }}>
+          {!authLoaded ? (
+            // 로딩 중 - 같은 크기 자리 확보 (깜빡임/이동 방지)
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div style={{ width: 90, height: 32, background: "rgba(255,107,35,0.08)", borderRadius: 2, clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }} />
+              <div style={{ width: 52, height: 20, background: "rgba(255,255,255,0.04)", borderRadius: 2 }} />
+            </div>
+          ) : user ? (
             <>
               <a href="/mypage" className="user-badge">
                 <div style={{ width: 7, height: 7, background: "#4caf50", borderRadius: "50%", boxShadow: "0 0 6px #4caf50" }} />
