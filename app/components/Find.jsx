@@ -151,6 +151,7 @@ export default function OverClanFind() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ minHeight: 400 }}>
             {loading ? (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
             ) : filtered.length === 0 ? (

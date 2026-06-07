@@ -129,7 +129,7 @@ export default function Home() {
         </section>
 
         {/* 랭킹 섹션 */}
-        <section style={{ padding: "0 clamp(16px, 4vw, 48px) clamp(40px, 6vw, 80px)", maxWidth: 1200, margin: "0 auto" }}>
+        <section style={{ padding: "0 clamp(16px, 4vw, 48px) clamp(40px, 6vw, 80px)", maxWidth: 1200, margin: "0 auto", minHeight: 300 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
