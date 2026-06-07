@@ -3,10 +3,22 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
 export default function Navbar({ active = "" }) {
-  const [user, setUser] = useState(null);
-  const [nickname, setNickname] = useState("");
+  const [user, setUser] = useState(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = sessionStorage.getItem("oc_user");
+      return cached ? JSON.parse(cached) : null;
+    } catch { return null; }
+  });
+  const [nickname, setNickname] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try { return sessionStorage.getItem("oc_nickname") || ""; } catch { return ""; }
+  });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [authLoaded, setAuthLoaded] = useState(false);
+  const [authLoaded, setAuthLoaded] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try { return !!sessionStorage.getItem("oc_user"); } catch { return false; }
+  });
 
   useEffect(() => {
     // 캐시된 auth 상태 먼저 적용 (깜빡임 방지)
