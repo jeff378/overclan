@@ -3,14 +3,29 @@ import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 
+const TIERS = ["", "브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
+const ROLES = [
+  { key: "탱커", tierKey: "tier_tank", icon: "🛡️", color: "#4fc3f7" },
+  { key: "딜러", tierKey: "tier_dps", icon: "⚔️", color: "#ff6b23" },
+  { key: "힐러", tierKey: "tier_support", icon: "💊", color: "#4caf50" },
+];
+
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [battletag, setBattletag] = useState("");
+  const [roles, setRoles] = useState<string[]>([]);
+  const [tierTank, setTierTank] = useState("");
+  const [tierDps, setTierDps] = useState("");
+  const [tierSupport, setTierSupport] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const toggleRole = (role: string) => {
+    setRoles(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
+  };
 
   const handleSignup = async () => {
     if (!email || !password || !nickname || !battletag) {
@@ -50,6 +65,10 @@ export default function SignupPage() {
         nickname,
         battletag,
         email,
+        roles,
+        tier_tank: tierTank,
+        tier_dps: tierDps,
+        tier_support: tierSupport,
       });
       if (profileError) console.error("프로필 저장 오류:", profileError);
       router.push("/");
@@ -104,6 +123,31 @@ export default function SignupPage() {
             <div>
               <label className="label">비밀번호</label>
               <input className="input" type="password" placeholder="6자 이상" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSignup()} />
+            </div>
+
+            {/* 역할군 & 티어 */}
+            <div>
+              <label className="label">역할군별 티어 (선택)</label>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {ROLES.map(r => (
+                  <div key={r.key} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(13,20,35,0.6)", border: `1px solid ${roles.includes(r.key) ? r.color + "44" : "rgba(255,107,35,0.08)"}`, padding: "8px 10px" }}>
+                    <button type="button" onClick={() => toggleRole(r.key)} style={{
+                      background: roles.includes(r.key) ? `${r.color}22` : "rgba(13,20,35,0.8)",
+                      border: `1px solid ${roles.includes(r.key) ? r.color : "rgba(255,255,255,0.1)"}`,
+                      color: roles.includes(r.key) ? r.color : "#8892a4",
+                      padding: "4px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer",
+                      clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0,
+                    }}>{r.icon} {r.key}</button>
+                    <select value={r.key === "탱커" ? tierTank : r.key === "딜러" ? tierDps : tierSupport}
+                      onChange={e => { if (r.key === "탱커") setTierTank(e.target.value); else if (r.key === "딜러") setTierDps(e.target.value); else setTierSupport(e.target.value); }}
+                      style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.15)", color: "#8892a4", padding: "6px 10px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 12, outline: "none", flex: 1 }}>
+                      <option value="">티어 선택</option>
+                      {TIERS.filter(t => t).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <div className="hint">나중에 프로필에서 수정할 수 있어요</div>
             </div>
           </div>
 
