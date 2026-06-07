@@ -192,6 +192,7 @@ export default function OverClanFind() {
                 </div>
               </a>
             ))}
+            </div>
           </div>
         </div>
       </div>
