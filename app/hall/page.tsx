@@ -37,16 +37,10 @@ export default function HallOfFamePage() {
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 32px" }}>
         {/* 헤더 */}
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🏆</div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 8 }}>
-            <div style={{ width: 40, height: 1, background: "linear-gradient(to right, transparent, #ff6b23)" }} />
-            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 28, fontWeight: 700, letterSpacing: 4, color: "#ff6b23" }}>명예의 전당</h1>
-            <div style={{ width: 40, height: 1, background: "linear-gradient(to left, transparent, #ff6b23)" }} />
-          </div>
-          <p style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
-            클랜대전에서 뛰어난 성과를 거둔 클랜들의 기록
-          </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+          <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
+          <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>명예의 전당 🏆</h1>
+          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>클랜대전 누적 승점 순위</span>
         </div>
 
         {loading ? (
