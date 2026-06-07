@@ -57,7 +57,6 @@ export default function Home() {
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", position: "relative", overflow: "hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .hex-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         .glow-orange { color: #ff6b23; text-shadow: 0 0 20px rgba(255,107,35,0.6); }

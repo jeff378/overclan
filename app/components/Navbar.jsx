@@ -38,9 +38,8 @@ export default function Navbar({ active = "" }) {
   ];
 
   return (
-    <nav style={{ background: "rgba(8,12,20,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,107,35,0.1)", position: "sticky", top: 0, zIndex: 100 }}>
+    <nav style={{ background: "rgba(8,12,20,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,107,35,0.1)", position: "sticky", top: 0, zIndex: 100, minHeight: 61 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap');
         .nav-link { color: #8892a4; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; }
         .nav-link:hover, .nav-link.active { color: #ff6b23; }
         .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 20px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; text-decoration: none; }

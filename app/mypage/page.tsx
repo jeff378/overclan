@@ -51,7 +51,6 @@ export default function MyPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .clan-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.12); padding: 20px 24px; display: flex; align-items: center; gap: 16px; transition: all 0.2s; text-decoration: none; color: inherit; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
         .clan-card:hover { border-color: rgba(255,107,35,0.4); transform: translateX(4px); box-shadow: -3px 0 0 #ff6b23; }

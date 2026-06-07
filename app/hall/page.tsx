@@ -23,7 +23,6 @@ export default function HallOfFamePage() {
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .hall-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px 28px; display: flex; align-items: center; gap: 20px; transition: all 0.3s; cursor: pointer; text-decoration: none; color: inherit; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); }
         .hall-card:hover { border-color: rgba(255,107,35,0.5); transform: translateX(4px); box-shadow: -4px 0 0 #ff6b23; }
