@@ -345,7 +345,21 @@ export default function OverClanBattle() {
                       <span className="status-tag" style={{ background: selected.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: selected.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{selected.type}</span>
                     </div>
                   </div>
-                  <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 18 }}>✕</button>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {/* 클랜장 대전 취소 버튼 */}
+                    {myClan && (selected.clan1_id === myClan.id || selected.clan2_id === myClan.id) &&
+                     (selected.status === "멤버모집" || selected.status === "대전준비" || selected.status === "결과입력") && (
+                      <button onClick={async () => {
+                        if (!confirm("대전을 취소할까요? 모집된 멤버 정보도 모두 삭제돼요.")) return;
+                        await supabase.from("battle_volunteers").delete().eq("battle_id", selected.id);
+                        await supabase.from("clan_battles").delete().eq("id", selected.id);
+                        setSelected(null);
+                        await loadBattles();
+                        alert("대전이 취소됐어요.");
+                      }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "6px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>대전 취소</button>
+                    )}
+                    <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 18 }}>✕</button>
+                  </div>
                 </div>
 
                 {/* 스크림방 제목 */}
