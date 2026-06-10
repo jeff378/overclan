@@ -11,6 +11,7 @@ export default function NoticePage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<any>(null);
   const [filter, setFilter] = useState("전체");
+  const [search, setSearch] = useState("");
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -46,7 +47,7 @@ export default function NoticePage() {
     if (selected?.id === id) setSelected(null);
   };
 
-  const filtered = filter === "전체" ? notices : notices.filter(n => n.category === filter);
+  const filtered = notices.filter(n => (filter === "전체" || n.category === filter) && (!search || n.title.includes(search) || n.content.includes(search)));
 
   const categoryColor: Record<string, string> = {
     "공지": "#ff6b23", "업데이트": "#4fc3f7", "이벤트": "#4caf50"
@@ -80,6 +81,7 @@ export default function NoticePage() {
             {CATEGORIES.map(c => (
               <button key={c} className={`filter-btn ${filter === c ? "active" : ""}`} onClick={() => setFilter(c)}>{c}</button>
             ))}
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "5px 12px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 12, outline: "none", width: 140 }} />
             {isAdmin && !showForm && (
               <button className="btn-primary" onClick={() => setShowForm(true)} style={{ marginLeft: 8 }}>+ 공지 작성</button>
             )}

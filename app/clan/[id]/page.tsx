@@ -40,6 +40,7 @@ export default function ClanDetailPage() {
   const [clan, setClan] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
   const [recentBattles, setRecentBattles] = useState<any[]>([]);
+  const [activeBattles, setActiveBattles] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isMember, setIsMember] = useState(false);
@@ -71,6 +72,13 @@ export default function ClanDetailPage() {
         .order("created_at", { ascending: false })
         .limit(5);
       setRecentBattles(battles || []);
+
+      const { data: active } = await supabase.from("clan_battles")
+        .select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge)")
+        .or(`clan1_id.eq.${id},clan2_id.eq.${id}`)
+        .neq("status", "완료")
+        .order("created_at", { ascending: false });
+      setActiveBattles(active || []);
 
       const { data: noticeData } = await supabase.from("clan_notices")
         .select("*, profiles(nickname)").eq("clan_id", id).order("created_at", { ascending: false });
@@ -223,7 +231,7 @@ export default function ClanDetailPage() {
 
         {/* 탭 */}
         <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 24, display: "flex" }}>
-          {["소개", "클랜원", "공지", "대전 기록"].map(t => (
+          {["소개", "클랜원", "공지", "대전 기록", "진행중 대전"].map(t => (
             <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
           ))}
         </div>
@@ -359,6 +367,11 @@ export default function ClanDetailPage() {
         {/* 공지 탭 */}
         {activeTab === "공지" && (
           <NoticeTab notices={notices} setNotices={setNotices} isOwner={isOwner} user={user} clanId={id as string} />
+        )}
+
+        {/* 진행중 대전 탭 */}
+        {activeTab === "진행중 대전" && (
+          <ActiveBattleTab battles={activeBattles} clanId={id as string} />
         )}
 
         {/* 대전 기록 탭 */}
@@ -500,3 +513,53 @@ function BattleTab({ battles, clanId }: any) {
   );
 }
 // 모바일 스타일은 이미 page.tsx style 태그에 추가
+
+function ActiveBattleTab({ battles, clanId }: any) {
+  const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+    "신청중": { label: "수락 대기", color: "#ffd54f" },
+    "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
+    "멤버모집": { label: "멤버 모집중", color: "#ff6b23" },
+    "대전준비": { label: "대전 준비", color: "#4caf50" },
+    "결과입력": { label: "결과 입력중", color: "#ff6b23" },
+  };
+
+  if (battles.length === 0) return (
+    <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+      진행 중인 클랜대전이 없어요.
+    </div>
+  );
+
+  return (
+    <div>
+      {battles.map((b: any) => {
+        const isClan1 = b.clan1_id === clanId;
+        const opClan = isClan1 ? b.clan2 : b.clan1;
+        const status = STATUS_LABEL[b.status];
+        return (
+          <a key={b.id} href="/battle" style={{ textDecoration: "none", color: "inherit" }}>
+            <div style={{ background: "rgba(13,20,35,0.6)", border: `1px solid ${status?.color}33`, padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, transition: "all 0.2s", cursor: "pointer" }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = `${status?.color}88`)}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = `${status?.color}33`)}>
+              <div>
+                <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{status?.label}</span>
+              </div>
+              <div style={{ fontSize: 20 }}>{opClan?.badge || "⚔️"}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
+                  vs {opClan?.name || "삭제된 클랜"}
+                </div>
+                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+                  {b.type} · {b.confirmed_date ? new Date(b.confirmed_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }) : "날짜 협의중"}
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif" }}>클랜대전 →</div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+// 진행중 대전 탭 렌더링 - 클랜 프로필 페이지에서 사용
+// (page.tsx 내부에서 activeTab === "진행중 대전" 일 때 렌더)

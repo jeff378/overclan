@@ -11,6 +11,7 @@ export default function PatchPage() {
   const [form, setForm] = useState({ title: "", content: "", patch_version: "" });
   const [submitting, setSubmitting] = useState(false);
   const [selected, setSelected] = useState<any>(null);
+  const [search, setSearch] = useState("");
   const [comments, setComments] = useState<any[]>([]);
   const [comment, setComment] = useState("");
 
@@ -104,7 +105,10 @@ export default function PatchPage() {
       <Navbar />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+        <div style={{ marginBottom: 16 }}>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목, 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
             <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>패치노트 토론장</h1>
@@ -140,7 +144,7 @@ export default function PatchPage() {
               <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
             ) : posts.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 글이 없어요. 첫 번째 토론을 시작해보세요!</div>
-            ) : posts.map(post => (
+            ) : posts.filter((p: any) => !search || p.title.includes(search) || p.content.includes(search)).map(post => (
               <div key={post.id} className={`post-card ${selected?.id === post.id ? "active" : ""}`} onClick={() => handleSelect(post)}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   {post.patch_version && <span className="patch-tag">v{post.patch_version}</span>}

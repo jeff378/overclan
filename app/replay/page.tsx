@@ -14,6 +14,7 @@ export default function ReplayPage() {
   const [comments, setComments] = useState<any[]>([]);
   const [comment, setComment] = useState("");
   const [myVotes, setMyVotes] = useState<Record<string, string>>({});
+  const [search, setSearch] = useState("");
 
   const fetchWithProfiles = async (rows: any[]) => {
     return Promise.all(rows.map(async (row) => {
@@ -158,11 +159,14 @@ export default function ReplayPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
           <div>
-            {loading ? (
+            <div style={{ marginBottom: 12 }}>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="리플레이 코드 또는 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />
+          </div>
+          {loading ? (
               <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
             ) : posts.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 제보된 리플레이가 없어요.</div>
-            ) : posts.map(post => {
+            ) : posts.filter((p: any) => !search || p.replay_code.includes(search.toUpperCase()) || (p.description || "").includes(search)).map(post => {
               const v = getVotePercent(post);
               return (
                 <div key={post.id} className={`post-card ${selected?.id === post.id ? "active" : ""}`} onClick={() => handleSelect(post)}>

@@ -27,6 +27,7 @@ export default function OverClanBattle() {
   const [allClans, setAllClans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [myClanOnly, setMyClanOnly] = useState(false);
   const [selected, setSelected] = useState(null);
   const [volunteers, setVolunteers] = useState([]);
   const [myVolunteer, setMyVolunteer] = useState(null);
@@ -270,10 +271,23 @@ export default function OverClanBattle() {
         )}
 
         {/* 탭 */}
-        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex" }}>
-          {["진행중", "완료된 대전"].map(t => (
-            <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>{t}</button>
-          ))}
+        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex" }}>
+            {["진행중", "완료된 대전"].map(t => (
+              <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>{t}</button>
+            ))}
+          </div>
+          {myClan && (
+            <button onClick={() => setMyClanOnly(!myClanOnly)} style={{
+              background: myClanOnly ? "rgba(255,107,35,0.15)" : "transparent",
+              border: `1px solid ${myClanOnly ? "#ff6b23" : "rgba(255,107,35,0.2)"}`,
+              color: myClanOnly ? "#ff6b23" : "#8892a4",
+              padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700,
+              cursor: "pointer", letterSpacing: 1,
+              clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
+              marginBottom: 4,
+            }}>내 클랜만</button>
+          )}
         </div>
 
         {loading ? (
@@ -283,10 +297,11 @@ export default function OverClanBattle() {
 
             {/* 대전 목록 */}
             <div>
-              {activeTab === "진행중" && (
-                battles.length === 0 ? (
+              {activeTab === "진행중" && (() => {
+                const filteredBattles = myClanOnly ? battles.filter(isMyBattle) : battles;
+                return filteredBattles.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>진행중인 클랜대전이 없어요.</div>
-                ) : battles.map(b => (
+                ) : filteredBattles.map(b => (
                   <div key={b.id} className={`battle-card ${selected?.id === b.id ? "active" : ""} ${isMyBattle(b) ? "mine" : ""}`} onClick={() => handleSelectBattle(b)}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                       <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
@@ -302,8 +317,8 @@ export default function OverClanBattle() {
                       {b.is_disputed && <span style={{ fontSize: 10, color: "#ef5350", fontWeight: 700 }}>⚠️ 분쟁</span>}
                     </div>
                   </div>
-                ))
-              )}
+                ));
+              })()}
 
               {activeTab === "완료된 대전" && (
                 completedBattles.length === 0 ? (
