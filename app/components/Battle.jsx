@@ -369,20 +369,7 @@ export default function OverClanBattle() {
                       <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1, marginBottom: 4 }}>스크림방 제목 (복사해서 사용하세요)</div>
                       <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#ff6b23" }}>{scrimTitle(selected)}</div>
                     </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button className="btn-sm" onClick={() => { navigator.clipboard.writeText(scrimTitle(selected)); alert("복사됐어요!"); }}>복사</button>
-                      {/* 클랜장만 대전 취소 가능 */}
-                      {myClan && (selected.clan1_id === myClan.id || selected.clan2_id === myClan.id) && (
-                        <button onClick={async () => {
-                          if (!confirm("대전을 취소할까요? 모집된 멤버 정보도 모두 삭제돼요.")) return;
-                          await supabase.from("battle_volunteers").delete().eq("battle_id", selected.id);
-                          await supabase.from("clan_battles").delete().eq("id", selected.id);
-                          setSelected(null);
-                          await loadBattles();
-                          alert("대전이 취소됐어요.");
-                        }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>취소</button>
-                      )}
-                    </div>
+                    <button className="btn-sm" onClick={() => { navigator.clipboard.writeText(scrimTitle(selected)); alert("복사됐어요!"); }}>복사</button>
                   </div>
                 )}
 
