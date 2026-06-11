@@ -105,15 +105,15 @@ export default function PatchPage() {
       <Navbar />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 32px" }}>
-        <div style={{ marginBottom: 16 }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목, 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />
-        </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
             <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>패치노트 토론장</h1>
           </div>
           {user && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "글 작성"}</button>}
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목, 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />
         </div>
 
         {showForm && (
