@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
+import { VIBE_TAGS, ACCENT_COLORS, BANNER_COLORS, uploadClanImage } from "../../../../lib/clanCustomization";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
 const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
@@ -14,12 +15,34 @@ export default function EditClanPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState("");
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
     tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30,
     discord_link: "", slogan: "", join_condition: "", banner_color: "#1a1f35",
+    accent_color: "#ff6b23", vibe_tags: [] as string[], banner_image: "", emblem_image: "",
   });
+
+  const toggleVibe = (tag: string) => {
+    setForm(f => ({
+      ...f,
+      vibe_tags: f.vibe_tags.includes(tag)
+        ? f.vibe_tags.filter(t => t !== tag)
+        : f.vibe_tags.length >= 5 ? f.vibe_tags : [...f.vibe_tags, tag]
+    }));
+  };
+
+  const handleImageUpload = async (e: any, type: "banner" | "emblem") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(type);
+    setError("");
+    const { url, error: upErr } = await uploadClanImage(file, id, type);
+    setUploading("");
+    if (upErr) { setError(upErr); return; }
+    setForm(f => ({ ...f, [type === "banner" ? "banner_image" : "emblem_image"]: url }));
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -35,6 +58,10 @@ export default function EditClanPage() {
         slogan: clan.slogan || "",
         join_condition: clan.join_condition || "",
         banner_color: clan.banner_color || "#1a1f35",
+        accent_color: clan.accent_color || "#ff6b23",
+        vibe_tags: clan.vibe_tags || [],
+        banner_image: clan.banner_image || "",
+        emblem_image: clan.emblem_image || "",
       });
       setLoading(false);
     };
@@ -51,6 +78,8 @@ export default function EditClanPage() {
       style: form.style, max_members: form.max_members,
       discord_link: form.discord_link, slogan: form.slogan,
       join_condition: form.join_condition, banner_color: form.banner_color,
+      accent_color: form.accent_color, vibe_tags: form.vibe_tags,
+      banner_image: form.banner_image || null, emblem_image: form.emblem_image || null,
     }).eq("id", id);
     if (updateError) { setError("저장에 실패했어요. 다시 시도해주세요."); setSaving(false); return; }
     router.push(`/clan/${id}`);
@@ -186,10 +215,70 @@ export default function EditClanPage() {
           <div>
             <label className="label">배너 색상</label>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              {["#1a1f35", "#1a2535", "#1f1a35", "#1a3525", "#35251a", "#0d1f2d"].map(c => (
+              {BANNER_COLORS.map(c => (
                 <div key={c} onClick={() => setForm({ ...form, banner_color: c })} style={{ width: 32, height: 32, background: c, border: form.banner_color === c ? "2px solid #ff6b23" : "2px solid transparent", borderRadius: 4, cursor: "pointer" }} />
               ))}
               <input type="color" value={form.banner_color} onChange={e => setForm({ ...form, banner_color: e.target.value })} style={{ width: 32, height: 32, border: "none", background: "none", cursor: "pointer" }} />
+            </div>
+          </div>
+
+          <div style={{ height: 1, background: "rgba(255,107,35,0.15)", margin: "4px 0" }} />
+          <div style={{ fontSize: 13, color: "#ff6b23", fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", letterSpacing: 1 }}>✨ 클랜 개성 꾸미기</div>
+
+          <div>
+            <label className="label">클랜 대표 색 — 프로필 페이지 전체 포인트 컬러</label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              {ACCENT_COLORS.map(c => (
+                <div key={c} onClick={() => setForm({ ...form, accent_color: c })} style={{ width: 34, height: 34, background: c, border: form.accent_color === c ? "3px solid #fff" : "2px solid transparent", borderRadius: "50%", cursor: "pointer", boxShadow: form.accent_color === c ? `0 0 12px ${c}` : "none", transition: "all 0.15s" }} />
+              ))}
+              <input type="color" value={form.accent_color} onChange={e => setForm({ ...form, accent_color: e.target.value })} style={{ width: 34, height: 34, border: "none", background: "none", cursor: "pointer" }} />
+            </div>
+          </div>
+
+          <div>
+            <label className="label">분위기 태그 — 클랜 성격을 한눈에 (최대 5개)</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {VIBE_TAGS.map(tag => (
+                <button key={tag} type="button" onClick={() => toggleVibe(tag)}
+                  className={`select-btn ${form.vibe_tags.includes(tag) ? "active" : ""}`}
+                  style={{ fontFamily: "'Noto Sans KR', sans-serif", fontSize: 12 }}>
+                  {form.vibe_tags.includes(tag) ? "✓ " : ""}{tag}
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: "#8892a4", marginTop: 8, fontFamily: "Noto Sans KR, sans-serif" }}>{form.vibe_tags.length}/5 선택됨</div>
+          </div>
+
+          <div>
+            <label className="label">배너 이미지 — 클랜 대표 이미지 (최대 3MB)</label>
+            {form.banner_image && (
+              <div style={{ position: "relative", marginBottom: 10 }}>
+                <img src={form.banner_image} alt="배너" style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 4, border: "1px solid rgba(255,107,35,0.2)" }} />
+                <button type="button" onClick={() => setForm({ ...form, banner_image: "" })} style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", padding: "4px 10px", fontSize: 11, cursor: "pointer", borderRadius: 4, fontFamily: "Noto Sans KR, sans-serif" }}>삭제</button>
+              </div>
+            )}
+            <label style={{ display: "inline-block", background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.25)", color: "#ff6b23", padding: "10px 20px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, cursor: "pointer", borderRadius: 2 }}>
+              {uploading === "banner" ? "업로드 중..." : form.banner_image ? "다른 이미지로 변경" : "📷 배너 이미지 올리기"}
+              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, "banner")} style={{ display: "none" }} disabled={uploading === "banner"} />
+            </label>
+          </div>
+
+          <div>
+            <label className="label">커스텀 엠블럼 — 이모지 대신 클랜 로고 (최대 1MB)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              {form.emblem_image ? (
+                <div style={{ position: "relative" }}>
+                  <img src={form.emblem_image} alt="엠블럼" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8, border: "1px solid rgba(255,107,35,0.3)" }} />
+                  <button type="button" onClick={() => setForm({ ...form, emblem_image: "" })} style={{ position: "absolute", top: -6, right: -6, background: "#ef5350", border: "none", color: "#fff", width: 20, height: 20, fontSize: 12, cursor: "pointer", borderRadius: "50%", lineHeight: 1 }}>×</button>
+                </div>
+              ) : (
+                <div style={{ width: 64, height: 64, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.15)", borderRadius: 8 }}>{form.badge}</div>
+              )}
+              <label style={{ display: "inline-block", background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.25)", color: "#ff6b23", padding: "10px 20px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, cursor: "pointer", borderRadius: 2 }}>
+                {uploading === "emblem" ? "업로드 중..." : form.emblem_image ? "변경" : "🖼️ 로고 올리기"}
+                <input type="file" accept="image/*" onChange={e => handleImageUpload(e, "emblem")} style={{ display: "none" }} disabled={uploading === "emblem"} />
+              </label>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>로고가 없으면 이모지 배지가 표시돼요</span>
             </div>
           </div>
           {error && <div style={{ fontSize: 13, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}

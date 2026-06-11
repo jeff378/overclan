@@ -139,17 +139,19 @@ export default function ClanDetailPage() {
     </div>
   );
 
+  const accent = clan.accent_color || "#ff6b23";
+
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", ["--accent" as any]: accent }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent)); filter: brightness(1.05); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
-        .btn-sm:hover { background: rgba(255,107,35,0.1); }
+        .btn-sm { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-sm:hover { background: var(--accent); color: #fff; }
         .btn-discord { background: rgba(88,101,242,0.15); border: 1px solid rgba(88,101,242,0.4); color: #8ea1e1; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); text-decoration: none; display: inline-block; }
         .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-        .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); }
         .tier-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
         .member-row { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 4px; transition: all 0.2s; }
@@ -160,33 +162,44 @@ export default function ClanDetailPage() {
       <Navbar />
 
       {/* 배너 */}
-      <div style={{ background: clan.banner_color || "#1a1f35", borderBottom: "1px solid rgba(255,107,35,0.2)", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.08)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: 0.5 }} />
+      <div style={{ background: clan.banner_image ? `linear-gradient(to bottom, rgba(8,12,20,0.3), rgba(8,12,20,0.85)), url(${clan.banner_image})` : (clan.banner_color || "#1a1f35"), backgroundSize: "cover", backgroundPosition: "center", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.08)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: clan.banner_image ? 0.2 : 0.5 }} />
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 32px 32px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-              {/* 클랜 배지 */}
+              {/* 클랜 배지/엠블럼 */}
               <div style={{ position: "relative" }}>
-                <svg width="80" height="90" viewBox="0 0 80 90">
-                  <polygon points="40,4 76,22 76,68 40,86 4,68 4,22" fill="rgba(255,107,35,0.1)" stroke="#ff6b23" strokeWidth="1.5"/>
-                  <polygon points="40,16 64,30 64,60 40,74 16,60 16,30" fill="rgba(255,107,35,0.05)" stroke="rgba(255,107,35,0.3)" strokeWidth="1"/>
-                  <text x="40" y="54" textAnchor="middle" fontSize="28">{clan.badge}</text>
-                </svg>
+                {clan.emblem_image ? (
+                  <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 16px ${accent}55` }} />
+                ) : (
+                  <svg width="80" height="90" viewBox="0 0 80 90">
+                    <polygon points="40,4 76,22 76,68 40,86 4,68 4,22" fill={`${accent}1a`} stroke={accent} strokeWidth="1.5"/>
+                    <polygon points="40,16 64,30 64,60 40,74 16,60 16,30" fill={`${accent}0d`} stroke={`${accent}4d`} strokeWidth="1"/>
+                    <text x="40" y="54" textAnchor="middle" fontSize="28">{clan.badge}</text>
+                  </svg>
+                )}
               </div>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                   <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 32, fontWeight: 700, letterSpacing: 1 }}>{clan.name}</h1>
-                  <span style={{ fontSize: 14, color: "#ff6b23", opacity: 0.6, fontWeight: 600 }}>[{clan.tag}]</span>
+                  <span style={{ fontSize: 14, color: accent, opacity: 0.8, fontWeight: 600 }}>[{clan.tag}]</span>
                 </div>
-                {clan.slogan && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginBottom: 8, fontStyle: "italic" }}>"{clan.slogan}"</p>}
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  <span className="tier-tag" style={{ borderColor: `${TIER_COLORS[clan.tier]}44`, color: TIER_COLORS[clan.tier] || "#ff6b23" }}>{clan.tier}</span>
+                {clan.slogan && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginBottom: 8, fontStyle: "italic" }}>"{clan.slogan}"</p>}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <span className="tier-tag" style={{ borderColor: `${TIER_COLORS[clan.tier]}44`, color: TIER_COLORS[clan.tier] || accent }}>{clan.tier}</span>
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.style}</span>
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.play_time}</span>
                   <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", display: "flex", alignItems: "center", gap: 4 }}>
                     🗓️ {new Date(clan.created_at).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })} 창설
                   </span>
                 </div>
+                {clan.vibe_tags && clan.vibe_tags.length > 0 && (
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10 }}>
+                    {clan.vibe_tags.map((tag: string) => (
+                      <span key={tag} style={{ fontSize: 11, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 500, color: accent, background: `${accent}1a`, border: `1px solid ${accent}44`, padding: "3px 10px", borderRadius: 20 }}>#{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -223,7 +236,7 @@ export default function ClanDetailPage() {
             { label: "승률", value: `${winRate}%` },
           ].map(s => (
             <div key={s.label} className="stat-box">
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: accent, fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, letterSpacing: 0.5, fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap" }}>{s.label}</div>
             </div>
           ))}

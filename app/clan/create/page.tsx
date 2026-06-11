@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
+import { VIBE_TAGS, ACCENT_COLORS } from "../../../lib/clanCustomization";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
 const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
@@ -16,8 +17,18 @@ export default function CreateClanPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
-    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30
+    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30,
+    accent_color: "#ff6b23", vibe_tags: [] as string[]
   });
+
+  const toggleVibe = (tag: string) => {
+    setForm(f => ({
+      ...f,
+      vibe_tags: f.vibe_tags.includes(tag)
+        ? f.vibe_tags.filter(t => t !== tag)
+        : f.vibe_tags.length >= 5 ? f.vibe_tags : [...f.vibe_tags, tag]
+    }));
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -148,6 +159,27 @@ export default function CreateClanPage() {
                 <button key={s} className={`select-btn ${form.style === s ? "active" : ""}`} onClick={() => setForm({ ...form, style: s })}>{s}</button>
               ))}
             </div>
+          </div>
+          <div>
+            <label className="label">클랜 대표 색 — 프로필 페이지의 포인트 컬러가 돼요</label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              {ACCENT_COLORS.map(c => (
+                <div key={c} onClick={() => setForm({ ...form, accent_color: c })} style={{ width: 34, height: 34, background: c, border: form.accent_color === c ? "3px solid #fff" : "2px solid transparent", borderRadius: "50%", cursor: "pointer", boxShadow: form.accent_color === c ? `0 0 12px ${c}` : "none", transition: "all 0.15s" }} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="label">분위기 태그 — 클랜 성격을 한눈에 (최대 5개)</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {VIBE_TAGS.map(tag => (
+                <button key={tag} type="button" onClick={() => toggleVibe(tag)}
+                  className={`select-btn ${form.vibe_tags.includes(tag) ? "active" : ""}`}
+                  style={{ fontFamily: "'Noto Sans KR', sans-serif", fontSize: 12 }}>
+                  {form.vibe_tags.includes(tag) ? "✓ " : ""}{tag}
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: "#8892a4", marginTop: 8, fontFamily: "Noto Sans KR, sans-serif" }}>{form.vibe_tags.length}/5 선택됨</div>
           </div>
           <div>
             <label className="label">최대 클랜원 수: {form.max_members}명</label>

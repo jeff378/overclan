@@ -168,15 +168,19 @@ export default function OverClanFind() {
             ) : filtered.map(clan => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="clan-card">
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                  <div style={{ fontSize: 32, flexShrink: 0 }}>{clan.badge}</div>
+                  {clan.emblem_image ? (
+                    <img src={clan.emblem_image} alt="" style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 6, flexShrink: 0, border: `1px solid ${clan.accent_color || "#ff6b23"}55` }} />
+                  ) : (
+                    <div style={{ fontSize: 32, flexShrink: 0 }}>{clan.badge}</div>
+                  )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                         <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>
-                        <span style={{ fontSize: 11, color: "#ff6b23", opacity: 0.6, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
+                        <span style={{ fontSize: 11, color: clan.accent_color || "#ff6b23", opacity: 0.7, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: clan.accent_color || "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
                           {clan.clan_members?.[0]?.count || 0}/{clan.max_members}
                         </div>
                         <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>클랜원</div>
@@ -187,7 +191,15 @@ export default function OverClanFind() {
                       <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.style}</span>
                       <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.play_time}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.description}</p>
+                    {clan.vibe_tags && clan.vibe_tags.length > 0 ? (
+                      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                        {clan.vibe_tags.slice(0, 4).map((tag) => (
+                          <span key={tag} style={{ fontSize: 11, fontFamily: "Noto Sans KR, sans-serif", color: clan.accent_color || "#ff6b23", background: `${clan.accent_color || "#ff6b23"}1a`, padding: "2px 8px", borderRadius: 20 }}>#{tag}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.description}</p>
+                    )}
                   </div>
                 </div>
               </a>
