@@ -18,7 +18,9 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("전체");
   const [scanLine, setScanLine] = useState(0);
   const [stats, setStats] = useState({ clans: 0, members: 0, battles: 0 });
+  const [statsLoaded, setStatsLoaded] = useState(false);
   const [topClans, setTopClans] = useState([]);
+  const [clansLoaded, setClansLoaded] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,17 +35,19 @@ export default function Home() {
       const { count: memberCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true });
       const { count: battleCount } = await supabase.from("clan_battles").select("*", { count: "exact", head: true });
       setStats({ clans: clanCount || 0, members: memberCount || 0, battles: battleCount || 0 });
+      setStatsLoaded(true);
 
       const { data: clans } = await supabase.from("clans").select("*, clan_members(count)").order("points", { ascending: false }).limit(4);
       setTopClans(clans || []);
+      setClansLoaded(true);
     };
     loadStats();
   }, []);
 
   const statItems = [
-    { label: "활성 클랜", value: stats.clans.toLocaleString() },
-    { label: "총 클랜원", value: stats.members.toLocaleString() },
-    { label: "총 클랜대전", value: stats.battles.toLocaleString() },
+    { label: "활성 클랜", value: statsLoaded ? stats.clans.toLocaleString() : "—" },
+    { label: "총 클랜원", value: statsLoaded ? stats.members.toLocaleString() : "—" },
+    { label: "총 클랜대전", value: statsLoaded ? stats.battles.toLocaleString() : "—" },
   ];
 
   const filtered = activeTab === "전체" ? topClans : topClans.filter(c => {
@@ -121,7 +125,7 @@ export default function Home() {
           <div className="animate-in delay-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 60, maxWidth: 600 }}>
             {statItems.map(stat => (
               <div key={stat.label} className="stat-card">
-                <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23", letterSpacing: 1 }}>{stat.value}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23", letterSpacing: 1, opacity: statsLoaded ? 1 : 0.4, transition: "opacity 0.4s ease" }}>{stat.value}</div>
                 <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{stat.label}</div>
               </div>
             ))}
@@ -142,7 +146,11 @@ export default function Home() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {!clansLoaded ? (
+            <div style={{ textAlign: "center", padding: "40px", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, opacity: 0.5 }}>
+              LOADING...
+            </div>
+          ) : filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "40px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
               아직 클랜이 없어요. 첫 번째 클랜을 만들어보세요!
             </div>
