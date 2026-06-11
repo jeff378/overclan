@@ -116,6 +116,21 @@ export default function PatchPage() {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목, 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />
         </div>
 
+        <a href="https://overwatch.blizzard.com/ko-kr/news/patch-notes/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "block", marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,107,35,0.06)", border: "1px solid rgba(255,107,35,0.25)", padding: "14px 20px", clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))", transition: "all 0.2s", cursor: "pointer" }}
+            onMouseOver={e => { e.currentTarget.style.background = "rgba(255,107,35,0.12)"; e.currentTarget.style.borderColor = "rgba(255,107,35,0.5)"; }}
+            onMouseOut={e => { e.currentTarget.style.background = "rgba(255,107,35,0.06)"; e.currentTarget.style.borderColor = "rgba(255,107,35,0.25)"; }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 20 }}>📋</span>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif" }}>공식 패치노트 바로가기</div>
+                <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2 }}>블리자드 공식 패치노트를 확인하고 여기서 토론해보세요</div>
+              </div>
+            </div>
+            <span style={{ fontSize: 13, color: "#ff6b23", fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, whiteSpace: "nowrap" }}>바로가기 →</span>
+          </div>
+        </a>
+
         {showForm && (
           <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: "28px", marginBottom: 24 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

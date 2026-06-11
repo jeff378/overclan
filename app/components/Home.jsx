@@ -105,16 +105,18 @@ export default function Home() {
         <Navbar />
 
         <section style={{ padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px) clamp(32px, 5vw, 64px)", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
             <div className="live-dot" />
             <span style={{ fontSize: 11, letterSpacing: 3, color: "#4caf50", fontWeight: 600 }}>SEASON 1 진행중</span>
+            <span style={{ fontSize: 11, letterSpacing: 1, color: "#ff6b23", fontWeight: 600, fontFamily: "Noto Sans KR, sans-serif", background: "rgba(255,107,35,0.1)", border: "1px solid rgba(255,107,35,0.25)", padding: "2px 10px", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>🔥 오픈 멤버 모집중</span>
           </div>
           <div className="hero-title animate-in">
             <div style={{ color: "#e8eaf0" }}>같이 싸울</div>
             <div><span className="glow-orange">클랜</span><span style={{ color: "#e8eaf0" }}>을 찾아라</span></div>
           </div>
           <p className="animate-in delay-1" style={{ marginTop: 24, fontSize: 16, color: "#8892a4", lineHeight: 1.7, maxWidth: 480, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
-            오버워치를 같이 할 클랜을 찾아보세요.
+            오버워치를 같이 할 클랜을 찾아보세요.<br />
+            <span style={{ color: "#ff6b23", fontWeight: 400 }}>지금 합류하면 시즌 1 초기 멤버가 됩니다.</span>
           </p>
           <div className="animate-in delay-2" style={{ display: "flex", gap: 12, marginTop: 36 }}>
             <a href="/clan/create" style={{ textDecoration: "none" }}><button className="btn-primary" style={{whiteSpace:"nowrap"}}>클랜 만들기</button></a>
@@ -151,8 +153,11 @@ export default function Home() {
               LOADING...
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
-              아직 클랜이 없어요. 첫 번째 클랜을 만들어보세요!
+            <div style={{ textAlign: "center", padding: "48px 40px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.2)" }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>🏆</div>
+              <div style={{ fontSize: 16, color: "#e8eaf0", fontWeight: 500, marginBottom: 6 }}>아직 랭킹 1위 자리가 비어있어요</div>
+              <div style={{ fontSize: 13, marginBottom: 20 }}>지금 클랜을 만들면 시즌 1 첫 번째 클랜이 됩니다.</div>
+              <a href="/clan/create" style={{ textDecoration: "none" }}><button className="btn-primary" style={{ padding: "10px 24px", fontSize: 13 }}>1호 클랜 만들기</button></a>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
