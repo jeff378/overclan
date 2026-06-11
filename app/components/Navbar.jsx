@@ -62,7 +62,6 @@ export default function Navbar({ active = "" }) {
     { label: "클랜 찾기", href: "/find" },
     { label: "클랜대전", href: "/battle" },
     { label: "랭킹", href: "/ranking" },
-    { label: "명예의 전당", href: "/hall" },
     { label: "공지사항", href: "/notice" },
     { label: "패치노트", href: "/patch" },
     { label: "핵 제보", href: "/replay" },
