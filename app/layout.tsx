@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   keywords: ['오버워치', '오버워치 클랜', '클랜', '오버클랜', '클랜대전', '오버워치 클랜 모집', '오버워치 커뮤니티', '오버워치 클랜 찾기', '옵치 클랜'],
   manifest: '/manifest.json',
   alternates: { canonical: '/' },
+  verification: {
+    google: 'K2kn8h1201L6ZSotI1Kx_F7WuwUDjvqRWMTnB618UcQ',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
