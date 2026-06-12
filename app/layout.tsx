@@ -7,27 +7,32 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'OVERCLAN - 오버워치 클랜 플랫폼',
-  description: '오버워치를 같이 할 클랜을 찾아보세요.',
-  keywords: '오버워치, 클랜, 오버클랜, 클랜대전, 오버워치 커뮤니티',
+  metadataBase: new URL('https://overclan.vercel.app'),
+  title: {
+    default: '오버클랜 - 오버워치 클랜 찾기·클랜대전·랭킹 플랫폼',
+    template: '%s | 오버클랜',
+  },
+  description: '오버워치 클랜을 찾고, 클랜대전을 신청하고, 랭킹을 겨뤄보세요. 오버클랜은 오버워치 클랜 운영과 클랜원 모집을 위한 무료 팬 플랫폼입니다.',
+  keywords: ['오버워치', '오버워치 클랜', '클랜', '오버클랜', '클랜대전', '오버워치 클랜 모집', '오버워치 커뮤니티', '오버워치 클랜 찾기', '옵치 클랜'],
   manifest: '/manifest.json',
+  alternates: { canonical: '/' },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: '오버클랜',
   },
   openGraph: {
-    title: 'OVERCLAN - 오버워치 클랜 플랫폼',
-    description: '오버워치를 같이 할 클랜을 찾아보세요.',
+    title: '오버클랜 - 오버워치 클랜 찾기·클랜대전·랭킹 플랫폼',
+    description: '오버워치 클랜을 찾고, 클랜대전을 신청하고, 랭킹을 겨뤄보세요.',
     url: 'https://overclan.vercel.app',
-    siteName: 'OVERCLAN',
+    siteName: '오버클랜',
     locale: 'ko_KR',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'OVERCLAN - 오버워치 클랜 플랫폼',
-    description: '오버워치를 같이 할 클랜을 찾아보세요.',
+    title: '오버클랜 - 오버워치 클랜 플랫폼',
+    description: '오버워치 클랜을 찾고, 클랜대전을 신청하고, 랭킹을 겨뤄보세요.',
   },
   icons: {
     icon: '/icons/icon-192x192.png',
@@ -46,6 +51,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="오버클랜" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: '오버클랜',
+            alternateName: 'OVERCLAN',
+            url: 'https://overclan.vercel.app',
+            description: '오버워치 클랜을 찾고, 클랜대전을 신청하고, 랭킹을 겨뤄보세요.',
+            inLanguage: 'ko-KR',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://overclan.vercel.app/find?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
+          }) }}
+        />
       </head>
       <body style={{ margin: 0, padding: 0, background: "#080c14", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
         {children}
