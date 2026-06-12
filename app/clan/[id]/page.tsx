@@ -187,9 +187,9 @@ export default function ClanDetailPage() {
                 )}
               </div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                  <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 32, fontWeight: 700, letterSpacing: 1 }}>{clan.name}</h1>
-                  <span style={{ fontSize: 14, color: accent, opacity: 0.8, fontWeight: 600 }}>[{clan.tag}]</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+                  <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all" }}>{clan.name}</h1>
+                  <span style={{ fontSize: 13, color: accent, opacity: 0.8, fontWeight: 600, whiteSpace: "nowrap" }}>[{clan.tag}]</span>
                 </div>
                 {clan.slogan && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginBottom: 8, fontStyle: "italic" }}>"{clan.slogan}"</p>}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>

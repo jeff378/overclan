@@ -70,6 +70,7 @@ export default function EditClanPage() {
 
   const handleSave = async () => {
     if (!form.name || !form.tag || !form.description) { setError("클랜명, 태그, 소개를 입력해주세요."); return; }
+    if (form.name.length > 12) { setError("클랜명은 12자 이내로 입력해주세요."); return; }
     setSaving(true);
     setError("");
     const { error: updateError } = await supabase.from("clans").update({
@@ -130,8 +131,8 @@ export default function EditClanPage() {
             </div>
           </div>
           <div>
-            <label className="label">클랜명 *</label>
-            <input className="input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            <label className="label">클랜명 * (최대 12자)</label>
+            <input className="input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} maxLength={12} />
           </div>
           <div>
             <label className="label">클랜 태그 * (최대 6자)</label>

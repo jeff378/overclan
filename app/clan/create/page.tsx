@@ -58,6 +58,10 @@ export default function CreateClanPage() {
       setError("클랜명, 태그, 소개를 입력해주세요.");
       return;
     }
+    if (form.name.length > 12) {
+      setError("클랜명은 12자 이내로 입력해주세요.");
+      return;
+    }
     if (form.tag.length > 6) {
       setError("태그는 6자 이내로 입력해주세요.");
       return;
@@ -125,8 +129,9 @@ export default function CreateClanPage() {
             </div>
           </div>
           <div>
-            <label className="label">클랜명 *</label>
-            <input className="input" placeholder="클랜 이름을 입력하세요" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            <label className="label">클랜명 * (최대 12자)</label>
+            <input className="input" placeholder="클랜 이름을 입력하세요" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} maxLength={12} />
+            <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, fontFamily: "Noto Sans KR, sans-serif", textAlign: "right" }}>{form.name.length}/12</div>
           </div>
           <div>
             <label className="label">클랜 태그 * (최대 6자)</label>

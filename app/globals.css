@@ -31,11 +31,11 @@ body {
     min-width: 0 !important;
     word-break: normal !important;
   }
-  /* 상세 패널 매치업은 모바일에서 세로 배치 (더 넓게 표시) */
+  /* 상세 패널 매치업: 버튼이 위로 빠졌으니 클랜명을 넓게, 한 줄 유지 */
   .detail-panel .matchup-row {
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
   }
   .detail-panel .matchup-name {
-    max-width: 60vw !important;
+    max-width: 34vw !important;
   }
 }

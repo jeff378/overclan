@@ -32,6 +32,10 @@ export default function SignupPage() {
       setError("모든 항목을 입력해주세요.");
       return;
     }
+    if (nickname.length > 10) {
+      setError("닉네임은 10자 이내로 입력해주세요.");
+      return;
+    }
     if (password.length < 6) {
       setError("비밀번호는 6자 이상이어야 해요.");
       return;
@@ -108,7 +112,7 @@ export default function SignupPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
             <div>
               <label className="label">닉네임</label>
-              <input className="input" type="text" placeholder="오버클랜에서 사용할 이름" value={nickname} onChange={e => setNickname(e.target.value)} />
+              <input className="input" type="text" placeholder="오버클랜에서 사용할 이름" value={nickname} onChange={e => setNickname(e.target.value)} maxLength={10} />
             </div>
             <div>
               <label className="label">배틀태그</label>

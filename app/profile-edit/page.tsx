@@ -55,6 +55,7 @@ export default function ProfileEditPage() {
 
   const handleSave = async () => {
     if (!form.nickname || !form.battletag) { alert("닉네임과 배틀태그를 입력해주세요."); return; }
+    if (form.nickname.length > 10) { alert("닉네임은 10자 이내로 입력해주세요."); return; }
     setSaving(true);
     const { data: userData } = await supabase.auth.getUser();
     await supabase.from("profiles").update({
@@ -109,8 +110,8 @@ export default function ProfileEditPage() {
 
           {/* 기본 정보 */}
           <div>
-            <label className="label">닉네임 *</label>
-            <input className="input" placeholder="오버클랜에서 사용할 이름" value={form.nickname} onChange={e => setForm({ ...form, nickname: e.target.value })} />
+            <label className="label">닉네임 * (최대 10자)</label>
+            <input className="input" placeholder="오버클랜에서 사용할 이름" value={form.nickname} onChange={e => setForm({ ...form, nickname: e.target.value })} maxLength={10} />
           </div>
 
           <div>
