@@ -157,7 +157,7 @@ export default function ReplayPage() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
+        <div className="responsive-2col" style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
           <div>
             <div style={{ marginBottom: 12 }}>
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="리플레이 코드 또는 내용 검색..." style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 16px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%" }} />

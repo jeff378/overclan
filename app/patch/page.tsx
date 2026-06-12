@@ -153,7 +153,7 @@ export default function PatchPage() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
+        <div className="responsive-2col" style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.4fr" : "1fr", gap: 24 }}>
           <div>
             {loading ? (
               <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
@@ -162,8 +162,8 @@ export default function PatchPage() {
             ) : posts.filter((p: any) => !search || p.title.includes(search) || p.content.includes(search)).map(post => (
               <div key={post.id} className={`post-card ${selected?.id === post.id ? "active" : ""}`} onClick={() => handleSelect(post)}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  {post.patch_version && <span className="patch-tag">v{post.patch_version}</span>}
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, flex: 1 }}>{post.title}</span>
+                  {post.patch_version && <span className="patch-tag" style={{ flexShrink: 0 }}>v{post.patch_version}</span>}
+                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.title}</span>
                   {user?.id === post.user_id && (
                     <button className="btn-del" onClick={e => { e.stopPropagation(); handleDelete(post.id); }}>🗑</button>
                   )}

@@ -300,7 +300,7 @@ export default function OverClanBattle() {
         {loading ? (
           <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
         ) : (
-          <div className="battle-grid" style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.6fr" : "1fr", gap: 20 }}>
+          <div className="battle-grid responsive-2col" style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.6fr" : "1fr", gap: 20 }}>
 
             {/* 대전 목록 */}
             <div>
@@ -310,7 +310,7 @@ export default function OverClanBattle() {
                   <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>진행중인 클랜대전이 없어요.</div>
                 ) : filteredBattles.map(b => (
                   <div key={b.id} className={`battle-card ${selected?.id === b.id ? "active" : ""} ${isMyBattle(b) ? "mine" : ""}`} onClick={() => handleSelectBattle(b)}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                    <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                       <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
                       <span className="clan-name">{b.clan1?.name}</span>
                       <span className="vs">VS</span>
@@ -332,13 +332,13 @@ export default function OverClanBattle() {
                   <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>완료된 대전이 없어요.</div>
                 ) : completedBattles.map(b => (
                   <div key={b.id} className="battle-card">
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
+                      <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
                       <div style={{ textAlign: "center", minWidth: 60 }}>
                         <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700 }}>{b.clan1_score} - {b.clan2_score}</div>
                       </div>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
+                      <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
                       <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>
                     </div>
                   </div>
@@ -351,14 +351,14 @@ export default function OverClanBattle() {
               <div className="detail-panel">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                      <a href={`/clan/${selected.clan1_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit" }}>
+                    <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                      <a href={`/clan/${selected.clan1_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit", minWidth: 0 }}>
                         <span style={{ fontSize: 24 }}>{selected.clan1?.badge}</span>
-                        <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan1?.name}</span>
+                        <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan1?.name}</span>
                       </a>
                       <span className="vs">VS</span>
-                      <a href={`/clan/${selected.clan2_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit" }}>
-                        <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan2?.name}</span>
+                      <a href={`/clan/${selected.clan2_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit", minWidth: 0 }}>
+                        <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{selected.clan2?.name}</span>
                         <span style={{ fontSize: 24 }}>{selected.clan2?.badge}</span>
                       </a>
                     </div>

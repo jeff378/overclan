@@ -175,24 +175,24 @@ export default function OverClanRanking() {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {filtered.map((clan, i) => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="hall-row">
-                <div style={{ minWidth: 48, textAlign: "center" }}>
+                <div style={{ minWidth: 48, textAlign: "center", flexShrink: 0 }}>
                   {i === 0 ? <span className="gold" style={{ fontSize: 28 }}>🥇</span>
                   : i === 1 ? <span className="silver" style={{ fontSize: 28 }}>🥈</span>
                   : i === 2 ? <span className="bronze" style={{ fontSize: 28 }}>🥉</span>
                   : <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#8892a4" }}>#{i + 1}</span>}
                 </div>
-                <div style={{ fontSize: 36 }}>{clan.badge}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                    <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700 }}>{clan.name}</span>
-                    <span style={{ fontSize: 11, color: "#ff6b23", opacity: 0.6, fontWeight: 600 }}>[{clan.tag}]</span>
+                <div style={{ fontSize: 36, flexShrink: 0 }}>{clan.badge}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, minWidth: 0 }}>
+                    <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{clan.name}</span>
+                    <span style={{ fontSize: 11, color: "#ff6b23", opacity: 0.6, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
                   </div>
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23" }}>{clan.tier}</span>
                     <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.clan_members?.[0]?.count || 0}명</span>
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 22, fontWeight: 700, color: "#4caf50", fontFamily: "Rajdhani, sans-serif" }}>{clan.wins}</div>
                     <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>승</div>

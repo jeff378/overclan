@@ -5,4 +5,25 @@
 }
 body {
   background: #080c14;
+  overflow-x: hidden;
+}
+
+/* ===== 모바일 전역 안전장치 ===== */
+@media (max-width: 640px) {
+  /* 2단 그리드(목록+상세)를 모바일에선 무조건 1단으로 */
+  .responsive-2col {
+    grid-template-columns: 1fr !important;
+  }
+  /* VS 매치업 등 가로 배치가 좁을 때 세로로 깨지지 않게 */
+  .matchup-row {
+    flex-wrap: nowrap !important;
+  }
+  .matchup-row .clan-name,
+  .matchup-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30vw;
+    min-width: 0;
+  }
 }
