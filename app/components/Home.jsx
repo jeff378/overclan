@@ -75,7 +75,7 @@ export default function Home() {
         .stat-card { background: rgba(13,20,35,0.6); border: 1px solid rgba(79,195,247,0.15); padding: 20px 24px; text-align: center; clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); }
         .rank-badge { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
         .tier-tag { font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
-        .hero-title { font-size: clamp(48px, 8vw, 96px); font-weight: 700; line-height: 0.9; letter-spacing: -2px; font-family: 'Rajdhani', sans-serif; }
+        .hero-title { font-size: clamp(48px, 8vw, 96px); font-weight: 700; line-height: 1.08; letter-spacing: -2px; font-family: 'Rajdhani', sans-serif; }
         .scan-line { position: fixed; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,107,35,0.3), transparent); pointer-events: none; z-index: 1; }
         @keyframes pulse-glow { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
