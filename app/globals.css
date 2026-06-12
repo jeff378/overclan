@@ -18,12 +18,24 @@ body {
   .matchup-row {
     flex-wrap: nowrap !important;
   }
+  .matchup-row a {
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
   .matchup-row .clan-name,
   .matchup-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 30vw;
-    min-width: 0;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 26vw !important;
+    min-width: 0 !important;
+    word-break: normal !important;
+  }
+  /* 상세 패널 매치업은 모바일에서 세로 배치 (더 넓게 표시) */
+  .detail-panel .matchup-row {
+    flex-wrap: wrap !important;
+  }
+  .detail-panel .matchup-name {
+    max-width: 60vw !important;
   }
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
+import ShareButton from "../../components/ShareButton";
 
 // 간단한 마크다운 렌더러
 function renderText(text: string) {
@@ -224,6 +225,7 @@ export default function ClanDetailPage() {
                   <a href={`/clan/${id}/manage`} className="btn-sm">클랜 관리</a>
                 </div>
               )}
+              <ShareButton title={`${clan.name} [${clan.tag}] | 오버클랜`} accent={accent} />
 
             </div>
           </div>

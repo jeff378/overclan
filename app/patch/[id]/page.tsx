@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
+import ShareButton from "../../components/ShareButton";
 
 export default function PatchDetailPage() {
   const { id } = useParams();
@@ -101,8 +102,13 @@ export default function PatchDetailPage() {
               <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, lineHeight: 1.3, wordBreak: "keep-all" }}>{post.title}</h1>
               <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 8 }}>{post.profiles?.nickname} · {new Date(post.created_at).toLocaleDateString("ko-KR")}</div>
             </div>
-            {user?.id === post.user_id && (
-              <button className="btn-del" onClick={handleDeletePost} style={{ flexShrink: 0 }}>🗑 삭제</button>
+            {(user?.id === post.user_id) ? (
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
+                <ShareButton title={`${post.title} | 오버클랜`} />
+                <button className="btn-del" onClick={handleDeletePost}>🗑 삭제</button>
+              </div>
+            ) : (
+              <div style={{ flexShrink: 0 }}><ShareButton title={`${post.title} | 오버클랜`} /></div>
             )}
           </div>
           <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.9, paddingTop: 20, borderTop: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.content}</p>

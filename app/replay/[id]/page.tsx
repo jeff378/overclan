@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
+import ShareButton from "../../components/ShareButton";
 
 export default function ReplayDetailPage() {
   const { id } = useParams();
@@ -129,8 +130,13 @@ export default function ReplayDetailPage() {
               <span className="replay-code">{post.replay_code}</span>
               <div style={{ fontSize: 12, color: "#8892a4", marginTop: 10, fontFamily: "Noto Sans KR, sans-serif" }}>{post.profiles?.nickname} · {new Date(post.created_at).toLocaleDateString("ko-KR")}</div>
             </div>
-            {user?.id === post.user_id && (
-              <button className="btn-del" onClick={handleDeletePost} style={{ flexShrink: 0 }}>🗑 삭제</button>
+            {(user?.id === post.user_id) ? (
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
+                <ShareButton title={`핵 의심 리플레이 ${post.replay_code} | 오버클랜`} />
+                <button className="btn-del" onClick={handleDeletePost}>🗑 삭제</button>
+              </div>
+            ) : (
+              <div style={{ flexShrink: 0 }}><ShareButton title={`핵 의심 리플레이 ${post.replay_code} | 오버클랜`} /></div>
             )}
           </div>
           {post.description && <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.description}</p>}

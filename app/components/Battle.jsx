@@ -349,8 +349,8 @@ export default function OverClanBattle() {
             {/* 상세 패널 */}
             {selected && (
               <div className="detail-panel">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-                  <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, gap: 10 }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                       <a href={`/clan/${selected.clan1_id}`} style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none", color: "inherit", minWidth: 0 }}>
                         <span style={{ fontSize: 24 }}>{selected.clan1?.badge}</span>
@@ -367,7 +367,7 @@ export default function OverClanBattle() {
                       <span className="status-tag" style={{ background: selected.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: selected.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{selected.type}</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
                     {/* 클랜장 대전 취소 버튼 */}
                     {myClan && (selected.clan1_id === myClan.id || selected.clan2_id === myClan.id) &&
                      (selected.status === "멤버모집" || selected.status === "대전준비" || selected.status === "결과입력") && (

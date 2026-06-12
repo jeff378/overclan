@@ -54,14 +54,17 @@ export default function OverClanFind() {
         .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-join:hover { background: rgba(255,107,35,0.15); }
         .mobile-filters { display: none; }
+        .find-grid { max-width: 100%; }
+        .find-grid > div { min-width: 0; }
         @media (max-width: 768px) {
           .find-grid { grid-template-columns: 1fr !important; }
           .desktop-filters { display: none !important; }
           .mobile-filters { display: block !important; margin-bottom: 16px; }
-          .mobile-filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+          .mobile-filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; max-width: 100%; }
           .mobile-filter-row::-webkit-scrollbar { display: none; }
           .mobile-filter-row .filter-btn { white-space: nowrap; flex-shrink: 0; padding: 6px 12px; font-size: 11px; }
           .mobile-filter-label { font-size: 10px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; }
+          .clan-card { padding: 18px 16px; }
         }
         .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
       `}</style>
@@ -186,7 +189,7 @@ export default function OverClanFind() {
                         <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>클랜원</div>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "nowrap", overflow: "hidden" }}>
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
                       <span className="tier-tag" style={{ borderColor: tierColors[clan.tier]?.border || "rgba(255,107,35,0.3)", color: tierColors[clan.tier]?.color || "#ff6b23", flexShrink: 0 }}>{clan.tier}</span>
                       <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.style}</span>
                       <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4", flexShrink: 0 }}>{clan.play_time}</span>
