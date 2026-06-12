@@ -150,13 +150,19 @@ export default function ClanDetailPage() {
         .btn-sm { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
         .btn-sm:hover { background: var(--accent); color: #fff; }
         .btn-discord { background: rgba(88,101,242,0.15); border: 1px solid rgba(88,101,242,0.4); color: #8ea1e1; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); text-decoration: none; display: inline-block; }
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); }
-        .tier-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .tier-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); white-space: nowrap; }
         .member-row { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 4px; transition: all 0.2s; }
         .member-row:hover { border-color: rgba(255,107,35,0.2); }
         .battle-row { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 14px 18px; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        @media (max-width: 640px) {
+          .stat-box { padding: 12px 8px; }
+          .tab-btn { padding: 10px 14px; font-size: 12px; letter-spacing: 1px; }
+          .member-row { padding: 12px 14px; gap: 10px; }
+          .battle-row { padding: 12px 14px; gap: 8px; flex-wrap: wrap; }
+        }
       `}</style>
 
       <Navbar />
@@ -164,7 +170,7 @@ export default function ClanDetailPage() {
       {/* 배너 */}
       <div style={{ background: clan.banner_image ? `linear-gradient(to bottom, rgba(8,12,20,0.3), rgba(8,12,20,0.85)), url(${clan.banner_image})` : (clan.banner_color || "#1a1f35"), backgroundSize: "cover", backgroundPosition: "center", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.08)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: clan.banner_image ? 0.2 : 0.5 }} />
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 32px 32px", position: "relative" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(20px, 4vw, 40px) clamp(16px, 4vw, 32px) 32px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               {/* 클랜 배지/엠블럼 */}
@@ -224,10 +230,10 @@ export default function ClanDetailPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px)" }}>
 
         {/* 통계 카드 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "clamp(4px, 1.5vw, 8px)", marginBottom: 28 }}>
           {[
             { label: "클랜원", value: `${members.length}/${clan.max_members}` },
             { label: "승", value: clan.wins || 0 },
@@ -243,7 +249,8 @@ export default function ClanDetailPage() {
         </div>
 
         {/* 탭 */}
-        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 24, display: "flex" }}>
+        <div style={{ borderBottom: `1px solid ${accent}1a`, marginBottom: 24, display: "flex", overflowX: "auto", WebkitOverflowScrolling: "touch" as any, scrollbarWidth: "none" as any }}>
+          <style>{`.tab-scroll::-webkit-scrollbar { display: none; }`}</style>
           {["소개", "클랜원", "공지", "대전 기록", "진행중 대전"].map(t => (
             <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>
           ))}

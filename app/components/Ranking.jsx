@@ -43,10 +43,17 @@ export default function OverClanRanking() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .mode-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .mode-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; white-space: nowrap; }
         .mode-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
-        .league-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .league-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; white-space: nowrap; }
         .league-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
+        @media (max-width: 640px) {
+          .mode-btn { padding: 7px 16px; font-size: 12px; letter-spacing: 1px; }
+          .league-btn { padding: 7px 14px; font-size: 11px; letter-spacing: 1px; }
+          .rank-row { padding: 12px 14px; gap: 10px; }
+          .hall-row { padding: 14px 16px; gap: 12px; clip-path: none; }
+          .podium-card { padding: 16px 12px; }
+        }
         .rank-row { background: rgba(13,20,35,0.7); border: 1px solid rgba(255,107,35,0.08); padding: 16px 24px; display: flex; align-items: center; gap: 16px; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
         .rank-row:hover { border-color: rgba(255,107,35,0.3); transform: translateX(4px); box-shadow: -3px 0 0 rgba(255,107,35,0.5); }
         .podium-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.2); padding: 24px 20px; text-align: center; position: relative; transition: all 0.3s; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); cursor: pointer; }
@@ -66,7 +73,7 @@ export default function OverClanRanking() {
 
       <Navbar active="랭킹" />
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 32px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)" }}>
         {/* 헤더 */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -94,7 +101,7 @@ export default function OverClanRanking() {
               <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(255,255,255,0.05)", padding: "3px 10px", borderRadius: 2 }}>클랜대전 누적 승수 기준</span>
             )}
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", flexShrink: 0 }}>
             {["전체", "소규모", "중규모", "대규모"].map(l => (
               <button key={l} className={`league-btn ${league === l ? "active" : ""}`} onClick={() => setLeague(l)}>{l}</button>
             ))}

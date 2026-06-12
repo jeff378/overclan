@@ -225,6 +225,13 @@ export default function OverClanBattle() {
         .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
         @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
         .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
+        .clan-name { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
+        @media (max-width: 640px) {
+          .battle-grid { grid-template-columns: 1fr !important; }
+          .detail-panel { padding: 16px; }
+          .tab-btn { padding: 8px 12px; font-size: 12px; letter-spacing: 1px; }
+          .clan-name { max-width: 90px; font-size: 13px; }
+        }
       `}</style>
 
       <Navbar active="클랜대전" />
@@ -293,7 +300,7 @@ export default function OverClanBattle() {
         {loading ? (
           <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.6fr" : "1fr", gap: 20 }}>
+          <div className="battle-grid" style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1.6fr" : "1fr", gap: 20 }}>
 
             {/* 대전 목록 */}
             <div>
@@ -305,9 +312,9 @@ export default function OverClanBattle() {
                   <div key={b.id} className={`battle-card ${selected?.id === b.id ? "active" : ""} ${isMyBattle(b) ? "mine" : ""}`} onClick={() => handleSelectBattle(b)}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                       <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{b.clan1?.name}</span>
+                      <span className="clan-name">{b.clan1?.name}</span>
                       <span className="vs">VS</span>
-                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{b.clan2?.name}</span>
+                      <span className="clan-name">{b.clan2?.name}</span>
                       <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
