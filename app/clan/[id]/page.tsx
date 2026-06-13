@@ -52,6 +52,7 @@ export default function ClanDetailPage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [activeTab, setActiveTab] = useState("소개");
+  const [bannerUploading, setBannerUploading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -130,6 +131,25 @@ export default function ClanDetailPage() {
 
   const winRate = clan ? Math.round((clan.wins || 0) / Math.max((clan.wins || 0) + (clan.losses || 0), 1) * 100) : 0;
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !clan) return;
+    setBannerUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${id}/banner.${ext}`;
+      const { error: upErr } = await supabase.storage.from('clan-banners').upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from('clan-banners').getPublicUrl(path);
+      await supabase.from('clans').update({ banner_image: publicUrl }).eq('id', id);
+      setClan((prev: any) => ({ ...prev, banner_image: publicUrl }));
+    } catch (err) {
+      console.error('배너 업로드 실패:', err);
+    } finally {
+      setBannerUploading(false);
+    }
+  };
+
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
@@ -170,10 +190,36 @@ export default function ClanDetailPage() {
 
       <Navbar />
 
-      {/* 배너 */}
-      <div style={{ background: clan.banner_image ? `linear-gradient(to bottom, rgba(8,12,20,0.3), rgba(8,12,20,0.85)), url(${clan.banner_image})` : (clan.banner_color || "#1a1f35"), backgroundSize: "cover", backgroundPosition: "center", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.08)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: clan.banner_image ? 0.2 : 0.5 }} />
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(20px, 4vw, 40px) clamp(16px, 4vw, 32px) 32px", position: "relative" }}>
+      {/* YouTube 스타일 배너 */}
+      <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden", background: clan.banner_image ? "transparent" : `linear-gradient(135deg, ${clan.banner_color || "#1a1f35"} 0%, rgba(8,12,20,0.9) 100%)`, cursor: isOwner ? "pointer" : "default" }}
+        onClick={() => isOwner && (document.getElementById("banner-input") as HTMLInputElement)?.click()}>
+        {/* 배너 이미지 */}
+        {clan.banner_image && (
+          <img src={clan.banner_image} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+        )}
+        {/* 헥사곤 패턴 오버레이 */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.06)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: 1 }} />
+        {/* 하단 페이드 */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.8))" }} />
+        {/* 클랜장: 배너 변경 버튼 */}
+        {isOwner && (
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0)", transition: "background 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.4)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "rgba(0,0,0,0)")}>
+            <span style={{ opacity: 0, transition: "opacity 0.2s", background: "rgba(0,0,0,0.7)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", padding: "8px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "0")}>
+              {bannerUploading ? "업로드 중..." : "📷  배너 변경"}
+            </span>
+          </div>
+        )}
+        <input id="banner-input" type="file" accept="image/*" style={{ display: "none" }} onChange={handleBannerUpload} />
+      </div>
+
+      {/* 클랜 헤더 정보 */}
+      <div style={{ background: "rgba(8,12,20,0.95)", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.04)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: 0.5 }} />
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 3vw, 28px) clamp(16px, 4vw, 32px) 28px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               {/* 클랜 배지/엠블럼 */}
