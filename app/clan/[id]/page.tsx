@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import ClanBadge from "../../components/ClanBadge";
+import ClanBadgeJSX from "../../components/ClanBadge";
+const ClanBadge = ClanBadgeJSX as any;
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
