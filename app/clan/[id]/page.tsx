@@ -190,8 +190,8 @@ export default function ClanDetailPage() {
 
       <Navbar />
 
-      {/* YouTube 스타일 배너 */}
-      <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden", background: clan.banner_image ? "transparent" : `linear-gradient(135deg, ${clan.banner_color || "#1a1f35"} 0%, rgba(8,12,20,0.9) 100%)`, cursor: isOwner ? "pointer" : "default" }}
+      {/* YouTube 스타일 배너 - 이미지 있을 때만 표시 */}
+      {clan.banner_image && <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden", background: clan.banner_image ? "transparent" : `linear-gradient(135deg, ${clan.banner_color || "#1a1f35"} 0%, rgba(8,12,20,0.9) 100%)`, cursor: isOwner ? "pointer" : "default" }}
         onClick={() => isOwner && (document.getElementById("banner-input") as HTMLInputElement)?.click()}>
         {/* 배너 이미지 */}
         {clan.banner_image && (
@@ -214,7 +214,7 @@ export default function ClanDetailPage() {
           </div>
         )}
         <input id="banner-input" type="file" accept="image/*" style={{ display: "none" }} onChange={handleBannerUpload} />
-      </div>
+      </div>}
 
       {/* 클랜 헤더 정보 */}
       <div style={{ background: "rgba(8,12,20,0.95)", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
