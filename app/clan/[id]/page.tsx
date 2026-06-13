@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
+import ClanBadgeJSX from "../../components/ClanBadge";
+const ClanBadge = ClanBadgeJSX as any;
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
@@ -140,6 +142,7 @@ export default function ClanDetailPage() {
 
   const winRate = clan ? Math.round((clan.wins || 0) / Math.max((clan.wins || 0) + (clan.losses || 0), 1) * 100) : 0;
 
+
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
@@ -180,10 +183,19 @@ export default function ClanDetailPage() {
 
       <Navbar />
 
-      {/* 배너 */}
-      <div style={{ background: clan.banner_image ? `linear-gradient(to bottom, rgba(8,12,20,0.3), rgba(8,12,20,0.85)), url(${clan.banner_image})` : (clan.banner_color || "#1a1f35"), backgroundSize: "cover", backgroundPosition: "center", borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.08)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: clan.banner_image ? 0.2 : 0.5 }} />
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(20px, 4vw, 40px) clamp(16px, 4vw, 32px) 32px", position: "relative" }}>
+      {/* YouTube 스타일 배너 - 이미지 있을 때만 표시 */}
+      {clan.banner_image && (
+        <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden" }}>
+          <img src={clan.banner_image} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.06)' stroke-width='1'/%3E%3C/svg%3E\")" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.9))" }} />
+        </div>
+      )}
+
+      {/* 클랜 헤더 정보 */}
+      <div style={{ background: `linear-gradient(180deg, ${clan.banner_color || "#0d1220"} 0%, rgba(8,12,20,0.98) 60%)`, borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.04)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: 0.5 }} />
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 3vw, 28px) clamp(16px, 4vw, 32px) 28px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               {/* 클랜 배지/엠블럼 */}
@@ -191,11 +203,7 @@ export default function ClanDetailPage() {
                 {clan.emblem_image ? (
                   <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 16px ${accent}55` }} />
                 ) : (
-                  <svg width="80" height="90" viewBox="0 0 80 90">
-                    <polygon points="40,4 76,22 76,68 40,86 4,68 4,22" fill={`${accent}1a`} stroke={accent} strokeWidth="1.5"/>
-                    <polygon points="40,16 64,30 64,60 40,74 16,60 16,30" fill={`${accent}0d`} stroke={`${accent}4d`} strokeWidth="1"/>
-                    <text x="40" y="54" textAnchor="middle" fontSize="28">{clan.badge}</text>
-                  </svg>
+                  <ClanBadge memberCount={members.length} size={80} />
                 )}
               </div>
               <div>
@@ -525,7 +533,7 @@ function BattleTab({ battles, clanId }: any) {
         const opScore = isClan1 ? b.clan2_score : b.clan1_score;
         const opClan = isClan1 ? b.clan2 : b.clan1;
               const opName = opClan?.name || '삭제된 클랜';
-              const opBadge = opClan?.badge || '⚔️';
+
         const isWin = b.winner_id === clanId;
         const isDraw = !b.winner_id;
         return (
@@ -533,7 +541,7 @@ function BattleTab({ battles, clanId }: any) {
             <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", background: isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.1)" : "rgba(239,83,80,0.1)", color: isWin ? "#4caf50" : isDraw ? "#ffd54f" : "#ef5350", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", minWidth: 28, textAlign: "center" }}>
               {isWin ? "승" : isDraw ? "무" : "패"}
             </span>
-            <span style={{ fontSize: 22 }}>{opClan?.badge}</span>
+            <ClanBadge memberCount={0} size={32} />
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
@@ -577,7 +585,7 @@ function ActiveBattleTab({ battles, clanId }: any) {
               <div>
                 <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{status?.label}</span>
               </div>
-              <div style={{ fontSize: 20 }}>{opClan?.badge || "⚔️"}</div>
+              <ClanBadge memberCount={0} size={28} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
                   vs {opClan?.name || "삭제된 클랜"}
