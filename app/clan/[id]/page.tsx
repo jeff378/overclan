@@ -70,7 +70,7 @@ export default function ClanDetailPage() {
       setMembers(membersWithProfiles);
 
       const { data: battles } = await supabase.from("clan_battles")
-        .select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge)")
+        .select("*, clan1:clans!clan1_id(name,badge,clan_members(count)), clan2:clans!clan2_id(name,badge,clan_members(count))")
         .or(`clan1_id.eq.${id},clan2_id.eq.${id}`)
         .eq("status", "완료")
         .order("created_at", { ascending: false })
@@ -78,7 +78,7 @@ export default function ClanDetailPage() {
       setRecentBattles(battles || []);
 
       const { data: active } = await supabase.from("clan_battles")
-        .select("*, clan1:clans!clan1_id(name,badge), clan2:clans!clan2_id(name,badge)")
+        .select("*, clan1:clans!clan1_id(name,badge,clan_members(count)), clan2:clans!clan2_id(name,badge,clan_members(count))")
         .or(`clan1_id.eq.${id},clan2_id.eq.${id}`)
         .neq("status", "완료")
         .order("created_at", { ascending: false });
@@ -541,7 +541,7 @@ function BattleTab({ battles, clanId }: any) {
             <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", background: isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.1)" : "rgba(239,83,80,0.1)", color: isWin ? "#4caf50" : isDraw ? "#ffd54f" : "#ef5350", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", minWidth: 28, textAlign: "center" }}>
               {isWin ? "승" : isDraw ? "무" : "패"}
             </span>
-            <ClanBadge memberCount={0} size={32} />
+            <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={32} />
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
@@ -585,7 +585,7 @@ function ActiveBattleTab({ battles, clanId }: any) {
               <div>
                 <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{status?.label}</span>
               </div>
-              <ClanBadge memberCount={0} size={28} />
+              <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
                   vs {opClan?.name || "삭제된 클랜"}
