@@ -4,6 +4,7 @@ import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
+import { createNotification } from "../../../lib/notifications";
 
 // 간단한 마크다운 렌더러
 function renderText(text: string) {
@@ -109,6 +110,17 @@ export default function ClanDetailPage() {
     if (existingRequest) { alert("이미 다른 클랜에 가입 신청 중이에요."); return; }
     setJoining(true);
     await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id });
+    // 클랜장에게 알림
+    if (clan?.owner_id) {
+      const { data: myProf } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+      await createNotification(
+        clan.owner_id,
+        "clan_request",
+        "새 가입 신청",
+        `${myProf?.nickname || "누군가"}님이 ${clan.name} 클랜에 가입을 신청했어요.`,
+        `/clan/${id}/manage`
+      );
+    }
     setHasRequested(true);
     setJoining(false);
   };

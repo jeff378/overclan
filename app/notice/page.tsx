@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../components/Navbar";
+import { createEventNotificationForAll } from "../../lib/notifications";
 
 const CATEGORIES = ["전체", "공지", "업데이트", "이벤트"];
 const ADMIN_EMAIL = "jujin2271@gmail.com";
@@ -33,7 +34,15 @@ export default function NoticePage() {
     if (!form.title || !form.content) return;
     setSaving(true);
     const { data } = await supabase.from("site_notices").insert({ ...form, user_id: user.id }).select().single();
-    if (data) setNotices(prev => [data, ...prev]);
+    if (data) {
+      setNotices(prev => [data, ...prev]);
+      // 이벤트/공지 알림을 전체 유저에게 발송
+      await createEventNotificationForAll(
+        `[${form.category}] ${form.title}`,
+        form.content.slice(0, 60),
+        `/notice/${data.id}`
+      );
+    }
     setForm({ title: "", content: "", category: "공지" });
     setShowForm(false);
     setSaving(false);

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import NotificationBell from "./NotificationBell";
 
 export default function Navbar({ active = "" }) {
   const [user, setUser] = useState(() => {
@@ -120,6 +121,7 @@ export default function Navbar({ active = "" }) {
             </div>
           ) : user ? (
             <>
+              <NotificationBell />
               <a href="/mypage" className="user-badge">
                 <div style={{ width: 7, height: 7, background: "#4caf50", borderRadius: "50%", boxShadow: "0 0 6px #4caf50" }} />
                 <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, color: "#e8eaf0" }}>{nickname || "클랜원"}</span>
@@ -134,12 +136,15 @@ export default function Navbar({ active = "" }) {
           )}
         </div>
 
-        {/* 햄버거 버튼 */}
-        <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-          <span style={{ transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "none" }} />
-          <span style={{ opacity: menuOpen ? 0 : 1 }} />
-          <span style={{ transform: menuOpen ? "rotate(-45deg) translate(5px, -5px)" : "none" }} />
-        </button>
+        {/* 모바일: 종 + 햄버거 */}
+        <div className="mobile-right" style={{ display: "none", alignItems: "center", gap: 8 }}>
+          {user && <NotificationBell />}
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            <span style={{ transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "none" }} />
+            <span style={{ opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ transform: menuOpen ? "rotate(-45deg) translate(5px, -5px)" : "none" }} />
+          </button>
+        </div>
       </div>
 
       {/* 모바일 메뉴 */}

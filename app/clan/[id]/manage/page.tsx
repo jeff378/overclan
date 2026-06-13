@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
+import { createNotification } from "../../../../lib/notifications";
 
 export default function ClanManagePage() {
   const { id } = useParams();
@@ -52,12 +53,14 @@ export default function ClanManagePage() {
   const handleAccept = async (req: any) => {
     await supabase.from("clan_members").insert({ clan_id: id, user_id: req.user_id, role: "클랜원" });
     await supabase.from("clan_requests").update({ status: "수락" }).eq("id", req.id);
+    await createNotification(req.user_id, "clan_accepted", "가입 승인", `${clanName} 클랜 가입이 승인됐어요! 🎉`, `/clan/${id}`);
     setRequests(prev => prev.filter(r => r.id !== req.id));
     setMembers(prev => [...prev, { ...req, role: "클랜원" }]);
   };
 
   const handleReject = async (req: any) => {
     await supabase.from("clan_requests").update({ status: "거절" }).eq("id", req.id);
+    await createNotification(req.user_id, "clan_rejected", "가입 신청 결과", `${clanName} 클랜 가입 신청이 반려됐어요.`, "/find");
     setRequests(prev => prev.filter(r => r.id !== req.id));
   };
 

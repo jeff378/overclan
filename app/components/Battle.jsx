@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
+import { createNotification } from "../../lib/notifications";
 
 const STATUS_LABEL = {
   "신청중": { label: "수락 대기", color: "#ffd54f" },
@@ -103,6 +104,17 @@ export default function OverClanBattle() {
       proposed_dates: dates, created_by: user.id
     }).select("*, clan1:clans!clan1_id(id,name,badge,tier), clan2:clans!clan2_id(id,name,badge,tier)").single();
     if (data) setBattles(prev => [data, ...prev]);
+    // 상대 클랜장에게 알림
+    const { data: oppClan } = await supabase.from("clans").select("owner_id, name").eq("id", form.clan2_id).single();
+    if (oppClan?.owner_id) {
+      await createNotification(
+        oppClan.owner_id,
+        "battle_request",
+        "새 클랜대전 신청",
+        `${myClan.name} 클랜이 ${form.type} 대전을 신청했어요. 날짜를 확인해주세요.`,
+        "/battle"
+      );
+    }
     setShowForm(false);
     setForm({ clan2_id: "", type: "친선전", date1: "", date2: "", date3: "" });
     alert("대전 신청을 보냈어요!");
