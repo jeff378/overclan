@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
+import ClanBadge from "./ClanBadge";
 
 // Count-up hook
 function useCountUp(target, duration = 1800, started = false) {
@@ -380,7 +381,7 @@ export default function Home() {
                   <a href={`/clan/${clan.id}`} className="clan-card">
                     <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
                       <div className="rank-badge" style={{ background: i===0?"#ff6b23":i===1?"#8892a4":i===2?"#cd7f32":"#1a2535", color: i<3?"#fff":"#8892a4" }}>{i+1}</div>
-                      <div style={{ fontSize: 30 }}>{clan.badge}</div>
+                      <ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={44} />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>

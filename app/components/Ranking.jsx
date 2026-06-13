@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
+import ClanBadge, { getBadgeTier } from "./ClanBadge";
 
 const tierColors = {
   "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7", "플래티넘": "#b0bec5",
@@ -122,7 +123,7 @@ export default function OverClanRanking() {
                 {top3.length === 3 && (
                   <a href={`/clan/${top3[1].id}`} className="podium-card" style={{ textDecoration: "none", color: "inherit" }}>
                     <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 8 }}>2ND</div>
-                    <div style={{ fontSize: 36, marginBottom: 8 }}>{top3[1].badge}</div>
+                    <div style={{ marginBottom: 8 }}><ClanBadge memberCount={top3[1].clan_members?.[0]?.count || 0} size={52} /></div>
                     <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", marginBottom: 6 }}>{top3[1].name}</div>
                     <div style={{ marginBottom: 10 }}><span className="tier-tag" style={{ borderColor: `${tierColors[top3[1].tier]}44`, color: tierColors[top3[1].tier] || "#ff6b23" }}>{top3[1].tier}</span></div>
                     <div className="points-badge">{top3[1].points || 0} PT</div>
@@ -132,7 +133,7 @@ export default function OverClanRanking() {
                 <a href={`/clan/${top3[0].id}`} className="podium-card first" style={{ textDecoration: "none", color: "inherit" }}>
                   <div className="crown" style={{ fontSize: 20, marginBottom: 4 }}>👑</div>
                   <div style={{ fontSize: 11, color: "#ff6b23", letterSpacing: 2, marginBottom: 8, fontWeight: 700 }}>1ST</div>
-                  <div style={{ fontSize: 44, marginBottom: 10 }}>{top3[0].badge}</div>
+                  <div style={{ marginBottom: 10 }}><ClanBadge memberCount={top3[0].clan_members?.[0]?.count || 0} size={64} /></div>
                   <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", marginBottom: 6, color: "#ff6b23" }}>{top3[0].name}</div>
                   <div style={{ marginBottom: 12 }}><span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.5)", color: "#ff6b23" }}>{top3[0].tier}</span></div>
                   <div className="points-badge" style={{ fontSize: 16 }}>{top3[0].points || 0} PT</div>
@@ -141,7 +142,7 @@ export default function OverClanRanking() {
                 {top3.length >= 3 && (
                   <a href={`/clan/${top3[2].id}`} className="podium-card" style={{ textDecoration: "none", color: "inherit" }}>
                     <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 8 }}>3RD</div>
-                    <div style={{ fontSize: 36, marginBottom: 8 }}>{top3[2].badge}</div>
+                    <div style={{ marginBottom: 8 }}><ClanBadge memberCount={top3[2].clan_members?.[0]?.count || 0} size={52} /></div>
                     <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", marginBottom: 6 }}>{top3[2].name}</div>
                     <div style={{ marginBottom: 10 }}><span className="tier-tag" style={{ borderColor: `${tierColors[top3[2].tier]}44`, color: tierColors[top3[2].tier] || "#ff6b23" }}>{top3[2].tier}</span></div>
                     <div className="points-badge">{top3[2].points || 0} PT</div>
@@ -159,7 +160,7 @@ export default function OverClanRanking() {
                 {rest.map((clan, i) => (
                   <a key={clan.id} href={`/clan/${clan.id}`} className="rank-row">
                     <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#8892a4", minWidth: 44 }}>#{i + 4}</span>
-                    <span style={{ fontSize: 28 }}>{clan.badge}</span>
+                    <ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={36} />
                     <span style={{ fontSize: 15, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>
                     <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content" }}>{clan.tier}</span>
                     <span style={{ fontSize: 15, fontWeight: 700, color: "#4caf50", fontFamily: "Rajdhani, sans-serif" }}>{clan.wins}</span>
@@ -181,7 +182,7 @@ export default function OverClanRanking() {
                   : i === 2 ? <span className="bronze" style={{ fontSize: 28 }}>🥉</span>
                   : <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#8892a4" }}>#{i + 1}</span>}
                 </div>
-                <div style={{ fontSize: 36, flexShrink: 0 }}>{clan.badge}</div>
+                <div style={{ flexShrink: 0 }}><ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={48} /></div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, minWidth: 0 }}>
                     <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{clan.name}</span>

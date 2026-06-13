@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
+import ClanBadge from "../../components/ClanBadge";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
@@ -179,11 +180,7 @@ export default function ClanDetailPage() {
                 {clan.emblem_image ? (
                   <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 16px ${accent}55` }} />
                 ) : (
-                  <svg width="80" height="90" viewBox="0 0 80 90">
-                    <polygon points="40,4 76,22 76,68 40,86 4,68 4,22" fill={`${accent}1a`} stroke={accent} strokeWidth="1.5"/>
-                    <polygon points="40,16 64,30 64,60 40,74 16,60 16,30" fill={`${accent}0d`} stroke={`${accent}4d`} strokeWidth="1"/>
-                    <text x="40" y="54" textAnchor="middle" fontSize="28">{clan.badge}</text>
-                  </svg>
+                  <ClanBadge memberCount={members.length} size={80} />
                 )}
               </div>
               <div>
@@ -513,7 +510,7 @@ function BattleTab({ battles, clanId }: any) {
         const opScore = isClan1 ? b.clan2_score : b.clan1_score;
         const opClan = isClan1 ? b.clan2 : b.clan1;
               const opName = opClan?.name || '삭제된 클랜';
-              const opBadge = opClan?.badge || '⚔️';
+
         const isWin = b.winner_id === clanId;
         const isDraw = !b.winner_id;
         return (
@@ -521,7 +518,7 @@ function BattleTab({ battles, clanId }: any) {
             <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", background: isWin ? "rgba(76,175,80,0.15)" : isDraw ? "rgba(255,213,79,0.1)" : "rgba(239,83,80,0.1)", color: isWin ? "#4caf50" : isDraw ? "#ffd54f" : "#ef5350", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", minWidth: 28, textAlign: "center" }}>
               {isWin ? "승" : isDraw ? "무" : "패"}
             </span>
-            <span style={{ fontSize: 22 }}>{opClan?.badge}</span>
+            <ClanBadge memberCount={0} size={32} />
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
@@ -565,7 +562,7 @@ function ActiveBattleTab({ battles, clanId }: any) {
               <div>
                 <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{status?.label}</span>
               </div>
-              <div style={{ fontSize: 20 }}>{opClan?.badge || "⚔️"}</div>
+              <ClanBadge memberCount={0} size={28} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
                   vs {opClan?.name || "삭제된 클랜"}
