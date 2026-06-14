@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import { createNotification } from "../../lib/notifications";
 
 const STATUS_LABEL = {
+  "모집중": { label: "상대 모집중", color: "#ba68c8" },
   "신청중": { label: "수락 대기", color: "#ffd54f" },
   "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
   "멤버모집": { label: "멤버 모집중", color: "#ff6b23" },
@@ -36,8 +37,10 @@ export default function OverClanBattle() {
 
   // 신청 폼
   const [form, setForm] = useState({
-    clan2_id: "", type: "친선전",
-    date1: "", date2: "", date3: ""
+    mode: "지목", clan2_id: "", type: "친선전",
+    date1: "", date2: "", date3: "",
+    recruit_date: "", recruit_start: "", recruit_end: "",
+    description: ""
   });
 
   // 결과 입력
@@ -94,30 +97,41 @@ export default function OverClanBattle() {
     await loadVolunteers(battle.id);
   };
 
-  // 대전 신청
+  // 대전 신청 / 모집글
+  const BATTLE_SELECT = "*, clan1:clans!clan1_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count)), clan2:clans!clan2_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count))";
   const handleRequest = async () => {
-    if (!form.clan2_id || !form.date1) { alert("상대 클랜과 날짜를 입력해주세요."); return; }
-    const dates = [form.date1, form.date2, form.date3].filter(Boolean);
-    const { data } = await supabase.from("clan_battles").insert({
-      clan1_id: myClan.id, clan2_id: form.clan2_id,
-      type: form.type, status: "신청중",
-      proposed_dates: dates, created_by: user.id
-    }).select("*, clan1:clans!clan1_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count)), clan2:clans!clan2_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count))").single();
-    if (data) setBattles(prev => [data, ...prev]);
-    // 상대 클랜장에게 알림
-    const { data: oppClan } = await supabase.from("clans").select("owner_id, name").eq("id", form.clan2_id).single();
-    if (oppClan?.owner_id) {
-      await createNotification(
-        oppClan.owner_id,
-        "battle_request",
-        "새 클랜대전 신청",
-        `${myClan.name} 클랜이 ${form.type} 대전을 신청했어요. 날짜를 확인해주세요.`,
-        data ? `/battle/${data.id}` : "/battle"
-      );
+    if (form.mode === "지목") {
+      if (!form.clan2_id || !form.date1) { alert("상대 클랜과 날짜를 입력해주세요."); return; }
+      const dates = [form.date1, form.date2, form.date3].filter(Boolean);
+      const { data } = await supabase.from("clan_battles").insert({
+        clan1_id: myClan.id, clan2_id: form.clan2_id,
+        type: form.type, status: "신청중", mode: "지목",
+        proposed_dates: dates, description: form.description || null, created_by: user.id
+      }).select(BATTLE_SELECT).single();
+      if (data) setBattles(prev => [data, ...prev]);
+      const { data: oppClan } = await supabase.from("clans").select("owner_id, name").eq("id", form.clan2_id).single();
+      if (oppClan?.owner_id) {
+        await createNotification(
+          oppClan.owner_id, "battle_request", "새 클랜대전 신청",
+          `${myClan.name} 클랜이 ${form.type} 대전을 신청했어요. 날짜를 확인해주세요.`,
+          data ? `/battle/${data.id}` : "/battle"
+        );
+      }
+      alert("대전 신청을 보냈어요!");
+    } else {
+      // 열린 모집 (상대 미지정)
+      if (!form.recruit_date || !form.recruit_start || !form.recruit_end) { alert("희망 날짜와 시간대를 입력해주세요."); return; }
+      const { data } = await supabase.from("clan_battles").insert({
+        clan1_id: myClan.id, clan2_id: null,
+        type: form.type, status: "모집중", mode: "모집",
+        recruit_date: form.recruit_date, recruit_start: form.recruit_start, recruit_end: form.recruit_end,
+        description: form.description || null, created_by: user.id
+      }).select(BATTLE_SELECT).single();
+      if (data) setBattles(prev => [data, ...prev]);
+      alert("열린 대전 모집글을 올렸어요! 지원하는 클랜을 기다려보세요.");
     }
     setShowForm(false);
-    setForm({ clan2_id: "", type: "친선전", date1: "", date2: "", date3: "" });
-    alert("대전 신청을 보냈어요!");
+    setForm({ mode: form.mode, clan2_id: "", type: "친선전", date1: "", date2: "", date3: "", recruit_date: "", recruit_start: "", recruit_end: "", description: "" });
   };
 
   // 날짜 수락
@@ -260,32 +274,75 @@ export default function OverClanBattle() {
         {/* 대전 신청 폼 */}
         {showForm && (
           <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 24, marginBottom: 20 }}>
-            <h3 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 18, color: "#ff6b23" }}>클랜대전 신청</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
-              <div>
-                <label className="label">상대 클랜 *</label>
-                <select className="select" value={form.clan2_id} onChange={e => setForm({ ...form, clan2_id: e.target.value })}>
-                  <option value="">클랜 선택</option>
-                  {allClans.filter(c => c.id !== myClan?.id).map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="label">대전 종류</label>
-                <select className="select" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-                  <option value="친선전">친선전</option>
-                  <option value="정규전">정규전 (승점 반영)</option>
-                </select>
-              </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
-              {[1,2,3].map(n => (
-                <div key={n}>
-                  <label className="label">희망 날짜 {n}{n===1?" *":""}</label>
-                  <input className="input" type="datetime-local" value={form[`date${n}`]} onChange={e => setForm({ ...form, [`date${n}`]: e.target.value })} />
-                </div>
+            <h3 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 16, color: "#ff6b23" }}>클랜대전 신청</h3>
+
+            {/* 모드 토글 */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              {[["지목", "특정 클랜 지목"], ["모집", "열린 모집 (상대 구함)"]].map(([m, lbl]) => (
+                <button key={m} onClick={() => setForm({ ...form, mode: m })} style={{
+                  flex: 1, padding: "10px 12px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer",
+                  background: form.mode === m ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)",
+                  border: `1px solid ${form.mode === m ? "#ff6b23" : "rgba(255,255,255,0.1)"}`,
+                  color: form.mode === m ? "#ff6b23" : "#8892a4",
+                  clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
+                }}>{lbl}</button>
               ))}
             </div>
-            <button className="btn-primary" onClick={handleRequest}>신청 보내기</button>
+
+            <div style={{ marginBottom: 14 }}>
+              <label className="label">대전 종류</label>
+              <select className="select" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                <option value="친선전">친선전</option>
+                <option value="정규전">정규전 (승점 반영)</option>
+              </select>
+            </div>
+
+            {form.mode === "지목" ? (
+              <>
+                <div style={{ marginBottom: 14 }}>
+                  <label className="label">상대 클랜 *</label>
+                  <select className="select" value={form.clan2_id} onChange={e => setForm({ ...form, clan2_id: e.target.value })}>
+                    <option value="">클랜 선택</option>
+                    {allClans.filter(c => c.id !== myClan?.id).map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
+                  </select>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+                  {[1,2,3].map(n => (
+                    <div key={n}>
+                      <label className="label">희망 날짜 {n}{n===1?" *":""}</label>
+                      <input className="input" type="datetime-local" value={form[`date${n}`]} onChange={e => setForm({ ...form, [`date${n}`]: e.target.value })} />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ marginBottom: 14 }}>
+                  <label className="label">희망 날짜 *</label>
+                  <input className="input" type="date" value={form.recruit_date} onChange={e => setForm({ ...form, recruit_date: e.target.value })} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+                  <div>
+                    <label className="label">시작 시간 *</label>
+                    <input className="input" type="time" value={form.recruit_start} onChange={e => setForm({ ...form, recruit_start: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="label">종료 시간 *</label>
+                    <input className="input" type="time" value={form.recruit_end} onChange={e => setForm({ ...form, recruit_end: e.target.value })} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* 글 (공통) */}
+            <div style={{ marginBottom: 16 }}>
+              <label className="label">대전 글 (선택)</label>
+              <textarea className="input" rows={3} style={{ resize: "vertical", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.5 }}
+                placeholder={form.mode === "지목" ? "상대 클랜에게 전할 메시지를 적어보세요." : "원하는 상대 수준, 인원, 분위기 등을 적어보세요."}
+                value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} maxLength={500} />
+            </div>
+
+            <button className="btn-primary" onClick={handleRequest}>{form.mode === "지목" ? "신청 보내기" : "모집글 올리기"}</button>
           </div>
         )}
 
@@ -325,10 +382,21 @@ export default function OverClanBattle() {
                     <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                       {b.clan1?.emblem_image ? <img src={b.clan1.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan1.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>}
                       <span className="clan-name">{b.clan1?.name}</span>
-                      <span className="vs">VS</span>
-                      <span className="clan-name">{b.clan2?.name}</span>
-                      {b.clan2?.emblem_image ? <img src={b.clan2.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan2.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>}
+                      {b.clan2_id ? (
+                        <>
+                          <span className="vs">VS</span>
+                          <span className="clan-name">{b.clan2?.name}</span>
+                          {b.clan2?.emblem_image ? <img src={b.clan2.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan2.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>}
+                        </>
+                      ) : (
+                        <span style={{ fontSize: 13, color: "#ba68c8", fontWeight: 700, letterSpacing: 1, whiteSpace: "nowrap" }}>· 상대 모집중</span>
+                      )}
                     </div>
+                    {b.mode === "모집" && b.recruit_date && (
+                      <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8 }}>
+                        🗓 {new Date(b.recruit_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })} {b.recruit_start}~{b.recruit_end}
+                      </div>
+                    )}
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                       <span className="status-tag" style={{ background: `${STATUS_LABEL[b.status]?.color}22`, color: STATUS_LABEL[b.status]?.color, border: `1px solid ${STATUS_LABEL[b.status]?.color}44` }}>{STATUS_LABEL[b.status]?.label}</span>
                       <span className="status-tag" style={{ background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{b.type}</span>

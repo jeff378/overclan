@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import Navbar from "../../components/Navbar";
+import { createNotification } from "../../../lib/notifications";
 import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../../components/ClanBadge";
 
 const ClanBadge = ClanBadgeJSX as any;
@@ -23,7 +24,7 @@ const ROLE_CONFIG: any = {
   "힐러": { icon: "💊", color: "#4caf50", max: 2 },
 };
 
-const CLAN_SELECT = "*, clan1:clans!clan1_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count)), clan2:clans!clan2_id(id,name,badge,tier,emblem_image,accent_color,clan_members(count))";
+const CLAN_SELECT = "*, clan1:clans!clan1_id(id,name,badge,tier,emblem_image,accent_color,owner_id,clan_members(count)), clan2:clans!clan2_id(id,name,badge,tier,emblem_image,accent_color,owner_id,clan_members(count))";
 
 export default function BattleDetailPage() {
   const params = useParams();
@@ -35,6 +36,8 @@ export default function BattleDetailPage() {
   const [battle, setBattle] = useState<any>(null);
   const [volunteers, setVolunteers] = useState<any[]>([]);
   const [myVolunteer, setMyVolunteer] = useState<any>(null);
+  const [applicants, setApplicants] = useState<any[]>([]);
+  const [applyMsg, setApplyMsg] = useState("");
   const [resultForm, setResultForm] = useState({ score1: "", score2: "", screenshot: "" });
   const [submittingResult, setSubmittingResult] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -50,6 +53,7 @@ export default function BattleDetailPage() {
       }
       await reloadBattle();
       await loadVolunteers(id, userData.user);
+      await loadApplicants(id);
       setLoading(false);
     };
     if (id) load();
@@ -61,6 +65,13 @@ export default function BattleDetailPage() {
     if (!data) { setNotFound(true); return null; }
     setBattle(data);
     return data;
+  };
+
+  const loadApplicants = async (battleId: string) => {
+    const { data } = await supabase.from("battle_applicants")
+      .select("*, clans(id,name,badge,tier,emblem_image,accent_color,owner_id,clan_members(count))")
+      .eq("battle_id", battleId).order("created_at", { ascending: true });
+    setApplicants(data || []);
   };
 
   const loadVolunteers = async (battleId: string, u = user) => {
@@ -76,6 +87,56 @@ export default function BattleDetailPage() {
   const isMyBattle = (b: any) => myClan && b && (b.clan1_id === myClan.id || b.clan2_id === myClan.id);
   const isOpponent = (b: any) => myClan && b && b.clan2_id === myClan.id;
   const scrimTitle = (b: any) => `[오버클랜] ${b.clan1?.name} vs ${b.clan2?.name}`;
+
+  // 열린 모집 — 지원
+  const handleApply = async () => {
+    if (!user || !myClan || !battle) return;
+    const { error } = await supabase.from("battle_applicants").insert({
+      battle_id: battle.id, clan_id: myClan.id, user_id: user.id, message: applyMsg || null,
+    });
+    if (error) { alert("이미 지원했거나 오류가 발생했어요."); return; }
+    if (battle.clan1?.owner_id) {
+      await createNotification(
+        battle.clan1.owner_id, "battle_request", "새 대전 지원",
+        `${myClan.name} 클랜이 모집글에 지원했어요.`, `/battle/${battle.id}`
+      );
+    }
+    setApplyMsg("");
+    await loadApplicants(battle.id);
+    alert("지원했어요! 모집 클랜의 수락을 기다려보세요.");
+  };
+
+  // 지원 취소
+  const handleWithdraw = async () => {
+    const mine = applicants.find((a) => a.clan_id === myClan?.id && a.user_id === user?.id);
+    if (!mine) return;
+    await supabase.from("battle_applicants").delete().eq("id", mine.id);
+    await loadApplicants(battle.id);
+  };
+
+  // 모집글 작성자 — 지원 수락 → 대전 확정
+  const handleAcceptApplicant = async (applicant: any) => {
+    if (!confirm(`${applicant.clans?.name} 클랜의 지원을 수락할까요? 대전이 확정돼요.`)) return;
+    const confirmedDate = battle.recruit_date && battle.recruit_start ? `${battle.recruit_date}T${battle.recruit_start}` : null;
+    await supabase.from("clan_battles").update({ clan2_id: applicant.clan_id, status: "멤버모집", confirmed_date: confirmedDate }).eq("id", battle.id);
+    if (applicant.clans?.owner_id) {
+      await createNotification(
+        applicant.clans.owner_id, "battle_request", "대전 지원 수락",
+        `${battle.clan1?.name} 클랜이 지원을 수락했어요! 멤버 모집을 시작하세요.`, `/battle/${battle.id}`
+      );
+    }
+    await reloadBattle();
+    await loadVolunteers(battle.id);
+    alert("대전이 확정됐어요! 멤버 모집을 시작하세요.");
+  };
+
+  // 모집글 삭제
+  const handleCancelPost = async () => {
+    if (!confirm("모집글을 삭제할까요?")) return;
+    await supabase.from("battle_applicants").delete().eq("battle_id", battle.id);
+    await supabase.from("clan_battles").delete().eq("id", battle.id);
+    router.push("/battle");
+  };
 
   // 날짜 수락
   const handleAcceptDate = async (date: string) => {
@@ -121,8 +182,22 @@ export default function BattleDetailPage() {
       if (updated.clan1_result === updated.clan2_result) {
         const [s1, s2] = updated.clan1_result.split("-").map(Number);
         const winnerId = s1 > s2 ? updated.clan1_id : s2 > s1 ? updated.clan2_id : null;
-        await supabase.from("clan_battles").update({ status: "완료", winner_id: winnerId, clan1_score: s1, clan2_score: s2 }).eq("id", battle.id);
+
+        // 랭킹 점수 캡: 같은 두 클랜의 '시즌 첫 정규전'만 승점 반영
+        let pointsCounted = false;
         if (updated.type === "정규전") {
+          const a = updated.clan1_id, b = updated.clan2_id;
+          const { count: prior } = await supabase.from("clan_battles")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "완료").eq("type", "정규전").eq("points_counted", true)
+            .neq("id", battle.id)
+            .or(`and(clan1_id.eq.${a},clan2_id.eq.${b}),and(clan1_id.eq.${b},clan2_id.eq.${a})`);
+          pointsCounted = (prior || 0) === 0;
+        }
+
+        await supabase.from("clan_battles").update({ status: "완료", winner_id: winnerId, clan1_score: s1, clan2_score: s2, points_counted: pointsCounted }).eq("id", battle.id);
+
+        if (updated.type === "정규전" && pointsCounted) {
           if (winnerId) {
             const loserId = winnerId === updated.clan1_id ? updated.clan2_id : updated.clan1_id;
             const { data: w } = await supabase.from("clans").select("wins,points").eq("id", winnerId).single();
@@ -135,8 +210,12 @@ export default function BattleDetailPage() {
               if (c) await supabase.from("clans").update({ points: (c.points || 0) + 1 }).eq("id", cid);
             }
           }
+          alert("결과가 확정됐어요!");
+        } else if (updated.type === "정규전" && !pointsCounted) {
+          alert("결과가 확정됐어요! (이미 맞붙은 클랜이라 이번 정규전은 승점에 반영되지 않아요.)");
+        } else {
+          alert("결과가 확정됐어요!");
         }
-        alert("결과가 확정됐어요!");
       } else {
         await supabase.from("clan_battles").update({ is_disputed: true, status: "결과입력" }).eq("id", battle.id);
         alert("양쪽 결과가 일치하지 않아요. 분쟁으로 처리됩니다.");
@@ -221,8 +300,14 @@ export default function BattleDetailPage() {
             <div style={{ marginBottom: 20 }}>
               <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
                 <ClanHead clan={battle.clan1} clanId={battle.clan1_id} />
-                <span className="vs">VS</span>
-                <ClanHead clan={battle.clan2} clanId={battle.clan2_id} />
+                {battle.clan2_id ? (
+                  <>
+                    <span className="vs">VS</span>
+                    <ClanHead clan={battle.clan2} clanId={battle.clan2_id} />
+                  </>
+                ) : (
+                  <span style={{ fontSize: 14, color: "#ba68c8", fontWeight: 700, letterSpacing: 1 }}>· 상대 모집중</span>
+                )}
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <span className="status-tag" style={{ background: `${STATUS_LABEL[battle.status]?.color}22`, color: STATUS_LABEL[battle.status]?.color, border: `1px solid ${STATUS_LABEL[battle.status]?.color}44` }}>{STATUS_LABEL[battle.status]?.label}</span>
@@ -230,6 +315,78 @@ export default function BattleDetailPage() {
                 {battle.is_disputed && <span style={{ fontSize: 10, color: "#ef5350", fontWeight: 700 }}>⚠️ 분쟁</span>}
               </div>
             </div>
+
+            {/* 대전 글 */}
+            {battle.description && (
+              <div style={{ marginBottom: 16, padding: "14px 16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1, marginBottom: 6 }}>대전 글</div>
+                <div style={{ fontSize: 13, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{battle.description}</div>
+              </div>
+            )}
+
+            {/* 열린 모집 — 상대 모집중 */}
+            {battle.status === "모집중" && (() => {
+              const isPoster = myClan && myClan.id === battle.clan1_id;
+              const alreadyApplied = applicants.some((a) => a.clan_id === myClan?.id);
+              const canApply = user && myClan && myClan.id !== battle.clan1_id && !alreadyApplied;
+              return (
+                <div style={{ marginBottom: 16 }}>
+                  {/* 희망 일정 */}
+                  {battle.recruit_date && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, padding: "10px 14px", background: "rgba(186,104,200,0.08)", border: "1px solid rgba(186,104,200,0.25)" }}>
+                      <span style={{ fontSize: 12, color: "#ba68c8", fontWeight: 700, letterSpacing: 1 }}>🗓 희망 일정</span>
+                      <span style={{ fontSize: 13, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif" }}>
+                        {new Date(battle.recruit_date).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })} {battle.recruit_start}~{battle.recruit_end}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* 모집글 작성 클랜 — 지원자 관리 */}
+                  {isPoster ? (
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                        <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 600 }}>지원한 클랜 ({applicants.length})</div>
+                        <button onClick={handleCancelPost} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>모집 취소</button>
+                      </div>
+                      {applicants.length === 0 ? (
+                        <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", padding: "16px 0", textAlign: "center" }}>아직 지원한 클랜이 없어요.</div>
+                      ) : applicants.map((a) => (
+                        <div key={a.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 14px", marginBottom: 6, background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.15)" }}>
+                          <a href={`/clan/${a.clan_id}`} style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "inherit", minWidth: 0, flex: 1 }}>
+                            {a.clans?.emblem_image
+                              ? <img src={a.clans.emblem_image} alt="" style={{ width: 30, height: 30, objectFit: "cover", borderRadius: 6, flexShrink: 0, border: `1px solid ${a.clans.accent_color || "#ff6b23"}55` }} />
+                              : <span style={{ fontSize: 22 }}>{a.clans?.badge}</span>}
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.clans?.name}</span>
+                                <ClanTierChip memberCount={a.clans?.clan_members?.[0]?.count || 0} size={16} showName={false} />
+                              </div>
+                              {a.message && <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.message}</div>}
+                            </div>
+                          </a>
+                          <button className="btn-green" style={{ flexShrink: 0 }} onClick={() => handleAcceptApplicant(a)}>✓ 수락</button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : alreadyApplied ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                      <div style={{ fontSize: 13, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif" }}>✅ 지원 완료 — 모집 클랜의 수락을 기다려보세요.</div>
+                      <button onClick={handleWithdraw} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 12px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>지원 취소</button>
+                    </div>
+                  ) : canApply ? (
+                    <div>
+                      <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8 }}>이 일정에 가능하다면 지원해보세요.</div>
+                      <textarea className="input" rows={2} style={{ resize: "vertical", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8 }} placeholder="모집 클랜에게 전할 메시지 (선택)" value={applyMsg} onChange={(e) => setApplyMsg(e.target.value)} maxLength={300} />
+                      <button className="btn-primary" onClick={handleApply}>이 대전에 지원하기</button>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+                      {!user ? "지원하려면 로그인이 필요해요." : !myClan ? "지원하려면 먼저 클랜에 가입해야 해요." : "지원할 수 없는 모집글이에요."}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* 스크림방 제목 */}
             {(battle.status === "대전준비" || battle.status === "멤버모집") && (
