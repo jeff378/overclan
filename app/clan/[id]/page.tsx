@@ -60,7 +60,7 @@ export default function ClanDetailPage() {
   // 티어 계산 헬퍼
   const getTierByCount = (n: number) => {
     if (n >= 51) return 4; if (n >= 31) return 3;
-    if (n >= 3) return 2; if (n >= 2)  return 1; return 0;
+    if (n >= 16) return 2; if (n >= 6)  return 1; return 0;
   };
 
   useEffect(() => {
@@ -275,7 +275,7 @@ export default function ClanDetailPage() {
               {/* 클랜 배지/엠블럼 */}
               <div style={{ position: "relative" }} className={tierUpAnim ? "tier-up-badge" : ""}>
                 {clan.emblem_image ? (
-                  <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 16px ${accent}55` }} />
+                  <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 0 4px ${accent}1a, 0 6px 16px rgba(0,0,0,0.45)` }} />
                 ) : (
                   <ClanBadge memberCount={members.length} size={80} />
                 )}
