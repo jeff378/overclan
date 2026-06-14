@@ -112,7 +112,10 @@ export default function ClanDetailPage() {
       if (userData.user) {
         setIsOwner(clanData?.owner_id === userData.user.id);
         setIsMember(!!(membersWithProfiles?.some((m: any) => m.user_id === userData.user.id)));
-        const { data: req } = await supabase.from("clan_requests").select("*").eq("clan_id", id).eq("user_id", userData.user.id).eq("status", "대기중").single();
+        const { data: req, error: reqErr } = await supabase.from("clan_requests")
+          .select("*").eq("clan_id", id).eq("user_id", userData.user.id)
+          .in("status", ["대기중"]).maybeSingle();
+        if (reqErr) console.error("신청 상태 조회 오류:", reqErr);
         setHasRequested(!!req);
       }
       setLoading(false);
@@ -132,7 +135,13 @@ export default function ClanDetailPage() {
     const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();
     if (existingRequest) { alert("이미 다른 클랜에 가입 신청 중이에요."); return; }
     setJoining(true);
-    await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중" });
+    const { error: insertError } = await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중" });
+    if (insertError) {
+      console.error("가입신청 오류:", insertError);
+      alert(`가입 신청 중 오류가 발생했어요.\n${insertError.message}`);
+      setJoining(false);
+      return;
+    }
     // 클랜장에게 알림
     if (clan?.owner_id) {
       const { data: myProf } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
