@@ -29,6 +29,7 @@ export default function OverClanFind() {
       // is_hidden이 true인 클랜만 제외 (마이그레이션 전엔 null이라 전체 노출됨)
       const allClans = (data || []).filter(c => c.is_hidden !== true);
       setClans(allClans);
+      setLoading(false);
     };
     fetchClans();
   }, []);
