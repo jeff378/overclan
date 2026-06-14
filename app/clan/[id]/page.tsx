@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../lib/supabase";
 import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../../components/ClanBadge";
 const ClanBadge = ClanBadgeJSX as any;
@@ -54,6 +54,14 @@ export default function ClanDetailPage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [activeTab, setActiveTab] = useState("소개");
+  const [tierUpAnim, setTierUpAnim] = useState(false);
+  const prevTierRef = useRef<number | null>(null);
+
+  // 티어 계산 헬퍼
+  const getTierByCount = (n: number) => {
+    if (n >= 51) return 4; if (n >= 31) return 3;
+    if (n >= 16) return 2; if (n >= 6)  return 1; return 0;
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -69,6 +77,13 @@ export default function ClanDetailPage() {
         return { ...m, profiles: profile };
       }));
       setMembers(membersWithProfiles);
+      // 티어 업 이펙트 체크
+      const newTier = getTierByCount(membersWithProfiles.length);
+      if (prevTierRef.current !== null && newTier > prevTierRef.current) {
+        setTierUpAnim(true);
+        setTimeout(() => setTierUpAnim(false), 3000);
+      }
+      prevTierRef.current = newTier;
 
       const { data: battles } = await supabase.from("clan_battles")
         .select("*, clan1:clans!clan1_id(name,badge,clan_members(count)), clan2:clans!clan2_id(name,badge,clan_members(count))")
@@ -165,6 +180,13 @@ export default function ClanDetailPage() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", ["--accent" as any]: accent }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes tierUpBadge { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.3)} 80%{transform:scale(0.95)} 100%{transform:scale(1);opacity:1} }
+        @keyframes tierUpGlow { 0%,100%{box-shadow:0 0 0px transparent} 50%{box-shadow:0 0 40px 10px var(--accent)} }
+        @keyframes tierUpFloat { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(-60px);opacity:0} }
+        @keyframes tierUpOverlay { 0%{opacity:0} 15%{opacity:1} 80%{opacity:1} 100%{opacity:0} }
+        @keyframes starBurst { 0%{transform:scale(0) rotate(0deg);opacity:1} 100%{transform:scale(1.5) rotate(45deg);opacity:0} }
+        .tier-up-badge { animation: tierUpBadge 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards, tierUpGlow 1.5s ease-in-out 0.5s 2; }
+        .tier-up-overlay { position:fixed; inset:0; z-index:9999; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; animation: tierUpOverlay 3s ease forwards; background: radial-gradient(ellipse at center, rgba(255,107,35,0.15) 0%, transparent 70%); }
         .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent)); filter: brightness(1.05); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-sm { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
@@ -203,13 +225,30 @@ export default function ClanDetailPage() {
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               {/* 클랜 배지/엠블럼 */}
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} className={tierUpAnim ? "tier-up-badge" : ""}>
                 {clan.emblem_image ? (
                   <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 16px ${accent}55` }} />
                 ) : (
                   <ClanBadge memberCount={members.length} size={80} />
                 )}
               </div>
+
+              {/* 티어 업 오버레이 */}
+              {tierUpAnim && (() => {
+                const TIER_NAMES = ["신생 ROOKIE", "성장 RISING", "정예 ELITE", "강호 VANGUARD", "전설 LEGEND"];
+                const TIER_EMOJI = ["🛡️", "⚡", "💎", "👑", "🏆"];
+                const t = getTierByCount(members.length);
+                return (
+                  <div className="tier-up-overlay">
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 48, marginBottom: 12, animation: "starBurst 1s ease-out forwards" }}>{TIER_EMOJI[t]}</div>
+                      <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13, color: "#ff6b23", letterSpacing: 4, fontWeight: 700, marginBottom: 8 }}>TIER UP!</div>
+                      <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 28, fontWeight: 700, color: "#fff", letterSpacing: 2 }}>{TIER_NAMES[t]}</div>
+                      <div style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 8 }}>클랜원 전체에게 알림이 전송됐어요!</div>
+                    </div>
+                  </div>
+                );
+              })()}
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
                   <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all" }}>{clan.name}</h1>

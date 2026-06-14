@@ -50,6 +50,17 @@ export default function ClanManagePage() {
     load();
   }, [id]);
 
+  // 인원수 → 티어 인덱스
+  const getTierByCount = (n: number) => {
+    if (n >= 51) return 4;
+    if (n >= 31) return 3;
+    if (n >= 16) return 2;
+    if (n >= 6)  return 1;
+    return 0;
+  };
+  const TIER_NAMES = ["신생 ROOKIE", "성장 RISING", "정예 ELITE", "강호 VANGUARD", "전설 LEGEND"];
+  const TIER_EMOJI = ["🛡️", "⚡", "💎", "👑", "🏆"];
+
   const handleAccept = async (req: any) => {
     // 50명 제한 체크
     const { count: currentCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true }).eq("clan_id", id);
@@ -57,9 +68,32 @@ export default function ClanManagePage() {
       alert("클랜원이 50명에 도달했어요. 더 이상 수락할 수 없어요. (최대 50명)");
       return;
     }
+
+    const beforeTier = getTierByCount(currentCount || 0);
     await supabase.from("clan_members").insert({ clan_id: id, user_id: req.user_id, role: "클랜원" });
     await supabase.from("clan_requests").update({ status: "수락" }).eq("id", req.id);
+
+    // 가입 승인 알림 (신청자)
     await createNotification(req.user_id, "clan_accepted", "가입 승인", `${clanName} 클랜 가입이 승인됐어요! 🎉`, `/clan/${id}`);
+
+    // 티어 업 감지 → 클랜원 전체 알림
+    const newCount = (currentCount || 0) + 1;
+    const afterTier = getTierByCount(newCount);
+    if (afterTier > beforeTier) {
+      const tierName = TIER_NAMES[afterTier];
+      const tierEmoji = TIER_EMOJI[afterTier];
+      const { data: allMembers } = await supabase.from("clan_members").select("user_id").eq("clan_id", id);
+      await Promise.all((allMembers || []).map(m =>
+        createNotification(
+          m.user_id,
+          "event",
+          `${tierEmoji} 클랜 티어 업!`,
+          `${clanName} 클랜이 ${tierName} 단계에 진입했어요! 축하해요!`,
+          `/clan/${id}`
+        )
+      ));
+    }
+
     setRequests(prev => prev.filter(r => r.id !== req.id));
     setMembers(prev => [...prev, { ...req, role: "클랜원" }]);
   };
