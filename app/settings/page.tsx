@@ -17,6 +17,13 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  // 회원 탈퇴
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [ownedClan, setOwnedClan] = useState<any>(null);
+  const [heirs, setHeirs] = useState<any[]>([]);
+  const [clanMode, setClanMode] = useState<"delegate" | "delete" | null>(null);
+  const [selectedHeir, setSelectedHeir] = useState("");
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -46,6 +53,59 @@ export default function SettingsPage() {
     await supabase.from("profiles").update({ [key]: next }).eq("id", user.id);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+  };
+
+  // 탈퇴 모달 열기 — 본인이 클랜장인 클랜과 위임 가능한 클랜원 조회
+  const openWithdraw = async () => {
+    setClanMode(null); setSelectedHeir(""); setProcessing(false);
+    const { data: clans } = await supabase.from("clans").select("id, name").eq("owner_id", user.id);
+    const clan = clans?.[0] || null;
+    setOwnedClan(clan);
+    if (clan) {
+      const { data: members } = await supabase.from("clan_members").select("user_id").eq("clan_id", clan.id).neq("user_id", user.id);
+      const list = await Promise.all((members || []).map(async (m: any) => {
+        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", m.user_id).single();
+        return { user_id: m.user_id, nickname: prof?.nickname || "이름없음" };
+      }));
+      setHeirs(list);
+      setClanMode(list.length > 0 ? null : "delete"); // 위임할 클랜원이 없으면 삭제만 가능
+    }
+    setShowWithdraw(true);
+  };
+
+  // 최종 탈퇴 실행
+  const confirmWithdraw = async () => {
+    if (processing) return;
+    // 클랜장인데 처리 방식 미선택이면 막기
+    if (ownedClan && clanMode === null) { alert("클랜 처리 방식을 선택해주세요."); return; }
+    if (ownedClan && clanMode === "delegate" && !selectedHeir) { alert("클랜장을 넘겨받을 클랜원을 선택해주세요."); return; }
+    if (!confirm("정말 탈퇴하시겠어요?\n이 작업은 되돌릴 수 없어요.")) return;
+
+    setProcessing(true);
+    try {
+      // 위임 선택 시: owner_id를 후계자로 변경 (이러면 RPC에서 이 클랜은 삭제되지 않음)
+      if (ownedClan && clanMode === "delegate" && selectedHeir) {
+        const { error: delegateErr } = await supabase.from("clans").update({ owner_id: selectedHeir }).eq("id", ownedClan.id);
+        if (delegateErr) { alert("클랜장 위임에 실패했어요. 잠시 후 다시 시도해주세요."); setProcessing(false); return; }
+        // 새 클랜장 알림
+        await supabase.from("notifications").insert({ user_id: selectedHeir, type: "event", title: "클랜장이 되었어요", message: `${ownedClan.name}의 새 클랜장으로 임명되었어요.`, link: `/clan/${ownedClan.id}` });
+      }
+      // 계정 삭제 RPC
+      const { error } = await supabase.rpc("delete_my_account");
+      if (error) {
+        console.error("탈퇴 오류:", error);
+        alert("탈퇴 처리에 실패했어요. 관리자에게 문의해주세요.");
+        setProcessing(false);
+        return;
+      }
+      await supabase.auth.signOut();
+      alert("탈퇴가 완료됐어요. 그동안 이용해주셔서 감사해요.");
+      router.push("/");
+    } catch (e) {
+      console.error(e);
+      alert("탈퇴 처리 중 문제가 발생했어요.");
+      setProcessing(false);
+    }
   };
 
   if (loading) return (
@@ -113,6 +173,65 @@ export default function SettingsPage() {
             <span style={{ color: "#8892a4" }}>›</span>
           </a>
         </div>
+
+        {/* 회원 탈퇴 */}
+        <div style={{ marginTop: 36 }}>
+          <div style={{ fontSize: 13, color: "#ef5350", fontWeight: 700, letterSpacing: 1, marginBottom: 12, fontFamily: "Noto Sans KR, sans-serif" }}>⚠️ 위험 구역</div>
+          <div style={{ background: "rgba(239,83,80,0.04)", border: "1px solid rgba(239,83,80,0.15)", padding: "18px 20px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 2 }}>회원 탈퇴</div>
+              <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.5 }}>계정과 모든 활동 기록이 삭제돼요. 되돌릴 수 없어요.</div>
+            </div>
+            <button onClick={openWithdraw} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", padding: "9px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap" }}>회원 탈퇴</button>
+          </div>
+        </div>
+
+        {/* 탈퇴 모달 */}
+        {showWithdraw && (
+          <div onClick={() => !processing && setShowWithdraw(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: 20 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: "#0d1423", border: "1px solid rgba(239,83,80,0.3)", maxWidth: 440, width: "100%", padding: "clamp(20px, 5vw, 32px)", clipPath: "polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))", maxHeight: "85vh", overflowY: "auto" }}>
+              <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 1, marginBottom: 16, color: "#ef5350" }}>회원 탈퇴</div>
+
+              {ownedClan ? (
+                <>
+                  <p style={{ fontSize: 13.5, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 18 }}>
+                    회원님은 <span style={{ color: "#ff6b23", fontWeight: 700 }}>{ownedClan.name}</span>의 클랜장이에요.<br />
+                    탈퇴 시 가입한 다른 클랜에서는 자동으로 나가지고, 내 클랜은 아래 선택에 따라 처리돼요.
+                  </p>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
+                    {/* 위임 옵션 */}
+                    <div onClick={() => heirs.length > 0 && setClanMode("delegate")} style={{ background: clanMode === "delegate" ? "rgba(255,107,35,0.1)" : "rgba(255,255,255,0.02)", border: `1px solid ${clanMode === "delegate" ? "#ff6b23" : "rgba(255,255,255,0.1)"}`, padding: "14px 16px", cursor: heirs.length > 0 ? "pointer" : "not-allowed", opacity: heirs.length > 0 ? 1 : 0.45 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 3 }}>👑 클랜장 넘기고 탈퇴</div>
+                      <div style={{ fontSize: 11.5, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.5 }}>{heirs.length > 0 ? "클랜원에게 클랜장을 넘기면 클랜은 사라지지 않아요." : "위임할 클랜원이 없어요."}</div>
+                      {clanMode === "delegate" && heirs.length > 0 && (
+                        <select value={selectedHeir} onChange={e => setSelectedHeir(e.target.value)} onClick={e => e.stopPropagation()} style={{ marginTop: 12, width: "100%", background: "#080c14", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", padding: "9px 12px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none" }}>
+                          <option value="">넘겨받을 클랜원 선택</option>
+                          {heirs.map(h => <option key={h.user_id} value={h.user_id}>{h.nickname}</option>)}
+                        </select>
+                      )}
+                    </div>
+
+                    {/* 삭제 옵션 */}
+                    <div onClick={() => setClanMode("delete")} style={{ background: clanMode === "delete" ? "rgba(239,83,80,0.1)" : "rgba(255,255,255,0.02)", border: `1px solid ${clanMode === "delete" ? "#ef5350" : "rgba(255,255,255,0.1)"}`, padding: "14px 16px", cursor: "pointer" }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 3 }}>🗑 클랜 삭제하고 탈퇴</div>
+                      <div style={{ fontSize: 11.5, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.5 }}>클랜과 모든 대전·공지 기록이 함께 사라져요.</div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p style={{ fontSize: 13.5, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 20 }}>
+                  탈퇴하면 가입한 클랜에서 자동으로 나가지고, 프로필과 모든 활동 기록이 영구히 삭제돼요. 이 작업은 되돌릴 수 없어요.
+                </p>
+              )}
+
+              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                <button onClick={() => setShowWithdraw(false)} disabled={processing} style={{ background: "none", border: "1px solid rgba(255,255,255,0.15)", color: "#a8b0c0", padding: "10px 20px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, cursor: processing ? "default" : "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
+                <button onClick={confirmWithdraw} disabled={processing} style={{ background: "rgba(239,83,80,0.9)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: processing ? "default" : "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", opacity: processing ? 0.6 : 1 }}>{processing ? "처리 중..." : "탈퇴하기"}</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {saved && (
           <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "rgba(255,107,35,0.95)", color: "#fff", padding: "10px 24px", borderRadius: 4, fontSize: 13, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 600, zIndex: 1000, boxShadow: "0 4px 16px rgba(0,0,0,0.4)" }}>
