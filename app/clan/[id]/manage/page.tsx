@@ -72,7 +72,12 @@ export default function ClanManagePage() {
     }
 
     const beforeTier = getTierByCount(currentCount || 0);
-    await supabase.from("clan_members").insert({ clan_id: id, user_id: req.user_id, role: "클랜원" });
+    const { error: insertErr } = await supabase.from("clan_members").insert({ clan_id: id, user_id: req.user_id, role: "클랜원" });
+    if (insertErr) {
+      console.error("클랜원 추가 오류:", insertErr);
+      alert(`클랜원 추가 중 오류가 발생했어요.\n${insertErr.message}`);
+      return;
+    }
     await supabase.from("clan_requests").update({ status: "수락" }).eq("id", req.id);
 
     // 가입 승인 알림 (신청자)
