@@ -25,8 +25,10 @@ export default function OverClanFind() {
 
   useEffect(() => {
     const fetchClans = async () => {
-      const { data } = await supabase.from("clans").select("*, clan_members(count)").eq("is_hidden", false).order("created_at", { ascending: false });
-      setClans(data || []);
+      const { data, error } = await supabase.from("clans").select("*, clan_members(count)").order("created_at", { ascending: false });
+      // is_hidden 컬럼이 존재하면 필터링, 없으면(마이그레이션 전) 전체 노출
+      const allClans = (data || []).filter((c: any) => c.is_hidden !== true);
+      setClans(allClans);
       setLoading(false);
     };
     fetchClans();
