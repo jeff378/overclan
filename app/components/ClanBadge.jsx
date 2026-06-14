@@ -296,6 +296,34 @@ function NeonBadge({ tier, size = 200 }) {
   );
 }
 
+// ─── 인라인 티어 칩 (클랜명 옆 표시용) ──────────────────────────────────────
+/**
+ * 클랜명 오른쪽에 작게 붙는 티어 칩 (배지 아이콘 + 티어명)
+ * @param {number}  memberCount  클랜원 수
+ * @param {number}  tierIndex    직접 지정 (옵션)
+ * @param {number}  size         배지 아이콘 px (기본 22)
+ * @param {boolean} showName     티어명 텍스트 표시 (기본 true)
+ */
+export function ClanTierChip({ memberCount = 0, tierIndex, size = 22, showName = true, style = {} }) {
+  const idx = tierIndex !== undefined ? tierIndex : getBadgeTier(memberCount);
+  const tier = TIER_DATA[Math.min(idx, 4)];
+  return (
+    <span
+      title={`${tier.name} · ${tier.en} (${tier.range})`}
+      style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, verticalAlign: "middle", ...style }}
+    >
+      <span style={{ display: "inline-flex", lineHeight: 0 }}>
+        <ClanBadge tierIndex={idx} size={size} />
+      </span>
+      {showName && (
+        <span style={{ fontSize: Math.max(10, Math.round(size * 0.5)), fontWeight: 700, color: tier.base, fontFamily: "Rajdhani, sans-serif", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+          {tier.name}
+        </span>
+      )}
+    </span>
+  );
+}
+
 // ─── 글로벌 CSS 주입 ─────────────────────────────────────────────────────────
 let cssInjected = false;
 function injectCSS() {

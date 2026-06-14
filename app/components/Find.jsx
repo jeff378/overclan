@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
-import ClanBadge from "./ClanBadge";
+import ClanBadge, { ClanTierChip } from "./ClanBadge";
 
 const tierColors = {
   "마스터": { color: "#ff6b23", border: "rgba(255,107,35,0.4)" },
@@ -182,6 +182,7 @@ export default function OverClanFind() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                         <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>
                         <span style={{ fontSize: 11, color: clan.accent_color || "#ff6b23", opacity: 0.7, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
+                        {clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={20} />}
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
                         <div style={{ fontSize: 16, fontWeight: 700, color: clan.accent_color || "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
