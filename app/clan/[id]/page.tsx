@@ -106,9 +106,10 @@ export default function ClanDetailPage() {
         .order("created_at", { ascending: false });
       setActiveBattles(active || []);
 
-      const { data: noticeData } = await supabase.from("clan_notices")
-        .select("*, profiles(nickname)").eq("clan_id", id).order("created_at", { ascending: false });
-      // profiles 조인
+      const { data: noticeData, error: noticeErr } = await supabase.from("clan_notices")
+        .select("*").eq("clan_id", id).order("created_at", { ascending: false });
+      if (noticeErr) console.error("공지 로드 오류:", noticeErr);
+      // 작성자 닉네임 개별 조회
       const noticesWithProfiles = await Promise.all((noticeData || []).map(async (n: any) => {
         const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", n.user_id).single();
         return { ...n, profiles: prof };
@@ -350,7 +351,7 @@ export default function ClanDetailPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px) calc(160px + env(safe-area-inset-bottom, 0px))" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px) calc(160px + env(safe-area-inset-bottom, 0px))", minHeight: "calc(100vh - 60px)" }}>
 
         {/* 통계 카드 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "clamp(4px, 1.5vw, 8px)", marginBottom: 28 }}>
@@ -619,11 +620,15 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
   const handlePost = async () => {
     if (!title || !content) return;
     setSaving(true);
-    const { data } = await supabase.from("clan_notices").insert({ clan_id: clanId, user_id: user.id, title, content }).select().single();
-    if (data) {
-      const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
-      setNotices((prev: any[]) => [{ ...data, profiles: prof }, ...prev]);
+    const { data, error } = await supabase.from("clan_notices").insert({ clan_id: clanId, user_id: user.id, title, content }).select().single();
+    if (error || !data) {
+      console.error("공지 작성 오류:", error);
+      alert("공지 작성에 실패했어요. 잠시 후 다시 시도해주세요.");
+      setSaving(false);
+      return;
     }
+    const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+    setNotices((prev: any[]) => [{ ...data, profiles: prof }, ...prev]);
     setTitle(""); setContent(""); setShowForm(false); setSaving(false);
   };
 
