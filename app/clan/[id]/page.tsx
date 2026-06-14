@@ -107,6 +107,9 @@ export default function ClanDetailPage() {
 
   const handleJoin = async () => {
     if (!user) { router.push("/login?redirect=" + encodeURIComponent(window.location.pathname)); return; }
+    // 50명 제한 체크
+    const { count: currentCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true }).eq("clan_id", id);
+    if ((currentCount || 0) >= 50) { alert("이 클랜은 클랜원이 꽉 찼어요. (최대 50명)"); return; }
     const { data: existingMembers } = await supabase.from("clan_members").select("clan_id").eq("user_id", user.id).limit(1);
     if (existingMembers && existingMembers.length > 0) { alert("이미 클랜에 가입되어 있어요. 마이페이지에서 탈퇴 후 가입할 수 있어요."); return; }
     const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();

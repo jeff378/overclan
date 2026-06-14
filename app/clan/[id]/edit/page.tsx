@@ -19,7 +19,7 @@ export default function EditClanPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
-    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 30,
+    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 50,
     discord_link: "", slogan: "", join_condition: "", banner_color: "#1a1f35",
     accent_color: "#ff6b23", vibe_tags: [] as string[], banner_image: "", emblem_image: "",
   });
@@ -198,8 +198,11 @@ export default function EditClanPage() {
             </div>
           </div>
           <div>
-            <label className="label">최대 클랜원 수: {form.max_members}명</label>
-            <input type="range" min={5} max={50} value={form.max_members} onChange={e => setForm({ ...form, max_members: Number(e.target.value) })} style={{ width: "100%", accentColor: "#ff6b23" }} />
+            <label className="label">최대 클랜원 수</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)" }}>
+              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>(기본 제공 · 추후 클랜확장권으로 확대 가능)</span>
+            </div>
           </div>
           <div>
             <label className="label">클랜 슬로건</label>

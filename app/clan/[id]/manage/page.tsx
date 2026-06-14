@@ -51,6 +51,12 @@ export default function ClanManagePage() {
   }, [id]);
 
   const handleAccept = async (req: any) => {
+    // 50명 제한 체크
+    const { count: currentCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true }).eq("clan_id", id);
+    if ((currentCount || 0) >= 50) {
+      alert("클랜원이 50명에 도달했어요. 더 이상 수락할 수 없어요. (최대 50명)");
+      return;
+    }
     await supabase.from("clan_members").insert({ clan_id: id, user_id: req.user_id, role: "클랜원" });
     await supabase.from("clan_requests").update({ status: "수락" }).eq("id", req.id);
     await createNotification(req.user_id, "clan_accepted", "가입 승인", `${clanName} 클랜 가입이 승인됐어요! 🎉`, `/clan/${id}`);
