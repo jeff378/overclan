@@ -480,7 +480,6 @@ export default function BattleDetailPage() {
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <span style={{ fontSize: 16 }}>{cfg.icon}</span>
                               <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
-                              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{v.profiles?.battletag}</span>
                             </div>
                             {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
                               <button onClick={async () => {
@@ -494,8 +493,7 @@ export default function BattleDetailPage() {
                           <div key={v.id} className="member-slot" style={{ justifyContent: "space-between" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <span style={{ fontSize: 14 }}>{cfg.icon}</span>
-                              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>
-                            </div>
+                              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>                            </div>
                             {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
                               <button className="btn-green" style={{ fontSize: 10 }} onClick={() => handleConfirmMember(v.id, role)}>확정</button>
                             )}

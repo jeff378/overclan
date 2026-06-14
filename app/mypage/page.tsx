@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../components/ClanBadge";
+const ClanBadge = ClanBadgeJSX as any;
+const ClanTierChip = ClanTierChipJSX as any;
 
 export default function MyPage() {
   const router = useRouter();
@@ -18,7 +21,9 @@ export default function MyPage() {
       const { data: prof } = await supabase.from("profiles").select("*").eq("id", userData.user.id).single();
       setProfile(prof);
 
-      const { data: mems } = await supabase.from("clan_members").select("role, clans(id, name, badge, tier, wins, losses, points)").eq("user_id", userData.user.id);
+      const { data: mems } = await supabase.from("clan_members")
+        .select("role, clans(id, name, badge, tier, wins, losses, points, emblem_image, accent_color, clan_members(count))")
+        .eq("user_id", userData.user.id);
       setMyClans(mems || []);
       setLoading(false);
     };
@@ -101,20 +106,6 @@ export default function MyPage() {
           </div>
         </div>
 
-        {/* 통계 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 32 }}>
-          {[
-            { label: "소속 클랜", value: myClans.length },
-            { label: "클랜장", value: myClans.filter(m => m.role === "클랜장").length },
-            { label: "총 클랜대전 승", value: myClans.reduce((acc, m) => acc + (m.clans?.wins || 0), 0) },
-          ].map(s => (
-            <div key={s.label} className="stat-box">
-              <div style={{ fontSize: 26, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* 내 클랜 목록 */}
         <div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -136,18 +127,20 @@ export default function MyPage() {
             </div>
           ) : myClans.map(m => (
             <a key={m.clans?.id} href={`/clan/${m.clans?.id}`} className="clan-card" style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 32 }}>{m.clans?.badge}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{m.clans?.name}</span>
-                  <span className="tier-tag">{m.clans?.tier}</span>
+              {m.clans?.emblem_image
+                ? <img src={m.clans.emblem_image} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8, flexShrink: 0, border: `1px solid ${m.clans.accent_color || "#ff6b23"}55` }} />
+                : <ClanBadge memberCount={m.clans?.clan_members?.[0]?.count || 0} size={44} />}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.clans?.name}</span>
+                  {m.clans?.emblem_image && <ClanTierChip memberCount={m.clans?.clan_members?.[0]?.count || 0} size={18} />}
                 </div>
                 <span className="role-tag" style={{
                   background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)",
                   color: m.role === "클랜장" ? "#ff6b23" : "#8892a4",
                 }}>{m.role}</span>
               </div>
-              <div style={{ textAlign: "right" }}>
+              <div style={{ textAlign: "right", flexShrink: 0 }}>
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 18, fontWeight: 700, color: "#4caf50", fontFamily: "Rajdhani, sans-serif" }}>{m.clans?.wins || 0}</div>
