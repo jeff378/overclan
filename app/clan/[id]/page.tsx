@@ -350,7 +350,7 @@ export default function ClanDetailPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px)" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px) calc(120px + env(safe-area-inset-bottom, 0px))" }}>
 
         {/* 통계 카드 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "clamp(4px, 1.5vw, 8px)", marginBottom: 28 }}>
@@ -598,7 +598,7 @@ export default function ClanDetailPage() {
 
         {/* 진행중 대전 탭 */}
         {activeTab === "진행중 대전" && (
-          <ActiveBattleTab battles={activeBattles} clanId={id as string} />
+          <ActiveBattleTab battles={activeBattles} clanId={id as string} isOwner={isOwner} setBattles={setActiveBattles} />
         )}
 
         {/* 대전 기록 탭 */}
@@ -717,7 +717,7 @@ function BattleTab({ battles, clanId }: any) {
         const myScore = isClan1 ? b.clan1_score : b.clan2_score;
         const opScore = isClan1 ? b.clan2_score : b.clan1_score;
         const opClan = isClan1 ? b.clan2 : b.clan1;
-              const opName = opClan?.name || '삭제된 클랜';
+              const opName = opClan?.name || '해체된 클랜';
 
         const isWin = b.winner_id === clanId;
         const isDraw = !b.winner_id;
@@ -727,7 +727,7 @@ function BattleTab({ battles, clanId }: any) {
               {isWin ? "승" : isDraw ? "무" : "패"}
             </span>
             <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={32} />
-            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opClan?.name}</span>
+            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opName}</span>
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
             <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", minWidth: 70, textAlign: "right" }}>
@@ -741,7 +741,7 @@ function BattleTab({ battles, clanId }: any) {
 }
 // 모바일 스타일은 이미 page.tsx style 태그에 추가
 
-function ActiveBattleTab({ battles, clanId }: any) {
+function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
   const STATUS_LABEL: Record<string, { label: string; color: string }> = {
     "신청중": { label: "수락 대기", color: "#ffd54f" },
     "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
@@ -750,7 +750,25 @@ function ActiveBattleTab({ battles, clanId }: any) {
     "결과입력": { label: "결과 입력중", color: "#ff6b23" },
   };
 
-  if (battles.length === 0) return (
+  // 상대 클랜이 해체됐는지 판별 (상대 clan_id는 있는데 조인 결과가 null)
+  const isOpponentGone = (b: any) => {
+    const isClan1 = b.clan1_id === clanId;
+    const opId = isClan1 ? b.clan2_id : b.clan1_id;
+    const opClan = isClan1 ? b.clan2 : b.clan1;
+    return !!opId && !opClan; // 열린모집(clan2_id null)은 opId가 null이라 false
+  };
+
+  // 일반 방문자에게는 해체된 대전 숨김, 클랜장에게는 정리할 수 있게 노출
+  const visible = isOwner ? battles : battles.filter((b: any) => !isOpponentGone(b));
+
+  const handleCleanup = async (battleId: string) => {
+    if (!confirm("상대 클랜이 해체되어 진행할 수 없는 대전이에요. 목록에서 정리할까요?")) return;
+    const { error } = await supabase.from("clan_battles").delete().eq("id", battleId);
+    if (error) { alert("정리에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
+    setBattles((prev: any[]) => prev.filter((x) => x.id !== battleId));
+  };
+
+  if (visible.length === 0) return (
     <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
       진행 중인 클랜대전이 없어요.
     </div>
@@ -758,10 +776,30 @@ function ActiveBattleTab({ battles, clanId }: any) {
 
   return (
     <div>
-      {battles.map((b: any) => {
+      {visible.map((b: any) => {
         const isClan1 = b.clan1_id === clanId;
         const opClan = isClan1 ? b.clan2 : b.clan1;
         const status = STATUS_LABEL[b.status];
+        const gone = isOpponentGone(b);
+
+        // 상대 해체된 대전 — 클랜장에게만 보이며, 정리 버튼 제공 (링크 없음)
+        if (gone) {
+          return (
+            <div key={b.id} style={{ background: "rgba(239,83,80,0.05)", border: "1px solid rgba(239,83,80,0.2)", padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14 }}>
+              <span style={{ background: "rgba(239,83,80,0.15)", color: "#ef5350", border: "1px solid rgba(239,83,80,0.3)", fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>상대 해체됨</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: "#8892a4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  vs 해체된 클랜
+                </div>
+                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+                  상대 클랜이 사라져 진행할 수 없는 대전이에요.
+                </div>
+              </div>
+              <button onClick={() => handleCleanup(b.id)} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, padding: "7px 14px", cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap" }}>정리하기</button>
+            </div>
+          );
+        }
+
         return (
           <a key={b.id} href="/battle" style={{ textDecoration: "none", color: "inherit" }}>
             <div style={{ background: "rgba(13,20,35,0.6)", border: `1px solid ${status?.color}33`, padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, transition: "all 0.2s", cursor: "pointer" }}
@@ -773,7 +811,7 @@ function ActiveBattleTab({ battles, clanId }: any) {
               <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
-                  vs {opClan?.name || "삭제된 클랜"}
+                  vs {opClan?.name || "상대 모집중"}
                 </div>
                 <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
                   {b.type} · {b.confirmed_date ? new Date(b.confirmed_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }) : "날짜 협의중"}
