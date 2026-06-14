@@ -350,7 +350,7 @@ export default function ClanDetailPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px) calc(120px + env(safe-area-inset-bottom, 0px))" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 4vw, 28px) clamp(16px, 4vw, 32px) calc(160px + env(safe-area-inset-bottom, 0px))" }}>
 
         {/* 통계 카드 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "clamp(4px, 1.5vw, 8px)", marginBottom: 28 }}>
@@ -742,6 +742,7 @@ function BattleTab({ battles, clanId }: any) {
 // 모바일 스타일은 이미 page.tsx style 태그에 추가
 
 function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
+  const router = useRouter();
   const STATUS_LABEL: Record<string, { label: string; color: string }> = {
     "신청중": { label: "수락 대기", color: "#ffd54f" },
     "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
@@ -761,11 +762,15 @@ function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
   // 일반 방문자에게는 해체된 대전 숨김, 클랜장에게는 정리할 수 있게 노출
   const visible = isOwner ? battles : battles.filter((b: any) => !isOpponentGone(b));
 
-  const handleCleanup = async (battleId: string) => {
-    if (!confirm("상대 클랜이 해체되어 진행할 수 없는 대전이에요. 목록에서 정리할까요?")) return;
-    const { error } = await supabase.from("clan_battles").delete().eq("id", battleId);
-    if (error) { alert("정리에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
-    setBattles((prev: any[]) => prev.filter((x) => x.id !== battleId));
+  // 클랜장: 진행중 대전 취소/정리 (clan_battles 행 삭제 — /battle/[id] 취소와 동일 방식)
+  const handleCancel = async (b: any, gone: boolean) => {
+    const msg = gone
+      ? "상대 클랜이 해체되어 진행할 수 없는 대전이에요. 목록에서 정리할까요?"
+      : "이 대전을 취소할까요?\n모집된 멤버 정보도 함께 삭제되고, 상대 클랜에도 취소가 반영돼요.";
+    if (!confirm(msg)) return;
+    const { error } = await supabase.from("clan_battles").delete().eq("id", b.id);
+    if (error) { alert("처리에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
+    setBattles((prev: any[]) => prev.filter((x) => x.id !== b.id));
   };
 
   if (visible.length === 0) return (
@@ -781,45 +786,40 @@ function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
         const opClan = isClan1 ? b.clan2 : b.clan1;
         const status = STATUS_LABEL[b.status];
         const gone = isOpponentGone(b);
-
-        // 상대 해체된 대전 — 클랜장에게만 보이며, 정리 버튼 제공 (링크 없음)
-        if (gone) {
-          return (
-            <div key={b.id} style={{ background: "rgba(239,83,80,0.05)", border: "1px solid rgba(239,83,80,0.2)", padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14 }}>
-              <span style={{ background: "rgba(239,83,80,0.15)", color: "#ef5350", border: "1px solid rgba(239,83,80,0.3)", fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>상대 해체됨</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: "#8892a4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  vs 해체된 클랜
-                </div>
-                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
-                  상대 클랜이 사라져 진행할 수 없는 대전이에요.
-                </div>
-              </div>
-              <button onClick={() => handleCleanup(b.id)} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, padding: "7px 14px", cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap" }}>정리하기</button>
-            </div>
-          );
-        }
+        const borderColor = gone ? "#ef5350" : (status?.color || "#8892a4");
 
         return (
-          <a key={b.id} href="/battle" style={{ textDecoration: "none", color: "inherit" }}>
-            <div style={{ background: "rgba(13,20,35,0.6)", border: `1px solid ${status?.color}33`, padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, transition: "all 0.2s", cursor: "pointer" }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = `${status?.color}88`)}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = `${status?.color}33`)}>
-              <div>
-                <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{status?.label}</span>
+          <div key={b.id}
+            onClick={() => { if (!gone) router.push(`/battle/${b.id}`); }}
+            style={{ background: gone ? "rgba(239,83,80,0.05)" : "rgba(13,20,35,0.6)", border: `1px solid ${borderColor}33`, padding: "16px 20px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, transition: "all 0.2s", cursor: gone ? "default" : "pointer" }}
+            onMouseEnter={e => { if (!gone) e.currentTarget.style.borderColor = `${borderColor}88`; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = `${borderColor}33`; }}>
+
+            {gone ? (
+              <span style={{ background: "rgba(239,83,80,0.15)", color: "#ef5350", border: "1px solid rgba(239,83,80,0.3)", fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>상대 해체됨</span>
+            ) : (
+              <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>{status?.label}</span>
+            )}
+
+            {!gone && <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />}
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: gone ? "#8892a4" : "#e8eaf0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                vs {gone ? "해체된 클랜" : (opClan?.name || "상대 모집중")}
               </div>
-              <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4 }}>
-                  vs {opClan?.name || "상대 모집중"}
-                </div>
-                <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
-                  {b.type} · {b.confirmed_date ? new Date(b.confirmed_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }) : "날짜 협의중"}
-                </div>
+              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {gone ? "상대 클랜이 사라져 진행할 수 없어요." : `${b.type} · ${b.confirmed_date ? new Date(b.confirmed_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }) : "날짜 협의중"}`}
               </div>
-              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif" }}>클랜대전 →</div>
             </div>
-          </a>
+
+            {isOwner ? (
+              <button onClick={(e) => { e.stopPropagation(); handleCancel(b, gone); }} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, padding: "7px 14px", cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>
+                {gone ? "정리" : "취소"}
+              </button>
+            ) : (!gone && (
+              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>클랜대전 →</div>
+            ))}
+          </div>
         );
       })}
     </div>
