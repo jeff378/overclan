@@ -155,6 +155,9 @@ export default function ClanDetailPage() {
 
   const handleJoin = async () => {
     if (!user) { router.push("/login?redirect=" + encodeURIComponent(window.location.pathname)); return; }
+    // 차단 여부 체크
+    const { data: banned } = await supabase.from("clan_bans").select("id").eq("clan_id", id).eq("user_id", user.id).maybeSingle();
+    if (banned) { alert("이 클랜에서 차단되어 가입 신청할 수 없어요."); return; }
     // 가입 신청 확인 다이얼로그
     if (!confirm(`"${clan?.name}" 클랜에 가입 신청할까요?`)) return;
     // 50명 제한 체크

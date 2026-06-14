@@ -10,6 +10,7 @@ export default function ClanManagePage() {
   const router = useRouter();
   const [requests, setRequests] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
+  const [bans, setBans] = useState<any[]>([]);
   const [clanName, setClanName] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +48,13 @@ export default function ClanManagePage() {
         return { ...m, profiles: profile };
       }));
       setMembers(memsWithProfiles);
+
+      const { data: banData } = await supabase.from("clan_bans").select("*").eq("clan_id", id).order("created_at", { ascending: false });
+      const bansWithProfiles = await Promise.all((banData || []).map(async (b) => {
+        const { data: profile } = await supabase.from("profiles").select("nickname, battletag").eq("id", b.user_id).single();
+        return { ...b, profiles: profile };
+      }));
+      setBans(bansWithProfiles);
       setLoading(false);
     };
     load();
@@ -112,16 +120,36 @@ export default function ClanManagePage() {
     setMembers(memsWithProfiles);
   };
 
-  const handleReject = async (req: any) => {
+  const handleReject = async (req: any, ban = false) => {
+    if (ban && !confirm(`${req.profiles?.nickname || "이 유저"}님을 거절하고 차단할까요?\n차단하면 이 클랜에 다시 가입 신청할 수 없어요. (차단 목록에서 해제 가능)`)) return;
     await supabase.from("clan_requests").update({ status: "거절" }).eq("id", req.id);
     await createNotification(req.user_id, "clan_rejected", "가입 신청 결과", `${clanName} 클랜 가입 신청이 반려됐어요.`, "/find");
+    if (ban) {
+      const { error } = await supabase.from("clan_bans").insert({ clan_id: id, user_id: req.user_id });
+      if (error) { console.error("차단 오류:", error); alert("차단 처리에 실패했어요. (clan_bans 테이블 마이그레이션 확인 필요)"); }
+      else setBans(prev => [{ user_id: req.user_id, clan_id: id, profiles: req.profiles, created_at: new Date().toISOString() }, ...prev]);
+    }
     setRequests(prev => prev.filter(r => r.id !== req.id));
   };
 
-  const handleKick = async (member: any) => {
-    if (!confirm(`${member.profiles?.nickname}님을 클랜에서 내보낼까요?`)) return;
+  const handleKick = async (member: any, ban = false) => {
+    const msg = ban
+      ? `${member.profiles?.nickname}님을 내보내고 차단할까요?\n차단하면 다시 가입 신청할 수 없어요. (차단 목록에서 해제 가능)`
+      : `${member.profiles?.nickname}님을 클랜에서 내보낼까요?`;
+    if (!confirm(msg)) return;
     await supabase.from("clan_members").delete().eq("id", member.id);
+    if (ban) {
+      const { error } = await supabase.from("clan_bans").insert({ clan_id: id, user_id: member.user_id });
+      if (error) { console.error("차단 오류:", error); alert("차단 처리에 실패했어요. (clan_bans 테이블 마이그레이션 확인 필요)"); }
+      else setBans(prev => [{ user_id: member.user_id, clan_id: id, profiles: member.profiles, created_at: new Date().toISOString() }, ...prev]);
+    }
     setMembers(prev => prev.filter(m => m.id !== member.id));
+  };
+
+  const handleUnban = async (ban: any) => {
+    if (!confirm(`${ban.profiles?.nickname || "이 유저"}님의 차단을 해제할까요?\n해제하면 다시 가입 신청할 수 있어요.`)) return;
+    await supabase.from("clan_bans").delete().eq("clan_id", id).eq("user_id", ban.user_id);
+    setBans(prev => prev.filter(b => b.user_id !== ban.user_id));
   };
 
   return (
@@ -132,6 +160,9 @@ export default function ClanManagePage() {
         .btn-reject { background: transparent; border: 1px solid rgba(239,83,80,0.4); color: #ef5350; padding: 7px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); }
         .btn-kick { background: transparent; border: 1px solid rgba(239,83,80,0.2); color: #ef5350; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
         .btn-kick:hover { opacity: 1; }
+        .btn-ban { background: transparent; border: 1px solid rgba(239,83,80,0.5); color: #ef5350; padding: 7px 16px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); }
+        .btn-ban:hover { background: rgba(239,83,80,0.12); }
+        .btn-unban { background: transparent; border: 1px solid rgba(79,195,247,0.4); color: #4fc3f7; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%); }
         .btn-back { background: transparent; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); text-decoration: none; }
         .row { background: rgba(13,20,35,0.7); border: 1px solid rgba(255,107,35,0.08); padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
         .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
@@ -172,9 +203,10 @@ export default function ClanManagePage() {
                     <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, marginRight: 10 }}>{req.profiles?.nickname || "유저"}</span>
                     <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{req.profiles?.battletag}</span>
                   </div>
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     <button className="btn-accept" onClick={() => handleAccept(req)}>수락</button>
                     <button className="btn-reject" onClick={() => handleReject(req)}>거절</button>
+                    <button className="btn-ban" onClick={() => handleReject(req, true)}>차단</button>
                   </div>
                 </div>
               ))}
@@ -195,11 +227,35 @@ export default function ClanManagePage() {
                   </div>
                   <span style={{ fontSize: 11, color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", fontWeight: 700, letterSpacing: 1, marginRight: 12 }}>{m.role}</span>
                   {m.role !== "클랜장" && (
-                    <button className="btn-kick" onClick={() => handleKick(m)}>내보내기</button>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="btn-kick" onClick={() => handleKick(m)}>내보내기</button>
+                      <button className="btn-kick" onClick={() => handleKick(m, true)} style={{ borderColor: "rgba(239,83,80,0.45)" }}>차단</button>
+                    </div>
                   )}
                 </div>
               ))}
             </div>
+
+            {/* 차단 목록 */}
+            {bans.length > 0 && (
+              <div style={{ marginTop: 40 }}>
+                <div className="section-title">
+                  <div style={{ width: 3, height: 16, background: "#ef5350" }} />
+                  <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, letterSpacing: 2 }}>차단 목록</h2>
+                  <span style={{ background: "rgba(239,83,80,0.12)", color: "#ef5350", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>{bans.length}</span>
+                </div>
+                <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 12, marginLeft: 13 }}>차단된 유저는 이 클랜에 가입 신청할 수 없어요. 해제하면 다시 신청할 수 있어요.</p>
+                {bans.map(b => (
+                  <div key={b.user_id} className="row" style={{ marginBottom: 6, borderColor: "rgba(239,83,80,0.12)" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginRight: 10 }}>{b.profiles?.nickname || "유저"}</span>
+                      <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{b.profiles?.battletag}</span>
+                    </div>
+                    <button className="btn-unban" onClick={() => handleUnban(b)}>차단 해제</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 
