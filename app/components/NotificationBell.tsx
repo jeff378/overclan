@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
-import { getUnreadCount, getNotifications, markAllRead, markRead } from "../../lib/notifications";
+import { getUnreadCount, getNotifications, markAllRead, markRead, deleteNotification, deleteAllNotifications } from "../../lib/notifications";
 
 export default function NotificationBell() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -60,6 +60,20 @@ export default function NotificationBell() {
     if (n.link) window.location.href = n.link;
   };
 
+  const handleDelete = async (e: any, id: string) => {
+    e.preventDefault(); e.stopPropagation();
+    await deleteNotification(id);
+    setItems(prev => prev.filter(x => x.id !== id));
+  };
+
+  const handleClearAll = async () => {
+    if (!userId || items.length === 0) return;
+    if (!confirm("알림을 모두 지울까요?")) return;
+    await deleteAllNotifications(userId);
+    setItems([]);
+    setUnread(0);
+  };
+
   const timeAgo = (date: any) => {
     const diff = Date.now() - new Date(date).getTime();
     const min = Math.floor(diff / 60000);
@@ -103,7 +117,10 @@ export default function NotificationBell() {
         <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 320, maxWidth: "85vw", maxHeight: 420, overflowY: "auto", background: "#0d1423", border: "1px solid rgba(255,107,35,0.25)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", zIndex: 1000, clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}>
           <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,107,35,0.15)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 1, color: "#e8eaf0" }}>알림</span>
-            <a href="/settings" style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", fontFamily: "Noto Sans KR, sans-serif" }}>⚙ 설정</a>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              {items.length > 0 && <button onClick={handleClearAll} style={{ background: "none", border: "none", fontSize: 11, color: "#8892a4", cursor: "pointer", fontFamily: "Noto Sans KR, sans-serif", padding: 0 }}>모두 지우기</button>}
+              <a href="/settings" style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", fontFamily: "Noto Sans KR, sans-serif" }}>⚙ 설정</a>
+            </div>
           </div>
           {loading ? (
             <div style={{ padding: "30px", textAlign: "center", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, fontSize: 13 }}>LOADING...</div>
@@ -124,7 +141,12 @@ export default function NotificationBell() {
                     {n.message && <div style={{ fontSize: 12, color: "#a8b0c0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.4, wordBreak: "break-word" }}>{n.message}</div>}
                     <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, fontFamily: "Rajdhani, sans-serif" }}>{timeAgo(n.created_at)}</div>
                   </div>
-                  {!n.is_read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#ff6b23", flexShrink: 0, marginTop: 4 }} />}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                    {!n.is_read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#ff6b23", marginTop: 2 }} />}
+                    <button onClick={(e) => handleDelete(e, n.id)} aria-label="알림 삭제" style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 15, lineHeight: 1, padding: 2, opacity: 0.5, display: "flex" }}
+                      onMouseOver={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = "#ef5350"; }}
+                      onMouseOut={e => { e.currentTarget.style.opacity = "0.5"; e.currentTarget.style.color = "#8892a4"; }}>×</button>
+                  </div>
                 </div>
               ))}
             </div>

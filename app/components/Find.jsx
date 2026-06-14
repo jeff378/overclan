@@ -20,6 +20,7 @@ export default function OverClanFind() {
   const [tierFilter, setTierFilter] = useState("전체");
   const [timeFilter, setTimeFilter] = useState("전체");
   const [styleFilter, setStyleFilter] = useState("전체");
+  const [memberFilter, setMemberFilter] = useState("전체");
   const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,9 @@ export default function OverClanFind() {
     const matchTier = tierFilter === "전체" || c.tier === tierFilter;
     const matchTime = timeFilter === "전체" || c.play_time === timeFilter;
     const matchStyle = styleFilter === "전체" || c.style === styleFilter;
-    return matchSearch && matchTier && matchTime && matchStyle;
+    const memberCount = c.clan_members?.[0]?.count || 0;
+    const matchMember = memberFilter === "전체" || memberCount >= parseInt(memberFilter);
+    return matchSearch && matchTier && matchTime && matchStyle && matchMember;
   });
 
   return (
@@ -90,7 +93,7 @@ export default function OverClanFind() {
         <div className="mobile-filters">
           <button onClick={() => setFilterOpen(!filterOpen)} style={{ display: "flex", alignItems: "center", gap: 8, background: filterOpen ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)", border: `1px solid ${filterOpen ? "#ff6b23" : "rgba(255,107,35,0.2)"}`, color: filterOpen ? "#ff6b23" : "#8892a4", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", marginBottom: 10 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-            필터 {(tierFilter !== "전체" || timeFilter !== "전체" || styleFilter !== "전체") ? "•" : ""}
+            필터 {(tierFilter !== "전체" || timeFilter !== "전체" || styleFilter !== "전체" || memberFilter !== "전체") ? "•" : ""}
           </button>
           {filterOpen && <div>
           <div style={{ marginBottom: 8 }}>
@@ -109,11 +112,19 @@ export default function OverClanFind() {
               ))}
             </div>
           </div>
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 8 }}>
             <div className="mobile-filter-label">성향</div>
             <div className="mobile-filter-row">
               {["전체","경쟁","캐주얼","친목"].map(t => (
                 <button key={t} className={`filter-btn ${styleFilter === t ? "active" : ""}`} onClick={() => setStyleFilter(t)}>{t}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div className="mobile-filter-label">클랜 인원</div>
+            <div className="mobile-filter-row">
+              {["전체","5+","10+","20+","30+","40+","50+","100+"].map(t => (
+                <button key={t} className={`filter-btn ${memberFilter === t ? "active" : ""}`} onClick={() => setMemberFilter(t)}>{t === "전체" ? "전체" : `${t.replace("+","")}명+`}</button>
               ))}
             </div>
           </div>
@@ -144,11 +155,19 @@ export default function OverClanFind() {
                 ))}
               </div>
             </div>
-            <div>
+            <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 성향</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {["전체", "경쟁", "캐주얼", "친목"].map(t => (
                   <button key={t} className={`filter-btn ${styleFilter === t ? "active" : ""}`} onClick={() => setStyleFilter(t)} style={{ textAlign: "left" }}>{t}</button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 인원</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {["전체","5+","10+","20+","30+","40+","50+","100+"].map(t => (
+                  <button key={t} className={`filter-btn ${memberFilter === t ? "active" : ""}`} onClick={() => setMemberFilter(t)} style={{ textAlign: "left" }}>{t === "전체" ? "전체" : `${t.replace("+","")}명 이상`}</button>
                 ))}
               </div>
             </div>

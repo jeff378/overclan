@@ -660,17 +660,24 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
       {notices.length === 0 ? (
         <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 공지가 없어요.</div>
       ) : notices.map((n: any) => (
-        <div key={n.id} style={{ background: "rgba(13,20,35,0.7)", border: "1px solid rgba(255,107,35,0.1)", padding: "20px 24px", marginBottom: 8, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 14 }}>📢</span>
-              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700 }}>{n.title}</span>
+        <a key={n.id} href={`/clan/${clanId}/notice/${n.id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+          <div style={{ background: "rgba(13,20,35,0.7)", border: "1px solid rgba(255,107,35,0.1)", padding: "18px 22px", marginBottom: 8, clipPath: "polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))", transition: "border-color 0.2s", cursor: "pointer" }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,107,35,0.35)")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,107,35,0.1)")}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: 14, flexShrink: 0 }}>📢</span>
+                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n.title}</span>
+              </div>
+              {isOwner && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(n.id); }} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 14, opacity: 0.5, flexShrink: 0 }}>🗑</button>}
             </div>
-            {isOwner && <button onClick={() => handleDelete(n.id)} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 14, opacity: 0.5 }}>🗑</button>}
+            <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.content}</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif" }}>자세히 →</span>
+            </div>
           </div>
-          <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, whiteSpace: "pre-wrap", marginBottom: 12 }}>{n.content}</p>
-          <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</div>
-        </div>
+        </a>
       ))}
     </div>
   );

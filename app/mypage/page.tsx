@@ -102,7 +102,10 @@ export default function MyPage() {
                 )}
               </div>
             </div>
-            <a href="/profile-edit" style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", alignSelf: "flex-start" }}>프로필 수정</a>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignSelf: "flex-start" }}>
+              <a href="/profile-edit" style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>프로필 수정</a>
+              <a href="/settings" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.12)", color: "#a8b0c0", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", display: "inline-flex", alignItems: "center", gap: 6 }}>⚙ 설정</a>
+            </div>
           </div>
         </div>
 
