@@ -25,7 +25,7 @@ export default function OverClanFind() {
 
   useEffect(() => {
     const fetchClans = async () => {
-      const { data } = await supabase.from("clans").select("*, clan_members(count)").order("created_at", { ascending: false });
+      const { data } = await supabase.from("clans").select("*, clan_members(count)").eq("is_hidden", false).order("created_at", { ascending: false });
       setClans(data || []);
       setLoading(false);
     };
