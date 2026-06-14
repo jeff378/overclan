@@ -56,8 +56,8 @@ export default function ClanManagePage() {
   const getTierByCount = (n: number) => {
     if (n >= 51) return 4;
     if (n >= 31) return 3;
-    if (n >= 16) return 2;
-    if (n >= 6)  return 1;
+    if (n >= 3) return 2;
+    if (n >= 2)  return 1;
     return 0;
   };
   const TIER_NAMES = ["신생 ROOKIE", "성장 RISING", "정예 ELITE", "강호 VANGUARD", "전설 LEGEND"];

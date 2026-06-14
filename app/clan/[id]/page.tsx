@@ -77,12 +77,18 @@ export default function ClanDetailPage() {
         return { ...m, profiles: profile };
       }));
       setMembers(membersWithProfiles);
-      // 티어 업 이펙트 체크
+      // 티어 업 이펙트 체크 (sessionStorage 기반 — 페이지 재진입 시에도 발동)
       const newTier = getTierByCount(membersWithProfiles.length);
-      if (prevTierRef.current !== null && newTier > prevTierRef.current) {
-        setTierUpAnim(true);
-        setTimeout(() => setTierUpAnim(false), 3000);
-      }
+      try {
+        const seenKey = `clan_tier_seen_${id}`;
+        const seenRaw = sessionStorage.getItem(seenKey);
+        const seenTier = seenRaw !== null ? Number(seenRaw) : null;
+        if (seenTier !== null && newTier > seenTier) {
+          setTierUpAnim(true);
+          setTimeout(() => setTierUpAnim(false), 3000);
+        }
+        sessionStorage.setItem(seenKey, String(newTier));
+      } catch {}
       prevTierRef.current = newTier;
 
       const { data: battles } = await supabase.from("clan_battles")
@@ -138,6 +144,7 @@ export default function ClanDetailPage() {
             setTimeout(() => setTierUpAnim(false), 3000);
           }
           prevTierRef.current = newTier;
+          try { sessionStorage.setItem(`clan_tier_seen_${id}`, String(newTier)); } catch {}
           setMembers(updated);
         }
       ).subscribe();
