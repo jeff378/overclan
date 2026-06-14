@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   verification: {
     google: 'K2kn8h1201L6ZSotI1Kx_F7WuwUDjvqRWMTnB618UcQ',
+    other: {
+      'naver-site-verification': ['a1fa806bd2d2cac58fb2377a038c8254314f7c29'],
+    },
   },
   appleWebApp: {
     capable: true,
