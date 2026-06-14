@@ -76,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body style={{ margin: 0, padding: 0, background: "#080c14", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+        <div className="bg-glow-blue" aria-hidden="true" />
         {children}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {

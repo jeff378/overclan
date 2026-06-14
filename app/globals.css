@@ -8,6 +8,62 @@ body {
   overflow-x: hidden;
 }
 
+/* ===== 전역 배경 — 헥사곤 그리드 + 고정 글로우 오브 ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.06)' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 주황 글로우 — 왼쪽 상단 고정 */
+body::after {
+  content: '';
+  position: fixed;
+  top: -120px;
+  left: -160px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(255,107,35,0.10) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgGlow1 18s ease-in-out infinite;
+}
+
+/* 파란 글로우 — 오른쪽 하단 고정 (layout에 div로 추가) */
+.bg-glow-blue {
+  position: fixed;
+  bottom: -140px;
+  right: -160px;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(79,195,247,0.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgGlow2 22s ease-in-out infinite;
+}
+
+@keyframes bgGlow1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.08); }
+}
+@keyframes bgGlow2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-35px, -28px) scale(1.1); }
+}
+
+/* 모바일: 글로우 축소 (배터리/성능 배려) */
+@media (max-width: 640px) {
+  body::after { opacity: 0.6; width: 320px; height: 320px; }
+  .bg-glow-blue { opacity: 0.5; width: 300px; height: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after, .bg-glow-blue { animation: none !important; }
+}
+
 /* ===== 모바일 전역 안전장치 ===== */
 @media (max-width: 640px) {
   /* 2단 그리드(목록+상세)를 모바일에선 무조건 1단으로 */

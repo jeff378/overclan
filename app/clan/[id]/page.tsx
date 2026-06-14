@@ -271,7 +271,7 @@ export default function ClanDetailPage() {
       )}
 
       {/* 클랜 헤더 정보 */}
-      <div style={{ background: `linear-gradient(180deg, ${clan.banner_color || "#0d1220"} 0%, rgba(8,12,20,0.98) 60%)`, borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden" }}>
+      <div style={{ background: `linear-gradient(180deg, ${clan.banner_color || "#0d1220"} 0%, rgba(8,12,20,0.98) 60%)`, borderBottom: `1px solid ${accent}33`, position: "relative", overflow: "hidden", boxShadow: `0 0 80px 0 ${accent}18` }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.04)' stroke-width='1'/%3E%3C/svg%3E\")", opacity: 0.5 }} />
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(16px, 3vw, 28px) clamp(16px, 4vw, 32px) 28px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
