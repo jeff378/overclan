@@ -327,32 +327,32 @@ export default function ClanDetailPage() {
                         {GROWTH_TIERS.map((tier, i) => {
                           const isActive = i === currentIdx;
                           const isPast = i < currentIdx;
-                          const color = isPast || isActive ? tier.color : "rgba(255,255,255,0.12)";
+                          const labelColor = isActive ? tier.color : isPast ? `${tier.color}99` : "rgba(255,255,255,0.2)";
                           return (
                             <div key={tier.en} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-                              {/* 연결선 (첫 번째 제외) */}
+                              {/* 연결선 */}
                               {i > 0 && (
-                                <div style={{ position: "absolute", left: "-50%", top: 10, width: "100%", height: 2,
-                                  background: i <= currentIdx ? `linear-gradient(90deg, ${GROWTH_TIERS[i-1].color}, ${tier.color})` : "rgba(255,255,255,0.08)",
+                                <div style={{ position: "absolute", left: "-50%", top: 20, width: "100%", height: 2,
+                                  background: i <= currentIdx
+                                    ? `linear-gradient(90deg, ${GROWTH_TIERS[i-1].color}88, ${tier.color}88)`
+                                    : "rgba(255,255,255,0.06)",
                                   zIndex: 0 }} />
                               )}
-                              {/* 노드 */}
-                              <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${color}`,
-                                background: isActive ? `${tier.color}33` : isPast ? `${tier.color}22` : "rgba(13,20,35,0.9)",
-                                display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1,
-                                boxShadow: isActive ? `0 0 10px ${tier.glow}88` : "none",
+                              {/* 배지 */}
+                              <div style={{ position: "relative", zIndex: 1,
+                                opacity: isPast || isActive ? 1 : 0.25,
+                                filter: isActive ? `drop-shadow(0 0 8px ${tier.glow}88)` : "none",
+                                transform: isActive ? "scale(1.15)" : "scale(1)",
                                 transition: "all 0.3s",
                               }}>
-                                {isPast && <div style={{ width: 8, height: 8, borderRadius: "50%", background: tier.color }} />}
-                                {isActive && <div style={{ width: 8, height: 8, borderRadius: "50%", background: tier.color, boxShadow: `0 0 6px ${tier.glow}` }} />}
+                                <ClanBadge tierIndex={i} size={40} />
                               </div>
                               {/* 라벨 */}
-                              <div style={{ marginTop: 6, textAlign: "center" }}>
-                                <div style={{ fontSize: 9, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, letterSpacing: 1,
-                                  color: isActive ? tier.color : isPast ? `${tier.color}88` : "rgba(255,255,255,0.2)" }}>
+                              <div style={{ marginTop: 4, textAlign: "center" }}>
+                                <div style={{ fontSize: 8, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, letterSpacing: 0.5, color: labelColor }}>
                                   {tier.en}
                                 </div>
-                                <div style={{ fontSize: 9, color: isActive ? "#c8cad0" : "rgba(255,255,255,0.2)", fontFamily: "Noto Sans KR, sans-serif", marginTop: 1 }}>
+                                <div style={{ fontSize: 8, color: labelColor, fontFamily: "Noto Sans KR, sans-serif", marginTop: 1 }}>
                                   {tier.range}
                                 </div>
                               </div>
