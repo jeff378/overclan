@@ -121,6 +121,21 @@ export default function ClanDetailPage() {
       setLoading(false);
     };
     load();
+
+    // Realtime: 클랜원 변경 시 자동 갱신
+    const channel = supabase.channel(`clan_members_${id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "clan_members", filter: `clan_id=eq.${id}` },
+        async () => {
+          const { data: membersData } = await supabase.from("clan_members").select("*").eq("clan_id", id);
+          const updated = await Promise.all((membersData || []).map(async (m) => {
+            const { data: profile } = await supabase.from("profiles").select("nickname, battletag, roles, tier_tank, tier_dps, tier_support, main_hero").eq("id", m.user_id).single();
+            return { ...m, profiles: profile };
+          }));
+          setMembers(updated);
+        }
+      ).subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [id]);
 
   const handleJoin = async () => {
