@@ -131,6 +131,13 @@ export default function ClanDetailPage() {
             const { data: profile } = await supabase.from("profiles").select("nickname, battletag, roles, tier_tank, tier_dps, tier_support, main_hero").eq("id", m.user_id).single();
             return { ...m, profiles: profile };
           }));
+          // 티어 업 이펙트 체크
+          const newTier = getTierByCount(updated.length);
+          if (prevTierRef.current !== null && newTier > prevTierRef.current) {
+            setTierUpAnim(true);
+            setTimeout(() => setTierUpAnim(false), 3000);
+          }
+          prevTierRef.current = newTier;
           setMembers(updated);
         }
       ).subscribe();
