@@ -89,6 +89,7 @@ export default function Navbar({ active = "" }) {
           .desktop-auth { display: none !important; }
           .hamburger { display: flex !important; }
           .mobile-menu { display: flex; }
+          .mobile-right { display: flex !important; }
         }
       `}</style>
 
