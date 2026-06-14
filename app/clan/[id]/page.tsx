@@ -303,6 +303,93 @@ export default function ClanDetailPage() {
                 </>
               )}
 
+              {/* 클랜 성장 단계 */}
+              {(() => {
+                const GROWTH_TIERS = [
+                  { name: "신생", en: "ROOKIE",   range: "1~5명",   min: 1,  max: 5,  color: "#78909c", glow: "#78909c" },
+                  { name: "성장", en: "RISING",   range: "6~15명",  min: 6,  max: 15, color: "#4fc3f7", glow: "#4fc3f7" },
+                  { name: "정예", en: "ELITE",    range: "16~30명", min: 16, max: 30, color: "#ce93d8", glow: "#ba68c8" },
+                  { name: "강호", en: "VANGUARD", range: "31~50명", min: 31, max: 50, color: "#ffd54f", glow: "#ffd54f" },
+                  { name: "전설", en: "LEGEND",   range: "51명+",   min: 51, max: Infinity, color: "#ff6b23", glow: "#ff6b23" },
+                ];
+                const count = members.length;
+                const currentIdx = GROWTH_TIERS.findIndex(t => count >= t.min && count <= t.max);
+                const current = GROWTH_TIERS[currentIdx];
+                const next = GROWTH_TIERS[currentIdx + 1];
+                const needed = next ? next.min - count : 0;
+                return (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 성장 단계</div>
+                    <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "18px 20px" }}>
+
+                      {/* 타임라인 */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 0, marginBottom: 16, position: "relative" }}>
+                        {GROWTH_TIERS.map((tier, i) => {
+                          const isActive = i === currentIdx;
+                          const isPast = i < currentIdx;
+                          const color = isPast || isActive ? tier.color : "rgba(255,255,255,0.12)";
+                          return (
+                            <div key={tier.en} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+                              {/* 연결선 (첫 번째 제외) */}
+                              {i > 0 && (
+                                <div style={{ position: "absolute", left: "-50%", top: 10, width: "100%", height: 2,
+                                  background: i <= currentIdx ? `linear-gradient(90deg, ${GROWTH_TIERS[i-1].color}, ${tier.color})` : "rgba(255,255,255,0.08)",
+                                  zIndex: 0 }} />
+                              )}
+                              {/* 노드 */}
+                              <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${color}`,
+                                background: isActive ? `${tier.color}33` : isPast ? `${tier.color}22` : "rgba(13,20,35,0.9)",
+                                display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1,
+                                boxShadow: isActive ? `0 0 10px ${tier.glow}88` : "none",
+                                transition: "all 0.3s",
+                              }}>
+                                {isPast && <div style={{ width: 8, height: 8, borderRadius: "50%", background: tier.color }} />}
+                                {isActive && <div style={{ width: 8, height: 8, borderRadius: "50%", background: tier.color, boxShadow: `0 0 6px ${tier.glow}` }} />}
+                              </div>
+                              {/* 라벨 */}
+                              <div style={{ marginTop: 6, textAlign: "center" }}>
+                                <div style={{ fontSize: 9, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, letterSpacing: 1,
+                                  color: isActive ? tier.color : isPast ? `${tier.color}88` : "rgba(255,255,255,0.2)" }}>
+                                  {tier.en}
+                                </div>
+                                <div style={{ fontSize: 9, color: isActive ? "#c8cad0" : "rgba(255,255,255,0.2)", fontFamily: "Noto Sans KR, sans-serif", marginTop: 1 }}>
+                                  {tier.range}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* 현재 상태 */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <ClanBadge memberCount={count} size={32} />
+                          <div>
+                            <div style={{ fontSize: 13, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, color: current?.color }}>
+                              {current?.name} {current?.en}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>현재 {count}명</div>
+                          </div>
+                        </div>
+                        {next && (
+                          <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", textAlign: "right" }}>
+                            <span style={{ color: next.color, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{next.en}</span>까지<br />
+                            <span style={{ color: "#ff6b23", fontWeight: 700 }}>{needed}명</span> 더 필요해요
+                          </div>
+                        )}
+                        {!next && (
+                          <div style={{ fontSize: 12, color: "#ffd54f", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 700 }}>
+                            🏆 최고 등급 달성!
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  </div>
+                );
+              })()}
+
 
             </div>
 
