@@ -40,6 +40,12 @@ export default function SignupPage() {
       setError("비밀번호는 6자 이상이어야 해요.");
       return;
     }
+    // 배틀태그 형식 검증: 한글/영문 2~12자 + # + 숫자 4~7자
+    const btRegex = /^[a-zA-Z가-힣0-9]{2,12}#[0-9]{4,7}$/;
+    if (!btRegex.test(battletag)) {
+      setError("배틀태그 형식이 올바르지 않아요. 예) 닉네임#1234");
+      return;
+    }
     setLoading(true);
     setError("");
 

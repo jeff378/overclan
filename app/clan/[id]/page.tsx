@@ -122,6 +122,8 @@ export default function ClanDetailPage() {
 
   const handleJoin = async () => {
     if (!user) { router.push("/login?redirect=" + encodeURIComponent(window.location.pathname)); return; }
+    // 가입 신청 확인 다이얼로그
+    if (!confirm(`"${clan?.name}" 클랜에 가입 신청할까요?`)) return;
     // 50명 제한 체크
     const { count: currentCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true }).eq("clan_id", id);
     if ((currentCount || 0) >= 50) { alert("이 클랜은 클랜원이 꽉 찼어요. (최대 50명)"); return; }
@@ -144,6 +146,12 @@ export default function ClanDetailPage() {
     }
     setHasRequested(true);
     setJoining(false);
+  };
+
+  const handleCancelRequest = async () => {
+    if (!confirm("가입 신청을 취소할까요?")) return;
+    await supabase.from("clan_requests").delete().eq("clan_id", id).eq("user_id", user.id).eq("status", "대기중");
+    setHasRequested(false);
   };
 
   // 티어 분포
@@ -280,9 +288,15 @@ export default function ClanDetailPage() {
                 <a href={clan.discord_link} target="_blank" rel="noopener noreferrer" className="btn-discord">💬 디스코드 참여</a>
               )}
               {!isMember && !isOwner && (
-                <button className="btn-primary" onClick={handleJoin} disabled={joining || hasRequested}>
-                  {hasRequested ? "신청 완료" : joining ? "신청 중..." : "가입 신청"}
-                </button>
+                hasRequested ? (
+                  <button onClick={handleCancelRequest} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", padding: "10px 20px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>
+                    신청 완료 · 취소하기
+                  </button>
+                ) : (
+                  <button className="btn-primary" onClick={handleJoin} disabled={joining}>
+                    {joining ? "신청 중..." : "가입 신청"}
+                  </button>
+                )
               )}
               {isOwner && (
                 <div style={{ display: "flex", gap: 8 }}>

@@ -95,7 +95,14 @@ export default function ClanManagePage() {
     }
 
     setRequests(prev => prev.filter(r => r.id !== req.id));
-    setMembers(prev => [...prev, { ...req, role: "클랜원" }]);
+
+    // DB에서 클랜원 목록 재로드 (상태 동기화)
+    const { data: mems } = await supabase.from("clan_members").select("*").eq("clan_id", id);
+    const memsWithProfiles = await Promise.all((mems || []).map(async (m: any) => {
+      const { data: profile } = await supabase.from("profiles").select("nickname, battletag").eq("id", m.user_id).single();
+      return { ...m, profiles: profile };
+    }));
+    setMembers(memsWithProfiles);
   };
 
   const handleReject = async (req: any) => {
