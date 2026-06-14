@@ -135,6 +135,8 @@ export default function ClanDetailPage() {
     const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();
     if (existingRequest) { alert("이미 다른 클랜에 가입 신청 중이에요."); return; }
     setJoining(true);
+    // 기존 신청 row 제거 후 새로 insert (중복 방지)
+    await supabase.from("clan_requests").delete().eq("clan_id", id).eq("user_id", user.id);
     const { error: insertError } = await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중" });
     if (insertError) {
       console.error("가입신청 오류:", insertError);
