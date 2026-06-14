@@ -60,7 +60,7 @@ export default function ClanDetailPage() {
   // 티어 계산 헬퍼
   const getTierByCount = (n: number) => {
     if (n >= 51) return 4; if (n >= 31) return 3;
-    if (n >= 16) return 2; if (n >= 6)  return 1; return 0;
+    if (n >= 3) return 2; if (n >= 2)  return 1; return 0;
   };
 
   useEffect(() => {
