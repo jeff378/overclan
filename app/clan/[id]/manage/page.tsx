@@ -32,7 +32,9 @@ export default function ClanManagePage() {
       if (clan?.owner_id !== userData.user.id) { router.push("/"); return; }
       setClanName(clan?.name || "");
 
-      const { data: reqs } = await supabase.from("clan_requests").select("*").eq("clan_id", id).eq("status", "대기중");
+      const { data: reqs } = await supabase.from("clan_requests")
+        .select("*").eq("clan_id", id)
+        .or("status.eq.대기중,status.is.null");
       const reqsWithProfiles = await Promise.all((reqs || []).map(async (r) => {
         const { data: profile } = await supabase.from("profiles").select("nickname, battletag").eq("id", r.user_id).single();
         return { ...r, profiles: profile };

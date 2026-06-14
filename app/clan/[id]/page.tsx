@@ -132,7 +132,7 @@ export default function ClanDetailPage() {
     const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();
     if (existingRequest) { alert("이미 다른 클랜에 가입 신청 중이에요."); return; }
     setJoining(true);
-    await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id });
+    await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중" });
     // 클랜장에게 알림
     if (clan?.owner_id) {
       const { data: myProf } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
