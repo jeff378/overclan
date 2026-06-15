@@ -337,6 +337,19 @@ export function ClanEmblem({ clan, size = 40, radius = 8, accent, style = {} }) 
   return <ClanBadge memberCount={count} size={size} />;
 }
 
+// ─── 작성자 닉네임 옆 클랜 표시 ([클랜명] + 클랜 티어) ──────────────────────
+export function ClanSuffix({ clan, style = {} }) {
+  if (!clan) return null;
+  const ac = clan.accent_color || "#ff6b23";
+  return (
+    <a href={`/clan/${clan.id}`} onClick={(e) => e.stopPropagation()}
+      style={{ display: "inline-flex", alignItems: "center", gap: 4, textDecoration: "none", verticalAlign: "middle", ...style }}>
+      <span style={{ fontSize: 11, color: ac, fontWeight: 600, fontFamily: "'Noto Sans KR', sans-serif", whiteSpace: "nowrap" }}>[{clan.name}]</span>
+      {clan.tier && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0.5, padding: "1px 5px", borderRadius: 3, border: `1px solid ${ac}55`, color: ac, whiteSpace: "nowrap" }}>{clan.tier}</span>}
+    </a>
+  );
+}
+
 // ─── 글로벌 CSS 주입 ─────────────────────────────────────────────────────────
 let cssInjected = false;
 function injectCSS() {

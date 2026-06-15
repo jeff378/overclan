@@ -4,6 +4,7 @@ import { supabase } from "../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
+import { ClanSuffix } from "../../components/ClanBadge";
 
 export default function ReplayDetailPage() {
   const { id } = useParams();
@@ -20,6 +21,11 @@ export default function ReplayDetailPage() {
     return data;
   };
 
+  const fetchClan = async (uid: string) => {
+    const { data } = await supabase.from("clan_members").select("clans(id,name,tier,accent_color)").eq("user_id", uid).limit(1);
+    return (data && (data[0] as any)?.clans) || null;
+  };
+
   useEffect(() => {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
@@ -27,10 +33,10 @@ export default function ReplayDetailPage() {
       const { data } = await supabase.from("replay_posts").select("*").eq("id", id).single();
       if (data) {
         const prof = await fetchProfile(data.user_id);
-        setPost({ ...data, profiles: prof });
+        setPost({ ...data, profiles: prof, authorClan: await fetchClan(data.user_id) });
         const { data: cs } = await supabase.from("replay_comments").select("*").eq("post_id", id).order("created_at", { ascending: true });
         if (cs) {
-          const withProfiles = await Promise.all(cs.map(async (c) => ({ ...c, profiles: await fetchProfile(c.user_id) })));
+          const withProfiles = await Promise.all(cs.map(async (c) => ({ ...c, profiles: await fetchProfile(c.user_id), authorClan: await fetchClan(c.user_id) })));
           setComments(withProfiles);
         }
         if (userData.user) {
@@ -57,7 +63,8 @@ export default function ReplayDetailPage() {
     const { data } = await supabase.from("replay_comments").insert({ post_id: id, user_id: user.id, content: comment }).select().single();
     if (data) {
       const prof = await fetchProfile(user.id);
-      setComments(prev => [...prev, { ...data, profiles: prof }]);
+      const myClan = await fetchClan(user.id);
+      setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
     }
     setComment("");
   };
@@ -128,7 +135,7 @@ export default function ReplayDetailPage() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 20 }}>
             <div style={{ minWidth: 0 }}>
               <span className="replay-code">{post.replay_code}</span>
-              <div style={{ fontSize: 12, color: "#8892a4", marginTop: 10, fontFamily: "Noto Sans KR, sans-serif" }}>{post.profiles?.nickname} · {new Date(post.created_at).toLocaleDateString("ko-KR")}</div>
+              <div style={{ fontSize: 12, color: "#8892a4", marginTop: 10, fontFamily: "Noto Sans KR, sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{post.profiles?.nickname}<ClanSuffix clan={post.authorClan} /> · {new Date(post.created_at).toLocaleDateString("ko-KR")}</div>
             </div>
             {(user?.id === post.user_id) ? (
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
@@ -171,7 +178,7 @@ export default function ReplayDetailPage() {
             ) : comments.map(c => (
               <div key={c.id} className="comment-row">
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{c.profiles?.nickname}</div>
+                  <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
                   <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{c.content}</div>
                 </div>
                 {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>🗑</button>}

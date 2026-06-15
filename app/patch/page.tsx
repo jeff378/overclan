@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../components/Navbar";
+import { ClanSuffix } from "../components/ClanBadge";
 
 export default function PatchPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -15,7 +16,8 @@ export default function PatchPage() {
   const fetchWithProfiles = async (rows: any[], idField = "user_id") => {
     return Promise.all(rows.map(async (row) => {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", row[idField]).single();
-      return { ...row, profiles: prof };
+      const { data: mem } = await supabase.from("clan_members").select("clans(id,name,tier,accent_color)").eq("user_id", row[idField]).limit(1);
+      return { ...row, profiles: prof, authorClan: (mem && (mem[0] as any)?.clans) || null };
     }));
   };
 
@@ -139,7 +141,7 @@ export default function PatchPage() {
                 )}
               </div>
               <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", display: "flex", gap: 12 }}>
-                <span>{post.profiles?.nickname}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{post.profiles?.nickname}<ClanSuffix clan={post.authorClan} /></span>
                 <span>{new Date(post.created_at).toLocaleDateString("ko-KR")}</span>
               </div>
             </a>

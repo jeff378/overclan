@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../components/Navbar";
+import { ClanSuffix } from "../components/ClanBadge";
 
 export default function ReplayPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -15,7 +16,8 @@ export default function ReplayPage() {
   const fetchWithProfiles = async (rows: any[]) => {
     return Promise.all(rows.map(async (row) => {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", row.user_id).single();
-      return { ...row, profiles: prof };
+      const { data: mem } = await supabase.from("clan_members").select("clans(id,name,tier,accent_color)").eq("user_id", row.user_id).limit(1);
+      return { ...row, profiles: prof, authorClan: (mem && (mem[0] as any)?.clans) || null };
     }));
   };
 
@@ -134,7 +136,7 @@ export default function ReplayPage() {
                     <span style={{ fontSize: 11, color: "#4caf50", fontWeight: 700, flexShrink: 0 }}>정상 {v.clean}%</span>
                   </div>
                 )}
-                <div style={{ fontSize: 11, color: "#8892a4", marginTop: 8, fontFamily: "Noto Sans KR, sans-serif" }}>{post.profiles?.nickname} · 투표 {v.total}명</div>
+                <div style={{ fontSize: 11, color: "#8892a4", marginTop: 8, fontFamily: "Noto Sans KR, sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{post.profiles?.nickname}<ClanSuffix clan={post.authorClan} /> · 투표 {v.total}명</div>
               </a>
             );
           })}
