@@ -222,14 +222,20 @@ export default function OverClanBattle() {
   const isOpponent = (battle) => myClan && battle.clan2_id === myClan.id;
 
   // "우리 vs 상대" 판정 — 내 클랜 기준. 내 클랜이 참가/도전 가능한 대전에서만 표시.
+  // placement: 더 센 클랜 쪽(clan1/clan2)에 칩을 붙임. 호각·도전후보는 가운데(center).
+  // 색은 내 기준(내가 우세=초록 / 상대 우세=빨강), 글자는 칩이 붙는 클랜 기준 "N단계 우위".
   const verdictFor = (b) => {
     if (!myClan) return null;
-    let myT, oppT;
-    if (b.clan1_id === myClan.id) { myT = b.clan1?.tier; oppT = b.clan2?.tier; }
-    else if (b.clan2_id === myClan.id) { myT = b.clan2?.tier; oppT = b.clan1?.tier; }
+    let mySide = null, myT, oppT;
+    if (b.clan1_id === myClan.id) { mySide = "clan1"; myT = b.clan1?.tier; oppT = b.clan2?.tier; }
+    else if (b.clan2_id === myClan.id) { mySide = "clan2"; myT = b.clan2?.tier; oppT = b.clan1?.tier; }
     else if (!b.clan2_id) { myT = myClan.tier; oppT = b.clan1?.tier; } // 도전자 모집중 → 도전 시 전력
     else return null; // 남의 클랜끼리의 대전
-    return matchupVerdict(myT, oppT);
+    const v = matchupVerdict(myT, oppT);
+    if (!v) return null;
+    if (!mySide || v.diff === 0) return { placement: "center", label: v.label, color: v.color };
+    const strongerSide = v.diff > 0 ? mySide : (mySide === "clan1" ? "clan2" : "clan1");
+    return { placement: strongerSide, label: `▲ ${Math.abs(v.diff)}단계 우위`, color: v.color };
   };
   const scrimTitle = (battle) => `[오버클랜] ${battle.clan1?.name} vs ${battle.clan2?.name}`;
 
@@ -259,6 +265,15 @@ export default function OverClanBattle() {
   };
   const tierTag = (tier) => (
     <span className="status-tag" style={{ color: TIER_COLOR[tier] || "#ff6b23", border: `1px solid ${(TIER_COLOR[tier] || "#ff6b23")}55`, background: "transparent" }}>{tier}</span>
+  );
+  const verdictChip = (v) => (
+    <span style={{
+      fontSize: 10, fontWeight: 700, color: v.color,
+      background: `${v.color}1f`, border: `1px solid ${v.color}55`,
+      padding: "2px 8px", whiteSpace: "nowrap", letterSpacing: 0.3,
+      fontFamily: "'Noto Sans KR', sans-serif",
+      clipPath: "polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)",
+    }}>{v.label}</span>
   );
 
   return (
@@ -442,6 +457,7 @@ export default function OverClanBattle() {
                 const st = STATUS_LABEL[b.status] || {};
                 const dt = battleDate(b);
                 const openRecruit = !b.clan2_id;
+                const v = verdictFor(b);
                 return (
                   <a key={b.id} href={`/battle/${b.id}`} className={`m-card ${isMyBattle(b) ? "mine" : ""}`}>
                     <span className="m-pill" style={{ background: `${st.color}22`, color: st.color, border: `1px solid ${st.color}55` }}>{st.label}</span>
@@ -450,21 +466,11 @@ export default function OverClanBattle() {
                         {sideEmblem(b.clan1, 48)}
                         <span className="m-nm">{b.clan1?.name}</span>
                         {b.clan1?.tier && tierTag(b.clan1.tier)}
+                        {v?.placement === "clan1" && verdictChip(v)}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
                         <span className="m-vs" style={openRecruit ? { color: "#ce93d8", textShadow: "0 0 14px rgba(206,147,216,0.6)" } : {}}>VS</span>
-                        {(() => {
-                          const v = verdictFor(b);
-                          return v ? (
-                            <span style={{
-                              fontSize: 10, fontWeight: 700, color: v.color,
-                              background: `${v.color}1f`, border: `1px solid ${v.color}55`,
-                              padding: "2px 8px", whiteSpace: "nowrap", letterSpacing: 0.3,
-                              fontFamily: "'Noto Sans KR', sans-serif",
-                              clipPath: "polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)",
-                            }}>{v.label}</span>
-                          ) : null;
-                        })()}
+                        {v?.placement === "center" && verdictChip(v)}
                       </div>
                       <div className="m-side">
                         {openRecruit ? (
@@ -477,6 +483,7 @@ export default function OverClanBattle() {
                             {sideEmblem(b.clan2, 48)}
                             <span className="m-nm">{b.clan2?.name}</span>
                             {b.clan2?.tier && tierTag(b.clan2.tier)}
+                            {v?.placement === "clan2" && verdictChip(v)}
                           </>
                         )}
                       </div>
