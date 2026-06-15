@@ -21,15 +21,15 @@ const BADGE_CSS = `
 
 // ─── 티어 데이터 ─────────────────────────────────────────────────────────────
 export const TIER_DATA = [
-  { key:"rookie", idx:0, name:"신생", en:"ROOKIE",   range:"1–5명",
+  { key:"rookie", idx:0, name:"신생", en:"ROOKIE",   range:"1–4명",
     base:"#9AA6BC", light:"#E6ECF6", deep:"#3A414F", glow:"#AEB9D0", ink:"#262B35" },
-  { key:"growth", idx:1, name:"성장", en:"RISING",   range:"6–15명",
+  { key:"growth", idx:1, name:"성장", en:"RISING",   range:"5–14명",
     base:"#3E90FF", light:"#B6D6FF", deep:"#123A7A", glow:"#5AA4FF", ink:"#0A1E40" },
-  { key:"elite",  idx:2, name:"정예", en:"ELITE",    range:"16–30명",
+  { key:"elite",  idx:2, name:"정예", en:"ELITE",    range:"15–29명",
     base:"#B469FF", light:"#E3C6FF", deep:"#451A8C", glow:"#C788FF", ink:"#270D52" },
-  { key:"strong", idx:3, name:"강호", en:"VANGUARD", range:"31–50명",
+  { key:"strong", idx:3, name:"강호", en:"VANGUARD", range:"30–49명",
     base:"#FFB12E", light:"#FFE7AC", deep:"#7C4D06", glow:"#FFC659", ink:"#3A2602" },
-  { key:"legend", idx:4, name:"전설", en:"LEGEND",   range:"51명+",
+  { key:"legend", idx:4, name:"전설", en:"LEGEND",   range:"50명+",
     base:"#FF5FB0", light:"#A6F0FF", deep:"#3A1466", glow:"#FF82C4", ink:"#1A0A30", holo:true },
 ];
 
@@ -40,10 +40,10 @@ const HOLO_STOPS = [
 
 // 멤버 수 → 티어 인덱스
 export function getBadgeTier(memberCount) {
-  if (memberCount >= 51) return 4;
-  if (memberCount >= 31) return 3;
-  if (memberCount >= 16) return 2;
-  if (memberCount >= 6)  return 1;
+  if (memberCount >= 50) return 4;
+  if (memberCount >= 30) return 3;
+  if (memberCount >= 15) return 2;
+  if (memberCount >= 5)  return 1;
   return 0;
 }
 

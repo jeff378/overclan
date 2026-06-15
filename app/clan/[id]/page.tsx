@@ -61,8 +61,8 @@ export default function ClanDetailPage() {
 
   // 티어 계산 헬퍼
   const getTierByCount = (n: number) => {
-    if (n >= 51) return 4; if (n >= 31) return 3;
-    if (n >= 16) return 2; if (n >= 6)  return 1; return 0;
+    if (n >= 50) return 4; if (n >= 30) return 3;
+    if (n >= 15) return 2; if (n >= 5)  return 1; return 0;
   };
 
   useEffect(() => {
@@ -415,11 +415,11 @@ export default function ClanDetailPage() {
               {/* 클랜 성장 단계 */}
               {(() => {
                 const GROWTH_TIERS = [
-                  { name: "신생", en: "ROOKIE",   range: "1~5명",   min: 1,  max: 5,  color: "#78909c", glow: "#78909c" },
-                  { name: "성장", en: "RISING",   range: "6~15명",  min: 6,  max: 15, color: "#4fc3f7", glow: "#4fc3f7" },
-                  { name: "정예", en: "ELITE",    range: "16~30명", min: 16, max: 30, color: "#ce93d8", glow: "#ba68c8" },
-                  { name: "강호", en: "VANGUARD", range: "31~50명", min: 31, max: 50, color: "#ffd54f", glow: "#ffd54f" },
-                  { name: "전설", en: "LEGEND",   range: "51명+",   min: 51, max: Infinity, color: "#ff6b23", glow: "#ff6b23" },
+                  { name: "신생", en: "ROOKIE",   range: "1~4명",   min: 1,  max: 4,  color: "#78909c", glow: "#78909c" },
+                  { name: "성장", en: "RISING",   range: "5~14명",  min: 5,  max: 14, color: "#4fc3f7", glow: "#4fc3f7" },
+                  { name: "정예", en: "ELITE",    range: "15~29명", min: 15, max: 29, color: "#ce93d8", glow: "#ba68c8" },
+                  { name: "강호", en: "VANGUARD", range: "30~49명", min: 30, max: 49, color: "#ffd54f", glow: "#ffd54f" },
+                  { name: "전설", en: "LEGEND",   range: "50명+",   min: 50, max: Infinity, color: "#ff6b23", glow: "#ff6b23" },
                 ];
                 const count = members.length;
                 const currentIdx = GROWTH_TIERS.findIndex(t => count >= t.min && count <= t.max);
