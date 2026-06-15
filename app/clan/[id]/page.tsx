@@ -55,6 +55,8 @@ export default function ClanDetailPage() {
   const [joining, setJoining] = useState(false);
   const [activeTab, setActiveTab] = useState("소개");
   const [tierUpAnim, setTierUpAnim] = useState(false);
+  const [bannerRatio, setBannerRatio] = useState(4.6); // 배너 이미지 실제 가로/세로 비율
+
   const prevTierRef = useRef<number | null>(null);
 
   // 티어 계산 헬퍼
@@ -268,9 +270,12 @@ export default function ClanDetailPage() {
 
       {/* YouTube 스타일 배너 - 이미지가 영역을 꽉 채움(cover) */}
       {clan.banner_image && (
-        <div style={{ width: "100%", aspectRatio: "5 / 1", minHeight: 120, maxHeight: 260, position: "relative", overflow: "hidden", background: "#080c14" }}>
-          <img src={clan.banner_image} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.85))" }} />
+        <div style={{ width: "100%", aspectRatio: String(bannerRatio), minHeight: 110, maxHeight: 320, position: "relative", overflow: "hidden", background: "#080c14" }}>
+          {/* 흐린 배경 — 비율이 안 맞아 남는 가장자리를 채워 투명하지 않게 */}
+          <img src={clan.banner_image} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(28px) brightness(0.5)", transform: "scale(1.15)" }} />
+          {/* 원본 전체 — 어떤 비율이든 잘리지 않고 다 보임 */}
+          <img src={clan.banner_image} alt="배너" onLoad={(e) => { const im = e.currentTarget; if (im.naturalWidth && im.naturalHeight) setBannerRatio(im.naturalWidth / im.naturalHeight); }} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", zIndex: 1, display: "block" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "40%", zIndex: 2, background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.75))" }} />
         </div>
       )}
 
