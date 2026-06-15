@@ -52,6 +52,7 @@ export default function ReplayDetailPage() {
 
   const handleVote = async (vote: string) => {
     if (!user || myVote) return;
+    if (!confirm(`'${vote}'에 투표하시겠습니까?\n한 번 투표하면 변경하거나 취소할 수 없어요.`)) return;
     await supabase.from("replay_votes").insert({ post_id: id, user_id: user.id, vote });
     const field = vote === "핵" ? "votes_hack" : "votes_clean";
     await supabase.from("replay_posts").update({ [field]: (post[field] || 0) + 1 }).eq("id", id);
