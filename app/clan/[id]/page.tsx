@@ -216,7 +216,7 @@ export default function ClanDetailPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
+      <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>LOADING...</div>
     </div>
   );
 
@@ -239,12 +239,12 @@ export default function ClanDetailPage() {
         @keyframes starBurst { 0%{transform:scale(0) rotate(0deg);opacity:1} 100%{transform:scale(1.5) rotate(45deg);opacity:0} }
         .tier-up-badge { animation: tierUpBadge 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards, tierUpGlow 1.5s ease-in-out 0.5s 2; }
         .tier-up-overlay { position:fixed; inset:0; z-index:9999; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; animation: tierUpOverlay 3s ease forwards; background: radial-gradient(ellipse at center, rgba(255,107,35,0.15) 0%, transparent 70%); }
-        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent)); filter: brightness(1.05); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent)); filter: brightness(1.05); border: none; color: #fff; padding: 12px 28px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-sm { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-sm { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 18px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; text-decoration: none; display: inline-block; }
         .btn-sm:hover { background: var(--accent); color: #fff; }
-        .btn-discord { background: rgba(88,101,242,0.15); border: 1px solid rgba(88,101,242,0.4); color: #8ea1e1; padding: 8px 18px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); text-decoration: none; display: inline-block; }
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+        .btn-discord { background: rgba(88,101,242,0.15); border: 1px solid rgba(88,101,242,0.4); color: #8ea1e1; padding: 8px 18px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); text-decoration: none; display: inline-block; }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); }
         .tier-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); white-space: nowrap; }
@@ -294,8 +294,8 @@ export default function ClanDetailPage() {
                   <div className="tier-up-overlay">
                     <div style={{ textAlign: "center" }}>
                       <div style={{ fontSize: 48, marginBottom: 12, animation: "starBurst 1s ease-out forwards" }}>{TIER_EMOJI[t]}</div>
-                      <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13, color: "#ff6b23", letterSpacing: 4, fontWeight: 700, marginBottom: 8 }}>TIER UP!</div>
-                      <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 28, fontWeight: 700, color: "#fff", letterSpacing: 2 }}>{TIER_NAMES[t]}</div>
+                      <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, color: "#ff6b23", letterSpacing: 4, fontWeight: 700, marginBottom: 8 }}>TIER UP!</div>
+                      <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700, color: "#fff", letterSpacing: 2 }}>{TIER_NAMES[t]}</div>
                       <div style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 8 }}>클랜원 전체에게 알림이 전송됐어요!</div>
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function ClanDetailPage() {
               })()}
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                  <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all" }}>{clan.name}</h1>
+                  <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all" }}>{clan.name}</h1>
                   <span style={{ fontSize: 13, color: accent, opacity: 0.8, fontWeight: 600, whiteSpace: "nowrap" }}>[{clan.tag}]</span>
                   {clan.emblem_image && <ClanTierChip memberCount={members.length} size={24} />}
                 </div>
@@ -333,7 +333,7 @@ export default function ClanDetailPage() {
               )}
               {!isMember && !isOwner && (
                 hasRequested ? (
-                  <button onClick={handleCancelRequest} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", padding: "10px 20px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>
+                  <button onClick={handleCancelRequest} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", padding: "10px 20px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>
                     신청 완료 · 취소하기
                   </button>
                 ) : (
@@ -366,7 +366,7 @@ export default function ClanDetailPage() {
             { label: "승률", value: `${winRate}%` },
           ].map(s => (
             <div key={s.label} className="stat-box">
-              <div style={{ fontSize: 20, fontWeight: 700, color: accent, fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: accent, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, letterSpacing: 0.5, fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap" }}>{s.label}</div>
             </div>
           ))}
@@ -446,7 +446,7 @@ export default function ClanDetailPage() {
                               </div>
                               {/* 라벨 */}
                               <div style={{ marginTop: 4, textAlign: "center" }}>
-                                <div style={{ fontSize: 8, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, letterSpacing: 0.5, color: labelColor }}>
+                                <div style={{ fontSize: 8, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 700, letterSpacing: 0.5, color: labelColor }}>
                                   {tier.en}
                                 </div>
                                 <div style={{ fontSize: 8, color: labelColor, fontFamily: "Noto Sans KR, sans-serif", marginTop: 1 }}>
@@ -463,7 +463,7 @@ export default function ClanDetailPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <ClanBadge memberCount={count} size={32} />
                           <div>
-                            <div style={{ fontSize: 13, fontFamily: "Rajdhani, sans-serif", fontWeight: 700, color: current?.color }}>
+                            <div style={{ fontSize: 13, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 700, color: current?.color }}>
                               {current?.name} {current?.en}
                             </div>
                             <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>현재 {count}명</div>
@@ -471,7 +471,7 @@ export default function ClanDetailPage() {
                         </div>
                         {next && (
                           <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", textAlign: "right" }}>
-                            <span style={{ color: next.color, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{next.en}</span>까지<br />
+                            <span style={{ color: next.color, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{next.en}</span>까지<br />
                             <span style={{ color: "#ff6b23", fontWeight: 700 }}>{needed}명</span> 더 필요해요
                           </div>
                         )}
@@ -499,11 +499,11 @@ export default function ClanDetailPage() {
                   <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>티어 정보 없음</div>
                 ) : Object.entries(tierDist).map(([tier, count]) => (
                   <div key={tier} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: TIER_COLORS[tier] || "#8892a4", fontWeight: 700, minWidth: 80, fontFamily: "Rajdhani, sans-serif" }}>{tier}</span>
+                    <span style={{ fontSize: 12, color: TIER_COLORS[tier] || "#8892a4", fontWeight: 700, minWidth: 80, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{tier}</span>
                     <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                       <div style={{ width: `${((count as number) / members.length) * 100}%`, height: "100%", background: TIER_COLORS[tier] || "#ff6b23", borderRadius: 2 }} />
                     </div>
-                    <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", minWidth: 20 }}>{count as number}명</span>
+                    <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", minWidth: 20 }}>{count as number}명</span>
                   </div>
                 ))}
               </div>
@@ -526,7 +526,7 @@ export default function ClanDetailPage() {
                     <div key={role} style={{ marginBottom: 14 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <span style={{ fontSize: 14 }}>{icon}</span>
-                        <span style={{ fontSize: 12, color, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{role}</span>
+                        <span style={{ fontSize: 12, color, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{role}</span>
                         <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{tierMembers.length}명</span>
                       </div>
                       {tierMembers.length === 0 ? (
@@ -550,7 +550,7 @@ export default function ClanDetailPage() {
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "16px 20px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                   <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>현재 클랜원</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: members.length >= clan.max_members ? "#ef5350" : "#4caf50", fontFamily: "Rajdhani, sans-serif" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: members.length >= clan.max_members ? "#ef5350" : "#4caf50", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
                     {members.length} / {clan.max_members}명
                   </span>
                 </div>
@@ -573,7 +573,7 @@ export default function ClanDetailPage() {
             </div>
             {members.map(m => (
               <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, alignItems: "center" }}>
-                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700 }}>{m.profiles?.nickname || "유저"}</span>
+                <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700 }}>{m.profiles?.nickname || "유저"}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)", color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>{m.role}</span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {[
@@ -646,7 +646,7 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
       {isOwner && (
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
           {!showForm && (
-            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 18px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>+ 공지 작성</button>
+            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 18px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>+ 공지 작성</button>
           )}
         </div>
       )}
@@ -655,8 +655,8 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="공지 제목" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", marginBottom: 10 }} />
           <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="공지 내용" style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none", width: "100%", minHeight: 100, resize: "vertical", marginBottom: 10 }} />
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={handlePost} disabled={saving} style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>{saving ? "등록 중..." : "등록"}</button>
-            <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 22px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
+            <button onClick={handlePost} disabled={saving} style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff", padding: "10px 22px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>{saving ? "등록 중..." : "등록"}</button>
+            <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 22px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>
           </div>
         </div>
       )}
@@ -670,14 +670,14 @@ function NoticeTab({ notices, setNotices, isOwner, user, clanId }: any) {
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}>
                 <span style={{ fontSize: 14, flexShrink: 0 }}>📢</span>
-                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n.title}</span>
+                <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n.title}</span>
               </div>
               {isOwner && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(n.id); }} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 14, opacity: 0.5, flexShrink: 0 }}>🗑</button>}
             </div>
             <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.content}</p>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{n.profiles?.nickname} · {new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
-              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif" }}>자세히 →</span>
+              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>자세히 →</span>
             </div>
           </div>
         </a>
@@ -705,7 +705,7 @@ function BattleTab({ battles, clanId }: any) {
               border: `1px solid ${filter === f ? "#ff6b23" : "rgba(255,107,35,0.15)"}`,
               color: filter === f ? "#ff6b23" : "#8892a4",
               padding: "6px 16px",
-              fontFamily: "Rajdhani, sans-serif",
+              fontFamily: "'Cinzel', 'Rajdhani', sans-serif",
               fontSize: 12, fontWeight: 700, letterSpacing: 1,
               cursor: "pointer",
               clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
@@ -714,7 +714,7 @@ function BattleTab({ battles, clanId }: any) {
           ))}
         </div>
         {filtered.length > 0 && (
-          <div style={{ display: "flex", gap: 16, fontSize: 13, fontFamily: "Rajdhani, sans-serif" }}>
+          <div style={{ display: "flex", gap: 16, fontSize: 13, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
             <span style={{ color: "#4caf50", fontWeight: 700 }}>{wins}승</span>
             <span style={{ color: "#ef5350", fontWeight: 700 }}>{losses}패</span>
             <span style={{ color: "#ffd54f", fontWeight: 700 }}>{draws}무</span>
@@ -742,8 +742,8 @@ function BattleTab({ battles, clanId }: any) {
               {isWin ? "승" : isDraw ? "무" : "패"}
             </span>
             <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={32} />
-            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opName}</span>
-            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
+            <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, flex: 1 }}>{opName}</span>
+            <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0" }}>{myScore} - {opScore}</span>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>{b.type}</span>
             <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", minWidth: 70, textAlign: "right" }}>
               {new Date(b.created_at).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
@@ -819,7 +819,7 @@ function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
             {!gone && <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />}
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: gone ? "#8892a4" : "#e8eaf0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: gone ? "#8892a4" : "#e8eaf0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 vs {gone ? "해체된 클랜" : (opClan?.name || "상대 모집중")}
               </div>
               <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -828,11 +828,11 @@ function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
             </div>
 
             {isOwner ? (
-              <button onClick={(e) => { e.stopPropagation(); handleCancel(b, gone); }} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, padding: "7px 14px", cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>
+              <button onClick={(e) => { e.stopPropagation(); handleCancel(b, gone); }} style={{ background: "rgba(239,83,80,0.12)", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, padding: "7px 14px", cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>
                 {gone ? "정리" : "취소"}
               </button>
             ) : (!gone && (
-              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>클랜대전 →</div>
+              <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>클랜대전 →</div>
             ))}
           </div>
         );

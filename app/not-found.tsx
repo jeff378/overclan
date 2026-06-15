@@ -10,17 +10,17 @@ export default function NotFound() {
         <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="8" fontWeight="700" fontFamily="Rajdhani">?</text>
       </svg>
       <div>
-        <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 72, fontWeight: 700, color: "#ff6b23", lineHeight: 1, letterSpacing: -2, opacity: 0.3 }}>404</div>
-        <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: 3, color: "#e8eaf0", marginTop: 8 }}>PAGE NOT FOUND</div>
+        <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 72, fontWeight: 700, color: "#ff6b23", lineHeight: 1, letterSpacing: -2, opacity: 0.3 }}>404</div>
+        <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 22, fontWeight: 700, letterSpacing: 3, color: "#e8eaf0", marginTop: 8 }}>PAGE NOT FOUND</div>
         <p style={{ fontSize: 14, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginTop: 12, lineHeight: 1.7 }}>
           찾으시는 페이지가 존재하지 않거나<br/>이동되었을 수 있어요.
         </p>
       </div>
       <div style={{ display: "flex", gap: 12 }}>
-        <Link href="/" style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "12px 28px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>
+        <Link href="/" style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "12px 28px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>
           메인으로
         </Link>
-        <Link href="/find" style={{ background: "transparent", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "11px 28px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>
+        <Link href="/find" style={{ background: "transparent", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "11px 28px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>
           클랜 찾기
         </Link>
       </div>

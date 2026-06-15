@@ -107,7 +107,7 @@ export default function NotificationBell() {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
         {unread > 0 && (
-          <span style={{ position: "absolute", top: 0, right: 0, background: "#ff6b23", color: "#fff", fontSize: 10, fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px", fontFamily: "Rajdhani, sans-serif" }}>
+          <span style={{ position: "absolute", top: 0, right: 0, background: "#ff6b23", color: "#fff", fontSize: 10, fontWeight: 700, minWidth: 16, height: 16, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
             {unread > 99 ? "99+" : unread}
           </span>
         )}
@@ -116,14 +116,14 @@ export default function NotificationBell() {
       {open && (
         <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 320, maxWidth: "85vw", maxHeight: 420, overflowY: "auto", background: "#0d1423", border: "1px solid rgba(255,107,35,0.25)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", zIndex: 1000, clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}>
           <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,107,35,0.15)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 1, color: "#e8eaf0" }}>알림</span>
+            <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 1, color: "#e8eaf0" }}>알림</span>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               {items.length > 0 && <button onClick={handleClearAll} style={{ background: "none", border: "none", fontSize: 11, color: "#8892a4", cursor: "pointer", fontFamily: "Noto Sans KR, sans-serif", padding: 0 }}>모두 지우기</button>}
               <a href="/settings" style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", fontFamily: "Noto Sans KR, sans-serif" }}>⚙ 설정</a>
             </div>
           </div>
           {loading ? (
-            <div style={{ padding: "30px", textAlign: "center", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, fontSize: 13 }}>LOADING...</div>
+            <div style={{ padding: "30px", textAlign: "center", color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 1, fontSize: 13 }}>LOADING...</div>
           ) : items.length === 0 ? (
             <div style={{ padding: "40px 20px", textAlign: "center", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>
               <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.5 }}>🔔</div>
@@ -139,7 +139,7 @@ export default function NotificationBell() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 2 }}>{n.title}</div>
                     {n.message && <div style={{ fontSize: 12, color: "#a8b0c0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.4, wordBreak: "break-word" }}>{n.message}</div>}
-                    <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, fontFamily: "Rajdhani, sans-serif" }}>{timeAgo(n.created_at)}</div>
+                    <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{timeAgo(n.created_at)}</div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
                     {!n.is_read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#ff6b23", marginTop: 2 }} />}

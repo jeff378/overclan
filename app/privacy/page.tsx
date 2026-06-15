@@ -3,12 +3,12 @@ import Navbar from "../components/Navbar";
 export default function PrivacyPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; } h2 { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; color: #ff6b23; margin: 28px 0 12px; } p, li { font-size: 14px; color: #8892a4; font-family: 'Noto Sans KR', sans-serif; line-height: 1.9; font-weight: 300; } ul { padding-left: 20px; }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; } h2 { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; color: #ff6b23; margin: 28px 0 12px; } p, li { font-size: 14px; color: #8892a4; font-family: 'Noto Sans KR', sans-serif; line-height: 1.9; font-weight: 300; } ul { padding-left: 20px; }`}</style>
       <Navbar />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
           <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
-          <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>개인정보처리방침</h1>
+          <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>개인정보처리방침</h1>
         </div>
         <div style={{ background: "rgba(13,20,35,0.8)", border: "1px solid rgba(255,107,35,0.1)", padding: "36px 40px" }}>
           <p>시행일: 2025년 6월 1일</p>

@@ -103,9 +103,9 @@ export default function CreateClanPage() {
         .input::placeholder { color: #8892a4; }
         textarea.input { resize: vertical; min-height: 100px; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; display: block; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px 36px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px 36px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .select-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 16px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .select-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .select-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
         .badge-btn { font-size: 24px; padding: 8px; background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
         .badge-btn.active { border-color: #ff6b23; background: rgba(255,107,35,0.15); }
@@ -116,7 +116,7 @@ export default function CreateClanPage() {
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "48px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
           <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
-          <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>클랜 만들기</h1>
+          <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>클랜 만들기</h1>
         </div>
 
         <div style={{ background: "rgba(13,20,35,0.8)", border: "1px solid rgba(255,107,35,0.15)", padding: "36px", display: "flex", flexDirection: "column", gap: 24 }}>
@@ -189,7 +189,7 @@ export default function CreateClanPage() {
           <div>
             <label className="label">최대 클랜원 수</label>
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)" }}>
-              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
+              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
               <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>(기본 제공 · 추후 클랜확장권으로 확대 가능)</span>
             </div>
           </div>

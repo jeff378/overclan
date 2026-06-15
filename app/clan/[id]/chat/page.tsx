@@ -94,7 +94,7 @@ export default function ClanChatPage() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
         .chat-bubble { max-width: 70%; padding: 10px 14px; margin-bottom: 8px; border-radius: 2px; }
         .chat-mine { background: rgba(255,107,35,0.15); border: 1px solid rgba(255,107,35,0.2); align-self: flex-end; }
@@ -103,8 +103,8 @@ export default function ClanChatPage() {
         .input:focus { border-color: #ff6b23; }
         .input::placeholder { color: #8892a4; }
         textarea.input { resize: none; min-height: 80px; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); white-space: nowrap; }
-        .btn-small { background: transparent; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 24px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); white-space: nowrap; }
+        .btn-small { background: transparent; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
         .notice-card { background: rgba(13,20,35,0.7); border: 1px solid rgba(255,107,35,0.12); padding: 18px 20px; margin-bottom: 8px; }
         .notice-card.pinned { border-color: rgba(255,107,35,0.35); background: rgba(255,107,35,0.05); }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #ff6b23; }
@@ -117,7 +117,7 @@ export default function ClanChatPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 28 }}>{clan?.badge}</span>
             <div>
-              <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 22, fontWeight: 700 }}>{clan?.name}</h1>
+              <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 22, fontWeight: 700 }}>{clan?.name}</h1>
               <a href={`/clan/${id}`} style={{ fontSize: 11, color: "#8892a4", textDecoration: "none" }}>← 클랜 페이지</a>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function ClanChatPage() {
               {chats.map(c => (
                 <div key={c.id} className={`chat-bubble ${c.user_id === user?.id ? "chat-mine" : "chat-other"}`}>
                   {c.user_id !== user?.id && (
-                    <div style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "Rajdhani, sans-serif" }}>{c.profiles?.nickname}</div>
+                    <div style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{c.profiles?.nickname}</div>
                   )}
                   <div style={{ fontSize: 13, fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.5 }}>{c.message}</div>
                   <div style={{ fontSize: 10, color: "#8892a4", marginTop: 4, textAlign: c.user_id === user?.id ? "right" : "left" }}>

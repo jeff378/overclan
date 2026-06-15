@@ -48,16 +48,16 @@ export default function OverClanFind() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .filter-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 7px 16px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .filter-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 7px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .filter-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
         .filter-btn:hover { border-color: rgba(255,107,35,0.4); color: #e8eaf0; }
         .clan-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 24px; position: relative; transition: all 0.3s; cursor: pointer; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); text-decoration: none; color: inherit; display: block; }
         .clan-card:hover { border-color: rgba(255,107,35,0.4); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,35,0.1); }
-        .search-input { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 20px 12px 44px; font-family: 'Rajdhani', sans-serif; font-size: 14px; letter-spacing: 1px; outline: none; width: 100%; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); transition: border-color 0.2s; }
+        .search-input { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 20px 12px 44px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; letter-spacing: 1px; outline: none; width: 100%; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); transition: border-color 0.2s; }
         .search-input:focus { border-color: #ff6b23; }
         .search-input::placeholder { color: #8892a4; }
         .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); white-space: nowrap; }
-        .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-join { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 8px 20px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-join:hover { background: rgba(255,107,35,0.15); }
         .mobile-filters { display: none; }
         .find-grid { max-width: 100%; }
@@ -72,7 +72,7 @@ export default function OverClanFind() {
           .mobile-filter-label { font-size: 10px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; }
           .clan-card { padding: 18px 16px; }
         }
-        .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
+        .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
       `}</style>
 
       <Navbar active="클랜 찾기" />
@@ -82,10 +82,10 @@ export default function OverClanFind() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
               <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-              <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "Rajdhani, sans-serif" }}>클랜 찾기</h1>
+              <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>클랜 찾기</h1>
             </div>
             <p style={{ fontSize: 13, color: "#8892a4", marginLeft: 15, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, whiteSpace: "nowrap" }}>
-              현재 <span style={{ color: "#ff6b23", fontWeight: 700, fontSize: 15, fontFamily: "Rajdhani, sans-serif" }}>{filtered.length}</span>개의 클랜이 모집 중이에요.
+              현재 <span style={{ color: "#ff6b23", fontWeight: 700, fontSize: 15, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{filtered.length}</span>개의 클랜이 모집 중이에요.
             </p>
           </div>
           <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", flexShrink: 0 }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
@@ -93,7 +93,7 @@ export default function OverClanFind() {
 
         {/* 모바일 필터 - 토글 */}
         <div className="mobile-filters">
-          <button onClick={() => setFilterOpen(!filterOpen)} style={{ display: "flex", alignItems: "center", gap: 8, background: filterOpen ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)", border: `1px solid ${filterOpen ? "#ff6b23" : "rgba(255,107,35,0.2)"}`, color: filterOpen ? "#ff6b23" : "#8892a4", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", marginBottom: 10 }}>
+          <button onClick={() => setFilterOpen(!filterOpen)} style={{ display: "flex", alignItems: "center", gap: 8, background: filterOpen ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)", border: `1px solid ${filterOpen ? "#ff6b23" : "rgba(255,107,35,0.2)"}`, color: filterOpen ? "#ff6b23" : "#8892a4", padding: "8px 16px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", marginBottom: 10 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
             필터 {(tierFilter !== "전체" || timeFilter !== "전체" || styleFilter !== "전체" || memberFilter !== "전체") ? "•" : ""}
           </button>
@@ -178,17 +178,17 @@ export default function OverClanFind() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ minHeight: 400 }}>
             {loading ? (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
+              <div style={{ textAlign: "center", padding: "60px 0", color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>LOADING...</div>
             ) : filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 20px", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
                 <div style={{ fontSize: 40, marginBottom: 14 }}>{clans.length === 0 ? "⚔️" : "🔍"}</div>
-                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0", marginBottom: 8 }}>
+                <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 18, fontWeight: 700, color: "#e8eaf0", marginBottom: 8 }}>
                   {clans.length === 0 ? "아직 클랜이 없어요." : "조건에 맞는 클랜이 없어요."}
                 </div>
                 <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 20 }}>
                   {clans.length === 0 ? "첫 번째 클랜의 주인공이 되어보세요!" : "필터를 바꿔보거나 직접 클랜을 만들어보세요."}
                 </div>
-                <a href="/clan/create" style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "10px 24px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)", display: "inline-block" }}>+ 클랜 만들기</a>
+                <a href="/clan/create" style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "10px 24px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)", display: "inline-block" }}>+ 클랜 만들기</a>
               </div>
             ) : filtered.map(clan => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="clan-card">
@@ -201,12 +201,12 @@ export default function OverClanFind() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                        <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>
+                        <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>
                         <span style={{ fontSize: 11, color: clan.accent_color || "#ff6b23", opacity: 0.7, fontWeight: 600, flexShrink: 0 }}>[{clan.tag}]</span>
                         {clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={20} />}
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: clan.accent_color || "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: clan.accent_color || "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
                           {clan.clan_members?.[0]?.count || 0}/{clan.max_members}
                         </div>
                         <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1 }}>클랜원</div>

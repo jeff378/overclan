@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import IntroOverlay from './components/IntroOverlay'
 
 export const viewport = {
   width: 'device-width',
@@ -52,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -75,8 +76,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }) }}
         />
       </head>
-      <body style={{ margin: 0, padding: 0, background: "#080c14", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+      <body style={{ margin: 0, padding: 0, background: "#080c14", fontFamily: "'Cinzel', 'Rajdhani', 'Noto Sans KR', sans-serif" }}>
         <div className="bg-glow-blue" aria-hidden="true" />
+        <IntroOverlay />
         {children}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {

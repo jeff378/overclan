@@ -73,11 +73,11 @@ export default function Navbar({ active = "" }) {
       <style>{`
         .nav-link { color: #8892a4; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; }
         .nav-link:hover, .nav-link.active { color: #ff6b23; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 20px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; text-decoration: none; }
-        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 9px 20px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 20px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; text-decoration: none; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 9px 20px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; text-decoration: none; }
         .btn-secondary:hover { background: rgba(255,107,35,0.1); }
         .user-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,107,35,0.08); border: 1px solid rgba(255,107,35,0.2); padding: 7px 14px; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
-        .btn-logout { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .btn-logout { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
         .btn-logout:hover { color: #ef5350; }
         .hamburger { background: none; border: none; cursor: pointer; padding: 4px; display: none; flex-direction: column; gap: 5px; }
         .hamburger span { display: block; width: 22px; height: 2px; background: #e8eaf0; transition: all 0.2s; }
@@ -102,7 +102,7 @@ export default function Navbar({ active = "" }) {
               <polygon points="16,8 24,13 24,23 16,28 8,23 8,13" fill="rgba(255,107,35,0.2)" stroke="#ff6b23" strokeWidth="1"/>
               <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
             </svg>
-            <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 3, fontFamily: "Rajdhani, sans-serif" }}>
+            <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 3, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
               <span style={{ color: "#ff6b23" }}>OVER</span><span style={{ color: "#e8eaf0" }}>CLAN</span>
             </span>
           </a>
@@ -125,7 +125,7 @@ export default function Navbar({ active = "" }) {
               <NotificationBell />
               <a href="/mypage" className="user-badge">
                 <div style={{ width: 7, height: 7, background: "#4caf50", borderRadius: "50%", boxShadow: "0 0 6px #4caf50" }} />
-                <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, color: "#e8eaf0" }}>{nickname || "클랜원"}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 1, color: "#e8eaf0" }}>{nickname || "클랜원"}</span>
               </a>
               <button className="btn-logout" onClick={handleLogout}>로그아웃</button>
             </>

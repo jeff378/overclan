@@ -30,7 +30,7 @@ export default function LoginPage() {
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 14px 18px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; outline: none; width: 100%; transition: all 0.25s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .input:focus { border-color: #ff6b23; box-shadow: 0 0 0 1px rgba(255,107,35,0.4), 0 0 18px rgba(255,107,35,0.15); }
         .input::placeholder { color: #8892a4; }
-        .btn { position: relative; background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; overflow: hidden; }
+        .btn { position: relative; background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; overflow: hidden; }
         .btn::after { content: ''; position: absolute; top: 0; left: -120%; width: 60%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s; }
         .btn:hover { box-shadow: 0 8px 28px rgba(255,107,35,0.45); }
         .btn:hover::after { left: 130%; }
@@ -77,10 +77,10 @@ export default function LoginPage() {
               <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
             </svg>
           </div>
-          <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
+          <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
             <span style={{ color: "#ff6b23" }}>OVER</span>CLAN
           </div>
-          <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 11, letterSpacing: 5, color: "#8892a4", marginTop: 6 }}>OVERWATCH CLAN PLATFORM</div>
+          <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, letterSpacing: 5, color: "#8892a4", marginTop: 6 }}>OVERWATCH CLAN PLATFORM</div>
         </div>
 
         {/* 카드 */}
@@ -89,7 +89,7 @@ export default function LoginPage() {
           <div style={{ position: "absolute", top: 0, left: 0, width: 24, height: 2, background: "#ff6b23" }} />
           <div style={{ position: "absolute", top: 0, left: 0, width: 2, height: 24, background: "#ff6b23" }} />
 
-          <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 28, color: "#e8eaf0", display: "flex", alignItems: "center", gap: 10 }}>
+          <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 28, color: "#e8eaf0", display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ width: 3, height: 18, background: "#ff6b23", display: "inline-block" }} />로그인
           </h2>
 

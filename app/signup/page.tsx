@@ -94,7 +94,7 @@ export default function SignupPage() {
         .input:focus { border-color: #ff6b23; }
         .input::placeholder { color: #8892a4; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
-        .btn { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn:hover { box-shadow: 0 8px 24px rgba(255,107,35,0.4); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .hint { font-size: 11px; color: #8892a4; margin-top: 6px; font-family: 'Noto Sans KR', sans-serif; }
@@ -107,13 +107,13 @@ export default function SignupPage() {
             <polygon points="16,8 24,13 24,23 16,28 8,23 8,13" fill="rgba(255,107,35,0.2)" stroke="#ff6b23" strokeWidth="1"/>
             <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
           </svg>
-          <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
+          <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
             <span style={{ color: "#ff6b23" }}>OVER</span>CLAN
           </div>
         </div>
 
         <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.15)", padding: "36px 32px", clipPath: "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))" }}>
-          <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 28, color: "#e8eaf0" }}>회원가입</h2>
+          <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 28, color: "#e8eaf0" }}>회원가입</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
             <div>
@@ -144,7 +144,7 @@ export default function SignupPage() {
                       background: roles.includes(r.key) ? `${r.color}22` : "rgba(13,20,35,0.8)",
                       border: `1px solid ${roles.includes(r.key) ? r.color : "rgba(255,255,255,0.1)"}`,
                       color: roles.includes(r.key) ? r.color : "#8892a4",
-                      padding: "4px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer",
+                      padding: "4px 10px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer",
                       clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0,
                     }}>{r.icon} {r.key}</button>
                     <select value={r.key === "탱커" ? tierTank : r.key === "딜러" ? tierDps : tierSupport}

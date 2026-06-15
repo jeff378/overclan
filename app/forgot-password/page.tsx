@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 14px 18px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; outline: none; width: 100%; transition: border-color 0.2s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .input:focus { border-color: #ff6b23; }
         .input::placeholder { color: #8892a4; }
-        .btn { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+        .btn { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; width: 100%; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
 
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
               <polygon points="16,8 24,13 24,23 16,28 8,23 8,13" fill="rgba(255,107,35,0.2)" stroke="#ff6b23" strokeWidth="1"/>
               <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
             </svg>
-            <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
+            <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 4, color: "#e8eaf0" }}>
               <span style={{ color: "#ff6b23" }}>OVER</span>CLAN
             </div>
           </a>
@@ -52,15 +52,15 @@ export default function ForgotPasswordPage() {
           {sent ? (
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 40, marginBottom: 16 }}>📧</div>
-              <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 12, color: "#4caf50" }}>이메일 발송 완료</h2>
+              <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 12, color: "#4caf50" }}>이메일 발송 완료</h2>
               <p style={{ fontSize: 14, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 24 }}>
                 {email}로 비밀번호 재설정 링크를 발송했어요.<br/>이메일을 확인해주세요.
               </p>
-              <a href="/login" style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", fontSize: 13, letterSpacing: 1 }}>← 로그인으로 돌아가기</a>
+              <a href="/login" style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, letterSpacing: 1 }}>← 로그인으로 돌아가기</a>
             </div>
           ) : (
             <>
-              <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 8, color: "#e8eaf0" }}>비밀번호 찾기</h2>
+              <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700, letterSpacing: 2, marginBottom: 8, color: "#e8eaf0" }}>비밀번호 찾기</h2>
               <p style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 24, lineHeight: 1.6 }}>가입한 이메일을 입력하면 비밀번호 재설정 링크를 보내드려요.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
                 <input className="input" type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handleReset()} />

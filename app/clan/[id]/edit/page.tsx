@@ -88,7 +88,7 @@ export default function EditClanPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>LOADING...</div>
+      <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>LOADING...</div>
     </div>
   );
 
@@ -101,10 +101,10 @@ export default function EditClanPage() {
         .input::placeholder { color: #8892a4; }
         textarea.input { resize: vertical; min-height: 100px; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; display: block; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px 36px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 14px 36px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-back { background: transparent; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; padding: 13px 24px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
-        .select-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 16px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-back { background: transparent; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; padding: 13px 24px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
+        .select-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%); transition: all 0.2s; }
         .select-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
         .badge-btn { font-size: 24px; padding: 8px; background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
         .badge-btn.active { border-color: #ff6b23; background: rgba(255,107,35,0.15); }
@@ -116,7 +116,7 @@ export default function EditClanPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 36 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 3, height: 22, background: "#ff6b23" }} />
-            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>클랜 정보 수정</h1>
+            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 26, fontWeight: 700, letterSpacing: 2 }}>클랜 정보 수정</h1>
           </div>
           <a href={`/clan/${id}`} className="btn-back">← 돌아가기</a>
         </div>
@@ -163,7 +163,7 @@ export default function EditClanPage() {
                       setForm({ ...form, description: newText });
                       setTimeout(() => { ta.focus(); ta.setSelectionRange(start + (btn.wrap ? btn.wrap[0].length : btn.insert!.length), end + (btn.wrap ? btn.wrap[0].length : btn.insert!.length)); }, 0);
                     }}
-                    style={{ background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.15)", color: "#ff6b23", padding: "3px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", borderRadius: 2 }}>
+                    style={{ background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.15)", color: "#ff6b23", padding: "3px 10px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", borderRadius: 2 }}>
                     {btn.label}
                   </button>
                 ))}
@@ -200,7 +200,7 @@ export default function EditClanPage() {
           <div>
             <label className="label">최대 클랜원 수</label>
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)" }}>
-              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
+              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
               <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>(기본 제공 · 추후 클랜확장권으로 확대 가능)</span>
             </div>
           </div>

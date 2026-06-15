@@ -115,7 +115,7 @@ function StatCard({ label, value, started, delay = 0 }) {
   const display = typeof value === "number" ? counted.toLocaleString() : value;
   return (
     <div className="stat-card" style={{ transitionDelay: `${delay}s` }}>
-      <div style={{ fontSize: 30, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23", letterSpacing: 1 }}>{display}</div>
+      <div style={{ fontSize: 30, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", color: "#ff6b23", letterSpacing: 1 }}>{display}</div>
       <div style={{ fontSize: 11, color: "#8892a4", marginTop: 5, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{label}</div>
     </div>
   );
@@ -167,7 +167,7 @@ export default function Home() {
         .btn-primary{
           background:linear-gradient(135deg,#ff6b23,#ff8c42);
           border:none;color:#fff;padding:14px 32px;
-          font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
+          font-family:'Cinzel','Rajdhani',sans-serif;font-size:14px;font-weight:700;
           letter-spacing:2px;text-transform:uppercase;cursor:pointer;
           clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
           transition:transform 0.3s,box-shadow 0.3s;
@@ -184,7 +184,7 @@ export default function Home() {
         .btn-secondary{
           background:transparent;border:1px solid rgba(255,107,35,0.4);
           color:#ff6b23;padding:13px 32px;
-          font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
+          font-family:'Cinzel','Rajdhani',sans-serif;font-size:14px;font-weight:700;
           letter-spacing:2px;text-transform:uppercase;cursor:pointer;
           clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
           transition:all 0.3s;white-space:nowrap;
@@ -237,7 +237,7 @@ export default function Home() {
         .clan-card:hover::before{opacity:1;}
 
         /* Tab */
-        .tab-btn{background:transparent;border:none;color:#8892a4;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+        .tab-btn{background:transparent;border:none;color:#8892a4;font-family:'Cinzel','Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
         .tab-btn.active{color:#ff6b23;border-bottom-color:#ff6b23;}
         .tab-btn:not(.active):hover{color:#e8eaf0;}
 
@@ -248,7 +248,7 @@ export default function Home() {
         .tier-tag{font-size:10px;font-weight:600;letter-spacing:1px;padding:2px 8px;border:1px solid;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);}
 
         /* Hero */
-        .hero-title{font-size:clamp(52px,8.5vw,104px);font-weight:700;line-height:1.05;letter-spacing:-2px;font-family:'Rajdhani',sans-serif;}
+        .hero-title{font-size:clamp(52px,8.5vw,104px);font-weight:700;line-height:1.05;letter-spacing:-2px;font-family:'Cinzel','Rajdhani',sans-serif;}
         .glow-orange{color:#ff6b23;text-shadow:0 0 40px rgba(255,107,35,0.5),0 0 80px rgba(255,107,35,0.2);}
 
         /* Live dot */
@@ -353,7 +353,7 @@ export default function Home() {
           <div className={`reveal ${rankingVisible ? "visible" : ""}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
             <div>
               <div className={`sec-line ${rankingVisible ? "visible" : ""}`}/>
-              <h2 style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", fontFamily: "Rajdhani, sans-serif", color: "#8892a4" }}>시즌 랭킹</h2>
+              <h2 style={{ fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", color: "#8892a4" }}>시즌 랭킹</h2>
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[{k:"전체",v:"전체"},{k:"소규모",v:"소"},{k:"중규모",v:"중"},{k:"대규모",v:"대"}].map(tab => (
@@ -366,7 +366,7 @@ export default function Home() {
           </div>
 
           {!clansLoaded ? (
-            <div style={{ textAlign: "center", padding: 48, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 3, opacity: 0.4, fontSize: 13 }}>LOADING...</div>
+            <div style={{ textAlign: "center", padding: 48, color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 3, opacity: 0.4, fontSize: 13 }}>LOADING...</div>
           ) : filtered.length === 0 ? (
             <div className={`reveal ${rankingVisible ? "visible" : ""}`} style={{ textAlign: "center", padding: "56px 40px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", background: "rgba(13,20,35,0.5)", border: "1px dashed rgba(255,107,35,0.15)" }}>
               <div style={{ fontSize: 36, marginBottom: 14 }}>🏆</div>
@@ -388,7 +388,7 @@ export default function Home() {
                       )}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{clan.name}</span>
+                          <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{clan.name}</span>
                           <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, opacity: 0.7 }}>[{clan.tag}]</span>
                           {clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={22} />}
                         </div>
@@ -398,7 +398,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", color: "#ff6b23" }}>{clan.wins||0}승</div>
+                        <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", color: "#ff6b23" }}>{clan.wins||0}승</div>
                         <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 1 }}>{clan.points||0} PT</div>
                       </div>
                     </div>
@@ -409,7 +409,7 @@ export default function Home() {
           )}
 
           <div className={`reveal rd4 ${rankingVisible ? "visible" : ""}`} style={{ marginTop: 20, textAlign: "right" }}>
-            <a href="/ranking" style={{ fontSize: 12, color: "#8892a4", textDecoration: "none", letterSpacing: 2, fontFamily: "Rajdhani, sans-serif", fontWeight: 600, transition: "color 0.2s" }}
+            <a href="/ranking" style={{ fontSize: 12, color: "#8892a4", textDecoration: "none", letterSpacing: 2, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 600, transition: "color 0.2s" }}
               onMouseEnter={e=>e.target.style.color="#ff6b23"} onMouseLeave={e=>e.target.style.color="#8892a4"}>
               전체 랭킹 보기 →
             </a>
@@ -429,7 +429,7 @@ export default function Home() {
 
           <div style={{ position: "relative" }}>
             <div className={`reveal ${ctaVisible?"visible":""}`} style={{ fontSize: 11, letterSpacing: 4, color: "#ff6b23", marginBottom: 20, fontWeight: 600 }}>지금 바로 시작</div>
-            <h2 className={`reveal rd1 ${ctaVisible?"visible":""}`} style={{ fontSize: "clamp(28px,5vw,48px)", fontWeight: 700, fontFamily: "Rajdhani, sans-serif", letterSpacing: -1, marginBottom: 16, lineHeight: 1.1 }}>혼자 하는 오버워치는 이제 그만</h2>
+            <h2 className={`reveal rd1 ${ctaVisible?"visible":""}`} style={{ fontSize: "clamp(28px,5vw,48px)", fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: -1, marginBottom: 16, lineHeight: 1.1 }}>혼자 하는 오버워치는 이제 그만</h2>
             <p className={`reveal rd2 ${ctaVisible?"visible":""}`} style={{ fontSize: 15, color: "#8892a4", marginBottom: 40, fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, lineHeight: 1.7 }}>
               클랜을 만들고, 대전에 참여하고, 명예를 쌓아라.
             </p>
@@ -441,7 +441,7 @@ export default function Home() {
         </section>
 
         <footer style={{ padding: "28px clamp(20px,5vw,48px)", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", flexWrap: "wrap", gap: 12 }}>
-          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2 }}>© 2026 OVERCLAN — 비공식 팬 플랫폼</span>
+          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>© 2026 OVERCLAN — 비공식 팬 플랫폼</span>
           <div style={{ display: "flex", gap: 24 }}>
             {[{label:"이용약관",href:"/terms"},{label:"개인정보처리방침",href:"/privacy"},{label:"문의하기",href:"/contact"}].map(item => (
               <a key={item.label} href={item.href} style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif", transition: "color 0.2s" }}

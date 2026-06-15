@@ -234,7 +234,7 @@ export default function BattleDetailPage() {
       {clan?.emblem_image
         ? <img src={clan.emblem_image} alt="" style={{ width: size + 6, height: size + 6, objectFit: "cover", borderRadius: 6, border: `1px solid ${clan.accent_color || "#ff6b23"}55`, flexShrink: 0 }} />
         : <span style={{ fontSize: size }}>{clan?.badge}</span>}
-      <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{clan?.name}</span>
+      <span className="matchup-name" style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, borderBottom: "1px solid rgba(255,107,35,0.3)" }}>{clan?.name}</span>
       {clan?.emblem_image && <ClanTierChip memberCount={clan?.clan_members?.[0]?.count || 0} size={18} />}
     </a>
   );
@@ -243,25 +243,25 @@ export default function BattleDetailPage() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:hover { opacity: 0.9; }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
+        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
         .btn-sm:hover { background: rgba(255,107,35,0.1); }
-        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .input:focus { border-color: #ff6b23; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
         .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
-        .role-btn { padding: 8px 16px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
+        .role-btn { padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
         .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .member-slot { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .member-slot.confirmed { border-color: rgba(76,175,80,0.3); }
         .empty-slot { background: rgba(13,20,35,0.3); border: 1px dashed rgba(255,255,255,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
         @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
-        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
-        .back-link { display:inline-flex; align-items:center; gap:6px; color:#8892a4; font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600; letter-spacing:1px; text-decoration:none; transition:color .2s; }
+        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Cinzel','Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
+        .back-link { display:inline-flex; align-items:center; gap:6px; color:#8892a4; font-family:'Cinzel','Rajdhani',sans-serif; font-size:13px; font-weight:600; letter-spacing:1px; text-decoration:none; transition:color .2s; }
         .back-link:hover { color:#ff6b23; }
         @media (max-width: 640px) { .detail-panel { padding: 16px; } .matchup-name { font-size: 14px !important; } }
       `}</style>
@@ -274,7 +274,7 @@ export default function BattleDetailPage() {
         </div>
 
         {loading ? (
-          <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "60px 0" }}>LOADING...</div>
+          <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2, textAlign: "center", padding: "60px 0" }}>LOADING...</div>
         ) : notFound || !battle ? (
           <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
             대전을 찾을 수 없어요. 이미 취소되었거나 종료된 대전일 수 있어요.
@@ -292,7 +292,7 @@ export default function BattleDetailPage() {
                   await supabase.from("clan_battles").delete().eq("id", battle.id);
                   alert("대전이 취소됐어요.");
                   router.push("/battle");
-                }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "6px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>대전 취소</button>
+                }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "6px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>대전 취소</button>
               )}
             </div>
 
@@ -346,7 +346,7 @@ export default function BattleDetailPage() {
                     <div>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                         <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 600 }}>지원한 클랜 ({applicants.length})</div>
-                        <button onClick={handleCancelPost} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>모집 취소</button>
+                        <button onClick={handleCancelPost} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>모집 취소</button>
                       </div>
                       {applicants.length === 0 ? (
                         <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", padding: "16px 0", textAlign: "center" }}>아직 지원한 클랜이 없어요.</div>
@@ -358,7 +358,7 @@ export default function BattleDetailPage() {
                               : <span style={{ fontSize: 22 }}>{a.clans?.badge}</span>}
                             <div style={{ minWidth: 0 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.clans?.name}</span>
+                                <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.clans?.name}</span>
                                 <ClanTierChip memberCount={a.clans?.clan_members?.[0]?.count || 0} size={16} showName={false} />
                               </div>
                               {a.message && <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.message}</div>}
@@ -371,7 +371,7 @@ export default function BattleDetailPage() {
                   ) : alreadyApplied ? (
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                       <div style={{ fontSize: 13, color: "#4caf50", fontFamily: "Noto Sans KR, sans-serif" }}>✅ 지원 완료 — 모집 클랜의 수락을 기다려보세요.</div>
-                      <button onClick={handleWithdraw} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 12px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>지원 취소</button>
+                      <button onClick={handleWithdraw} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 12px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>지원 취소</button>
                     </div>
                   ) : canApply ? (
                     <div>
@@ -393,7 +393,7 @@ export default function BattleDetailPage() {
               <div className="scrim-box" style={{ marginBottom: 16 }}>
                 <div>
                   <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1, marginBottom: 4 }}>스크림방 제목 (복사해서 사용하세요)</div>
-                  <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#ff6b23" }}>{scrimTitle(battle)}</div>
+                  <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, color: "#ff6b23" }}>{scrimTitle(battle)}</div>
                 </div>
                 <button className="btn-sm" onClick={() => { navigator.clipboard.writeText(scrimTitle(battle)); alert("복사됐어요!"); }}>복사</button>
               </div>
@@ -409,7 +409,7 @@ export default function BattleDetailPage() {
                     await supabase.from("clan_battles").delete().eq("id", battle.id);
                     alert("대전 신청을 거절했어요.");
                     router.push("/battle");
-                  }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>거절</button>
+                  }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>거절</button>
                 </div>
                 {(battle.proposed_dates || []).length === 0 ? (
                   <div style={{ fontSize: 12, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>제안된 날짜가 없어요.</div>
@@ -440,7 +440,7 @@ export default function BattleDetailPage() {
                     if (!confirm("대전 신청을 취소할까요?")) return;
                     await supabase.from("clan_battles").delete().eq("id", battle.id);
                     router.push("/battle");
-                  }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>신청 취소</button>
+                  }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>신청 취소</button>
                 </div>
                 <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 4 }}>제안한 날짜</div>
                 {(battle.proposed_dates || []).map((date: string, i: number) => (
@@ -479,13 +479,13 @@ export default function BattleDetailPage() {
                           <div key={v.id} className="member-slot confirmed" style={{ justifyContent: "space-between" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <span style={{ fontSize: 16 }}>{cfg.icon}</span>
-                              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
+                              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
                             </div>
                             {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
                               <button onClick={async () => {
                                 await supabase.from("battle_volunteers").update({ is_confirmed: false, confirmed_role: null }).eq("id", v.id);
                                 await loadVolunteers(battle.id);
-                              }} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "3px 10px", fontFamily: "Rajdhani, sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: 0.7 }}>확정 취소</button>
+                              }} style={{ background: "none", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "3px 10px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", opacity: 0.7 }}>확정 취소</button>
                             )}
                           </div>
                         ))}
@@ -493,7 +493,7 @@ export default function BattleDetailPage() {
                           <div key={v.id} className="member-slot" style={{ justifyContent: "space-between" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <span style={{ fontSize: 14 }}>{cfg.icon}</span>
-                              <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>                            </div>
+                              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>                            </div>
                             {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
                               <button className="btn-green" style={{ fontSize: 10 }} onClick={() => handleConfirmMember(v.id, role)}>확정</button>
                             )}
@@ -552,7 +552,7 @@ export default function BattleDetailPage() {
                         <button onClick={async () => {
                           await supabase.from("clan_battles").update(myClan?.id === battle.clan1_id ? { clan1_result: null } : { clan2_result: null }).eq("id", battle.id);
                           await reloadBattle();
-                        }} style={{ background: "none", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "6px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>수정하기 (24시간 이내)</button>
+                        }} style={{ background: "none", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "6px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>수정하기 (24시간 이내)</button>
                       ) : null;
                     })()}
                   </div>
@@ -567,7 +567,7 @@ export default function BattleDetailPage() {
             {battle.status === "완료" && (
               <div style={{ marginTop: 8, padding: "20px", background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.15)", textAlign: "center" }}>
                 <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 10 }}>최종 결과</div>
-                <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 32, fontWeight: 700 }}>{battle.clan1_score} - {battle.clan2_score}</div>
+                <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 32, fontWeight: 700 }}>{battle.clan1_score} - {battle.clan2_score}</div>
                 {battle.winner_id && (
                   <div style={{ marginTop: 8, fontSize: 14, color: "#ff6b23", fontWeight: 700 }}>
                     🏆 {battle.winner_id === battle.clan1_id ? battle.clan1?.name : battle.clan2?.name} 승리

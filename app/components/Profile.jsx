@@ -34,15 +34,15 @@ export default function OverClanProfile() {
         .nav-link { color: #8892a4; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
         .nav-link:hover { color: #ff6b23; }
 
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 12px 28px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,107,35,0.4); }
 
-        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 11px 28px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 11px 28px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-secondary:hover { background: rgba(255,107,35,0.1); }
 
         .stat-box { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.12); padding: 20px 24px; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); text-align: center; }
 
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
         .tab-btn:hover { color: #ff6b23; }
 
@@ -60,8 +60,8 @@ export default function OverClanProfile() {
         .online { background: #4caf50; box-shadow: 0 0 6px #4caf50; animation: pulse 2s infinite; }
         .offline { background: #37474f; }
 
-        .win-badge { color: #4caf50; font-weight: 700; font-size: 16px; font-family: 'Rajdhani', sans-serif; }
-        .lose-badge { color: #ef5350; font-weight: 700; font-size: 16px; font-family: 'Rajdhani', sans-serif; }
+        .win-badge { color: #4caf50; font-weight: 700; font-size: 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; }
+        .lose-badge { color: #ef5350; font-weight: 700; font-size: 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; }
 
         .hex-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.4; z-index: 0; }
       `}</style>
@@ -85,7 +85,7 @@ export default function OverClanProfile() {
                 <polygon points="16,8 24,13 24,23 16,28 8,23 8,13" fill="rgba(255,107,35,0.2)" stroke="#ff6b23" strokeWidth="1"/>
                 <text x="16" y="22" textAnchor="middle" fill="#ff6b23" fontSize="10" fontWeight="700" fontFamily="Rajdhani">OC</text>
               </svg>
-              <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 3, fontFamily: "Rajdhani, sans-serif" }}>
+              <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 3, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
                 <span style={{ color: "#ff6b23" }}>OVER</span><span>CLAN</span>
               </span>
             </div>
@@ -119,7 +119,7 @@ export default function OverClanProfile() {
               {/* 클랜 정보 */}
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                  <h1 style={{ fontSize: 32, fontWeight: 700, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1 }}>Phoenix Squad</h1>
+                  <h1 style={{ fontSize: 32, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 1 }}>Phoenix Squad</h1>
                   <span style={{ fontSize: 14, color: "#ff6b23", opacity: 0.6, fontWeight: 600 }}>[PHNX]</span>
                   <span style={{ background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%)" }}>PRO</span>
                 </div>
@@ -151,7 +151,7 @@ export default function OverClanProfile() {
               { label: "승률", value: "85.7%" },
             ].map(s => (
               <div key={s.label} className="stat-box">
-                <div style={{ fontSize: 26, fontWeight: 700, color: "#ff6b23", fontFamily: "Rajdhani, sans-serif" }}>{s.value}</div>
+                <div style={{ fontSize: 26, fontWeight: 700, color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{s.value}</div>
                 <div style={{ fontSize: 11, color: "#8892a4", marginTop: 4, letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif" }}>{s.label}</div>
               </div>
             ))}
@@ -178,7 +178,7 @@ export default function OverClanProfile() {
               </div>
               {members.map(m => (
                 <div key={m.name} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 80px", gap: 16, alignItems: "center" }}>
-                  <span style={{ fontWeight: 600, fontFamily: "Rajdhani, sans-serif", fontSize: 15 }}>{m.name}</span>
+                  <span style={{ fontWeight: 600, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15 }}>{m.name}</span>
                   <span className="role-tag" style={{
                     background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : m.role === "부클랜장" ? "rgba(79,195,247,0.1)" : "rgba(255,255,255,0.05)",
                     color: m.role === "클랜장" ? "#ff6b23" : m.role === "부클랜장" ? "#4fc3f7" : "#8892a4",
@@ -186,7 +186,7 @@ export default function OverClanProfile() {
                   }}>{m.role}</span>
                   <span className="tier-tag" style={{ borderColor: `${tierColors[m.tier]}44`, color: tierColors[m.tier], width: "fit-content" }}>{m.tier}</span>
                   <span style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{m.hero}</span>
-                  <span style={{ fontSize: 15, color: "#ff6b23", fontWeight: 700, fontFamily: "Rajdhani, sans-serif" }}>{m.wins}승</span>
+                  <span style={{ fontSize: 15, color: "#ff6b23", fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{m.wins}승</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div className={`online-dot ${m.online ? "online" : "offline"}`} />
                     <span style={{ fontSize: 11, color: m.online ? "#4caf50" : "#8892a4" }}>{m.online ? "온라인" : "오프라인"}</span>
@@ -208,9 +208,9 @@ export default function OverClanProfile() {
               </div>
               {battles.map((b, i) => (
                 <div key={i} className="battle-row" style={{ display: "grid", gridTemplateColumns: "1fr 80px 100px 80px 100px", gap: 16, alignItems: "center" }}>
-                  <span style={{ fontWeight: 600, fontFamily: "Rajdhani, sans-serif", fontSize: 15 }}>{b.opponent}</span>
+                  <span style={{ fontWeight: 600, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15 }}>{b.opponent}</span>
                   <span className={b.result === "승" ? "win-badge" : "lose-badge"}>{b.result}</span>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, color: "#e8eaf0", fontWeight: 600 }}>{b.score}</span>
+                  <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, color: "#e8eaf0", fontWeight: 600 }}>{b.score}</span>
                   <span style={{ fontSize: 11, color: b.tier === "정규" ? "#ff6b23" : "#8892a4", letterSpacing: 1 }}>{b.tier}</span>
                   <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{b.date}</span>
                 </div>

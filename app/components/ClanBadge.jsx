@@ -316,7 +316,7 @@ export function ClanTierChip({ memberCount = 0, tierIndex, size = 22, showName =
         <ClanBadge tierIndex={idx} size={size} />
       </span>
       {showName && (
-        <span style={{ fontSize: Math.max(10, Math.round(size * 0.5)), fontWeight: 700, color: tier.base, fontFamily: "Rajdhani, sans-serif", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: Math.max(10, Math.round(size * 0.5)), fontWeight: 700, color: tier.base, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
           {tier.name}
         </span>
       )}
@@ -354,10 +354,10 @@ export default function ClanBadge({ memberCount = 0, tierIndex, size = 80, showL
       <NeonBadge tier={tier} size={size} />
       {showLabel && (
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: tier.base, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: tier.base, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 1 }}>
             {tier.name}
           </div>
-          <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1.5, fontFamily: "Rajdhani, sans-serif" }}>
+          <div style={{ fontSize: 10, color: "#8892a4", letterSpacing: 1.5, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>
             {tier.en} · {tier.range}
           </div>
         </div>

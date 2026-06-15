@@ -129,7 +129,7 @@ export default function SettingsPage() {
 
   if (loading) return (
     <div style={{ minHeight:"100vh", background:"#080c14", display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div style={{ color:"#ff6b23", fontFamily:"Rajdhani, sans-serif", letterSpacing:2 }}>LOADING...</div>
+      <div style={{ color:"#ff6b23", fontFamily:"'Cinzel', 'Rajdhani', sans-serif", letterSpacing:2 }}>LOADING...</div>
     </div>
   );
 
@@ -149,7 +149,7 @@ export default function SettingsPage() {
         .lang-btn:hover:not(.disabled) { border-color:rgba(255,107,35,0.3); }
         .lang-btn.active { border-color:#ff6b23; background:rgba(255,107,35,0.08); }
         .lang-btn.disabled { opacity:0.4; cursor:not-allowed; }
-        .soon-tag { font-size:10px; background:rgba(255,107,35,0.15); color:#ff6b23; border:1px solid rgba(255,107,35,0.3); padding:2px 7px; font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:1px; }
+        .soon-tag { font-size:10px; background:rgba(255,107,35,0.15); color:#ff6b23; border:1px solid rgba(255,107,35,0.3); padding:2px 7px; font-family:'Cinzel','Rajdhani',sans-serif; font-weight:700; letter-spacing:1px; }
         a.setting-row { text-decoration:none; color:inherit; cursor:pointer; }
       `}</style>
 

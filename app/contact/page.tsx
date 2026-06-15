@@ -92,10 +92,10 @@ export default function ContactPage() {
         .chat-input { background:rgba(13,20,35,0.9); border:1px solid rgba(255,107,35,0.2); color:#e8eaf0; padding:13px 18px; font-family:'Noto Sans KR',sans-serif; font-size:14px; outline:none; flex:1; transition:border-color 0.2s; }
         .chat-input:focus { border-color:#ff6b23; }
         .chat-input::placeholder { color:#8892a4; }
-        .send-btn { background:linear-gradient(135deg,#ff6b23,#ff8c42); border:none; color:#fff; padding:13px 22px; font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; letter-spacing:1px; cursor:pointer; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition:opacity 0.2s; white-space:nowrap; }
+        .send-btn { background:linear-gradient(135deg,#ff6b23,#ff8c42); border:none; color:#fff; padding:13px 22px; font-family:'Cinzel','Rajdhani',sans-serif; font-size:14px; font-weight:700; letter-spacing:1px; cursor:pointer; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition:opacity 0.2s; white-space:nowrap; }
         .send-btn:disabled { opacity:0.45; cursor:not-allowed; }
         @media (max-width: 720px) { .contact-grid { grid-template-columns: 1fr !important; } .chat-sticky { position: static !important; } }
-        .escalate-btn { background:rgba(255,107,35,0.12); border:1px solid rgba(255,107,35,0.4); color:#ff6b23; padding:8px 18px; font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:700; letter-spacing:1px; cursor:pointer; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); margin-top:10px; }
+        .escalate-btn { background:rgba(255,107,35,0.12); border:1px solid rgba(255,107,35,0.4); color:#ff6b23; padding:8px 18px; font-family:'Cinzel','Rajdhani',sans-serif; font-size:12px; font-weight:700; letter-spacing:1px; cursor:pointer; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); margin-top:10px; }
         .form-input { background:rgba(13,20,35,0.9); border:1px solid rgba(255,107,35,0.2); color:#e8eaf0; padding:12px 16px; font-family:'Noto Sans KR',sans-serif; font-size:14px; outline:none; width:100%; transition:border-color 0.2s; }
         .form-input:focus { border-color:#ff6b23; }
         .form-input::placeholder { color:#8892a4; }

@@ -227,13 +227,13 @@ export default function OverClanBattle() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
         .btn-primary:hover { opacity: 0.9; }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
+        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
         .btn-sm:hover { background: rgba(255,107,35,0.1); }
-        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
-        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
         .battle-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 18px 22px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
         .battle-card:hover, .battle-card.active { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
@@ -243,15 +243,15 @@ export default function OverClanBattle() {
         .select { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
         .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
-        .role-btn { padding: 8px 16px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
+        .role-btn { padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
         .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .member-slot { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .member-slot.confirmed { border-color: rgba(76,175,80,0.3); }
         .empty-slot { background: rgba(13,20,35,0.3); border: 1px dashed rgba(255,255,255,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
         @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
-        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
-        .clan-name { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
+        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Cinzel','Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
+        .clan-name { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
         @media (max-width: 640px) {
           .battle-grid { grid-template-columns: 1fr !important; }
           .detail-panel { padding: 16px; }
@@ -266,7 +266,7 @@ export default function OverClanBattle() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>클랜대전</h1>
+            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>클랜대전</h1>
           </div>
           {myClan && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "대전 신청"}</button>}
         </div>
@@ -274,13 +274,13 @@ export default function OverClanBattle() {
         {/* 대전 신청 폼 */}
         {showForm && (
           <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 24, marginBottom: 20 }}>
-            <h3 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 16, color: "#ff6b23" }}>클랜대전 신청</h3>
+            <h3 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 16, color: "#ff6b23" }}>클랜대전 신청</h3>
 
             {/* 모드 토글 */}
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
               {[["지목", "특정 클랜 지목"], ["모집", "열린 모집 (상대 구함)"]].map(([m, lbl]) => (
                 <button key={m} onClick={() => setForm({ ...form, mode: m })} style={{
-                  flex: 1, padding: "10px 12px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer",
+                  flex: 1, padding: "10px 12px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer",
                   background: form.mode === m ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)",
                   border: `1px solid ${form.mode === m ? "#ff6b23" : "rgba(255,255,255,0.1)"}`,
                   color: form.mode === m ? "#ff6b23" : "#8892a4",
@@ -358,7 +358,7 @@ export default function OverClanBattle() {
               background: myClanOnly ? "rgba(255,107,35,0.15)" : "transparent",
               border: `1px solid ${myClanOnly ? "#ff6b23" : "rgba(255,107,35,0.2)"}`,
               color: myClanOnly ? "#ff6b23" : "#8892a4",
-              padding: "5px 14px", fontFamily: "Rajdhani, sans-serif", fontSize: 11, fontWeight: 700,
+              padding: "5px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700,
               cursor: "pointer", letterSpacing: 1,
               clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
               marginBottom: 4,
@@ -367,7 +367,7 @@ export default function OverClanBattle() {
         </div>
 
         {loading ? (
-          <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
+          <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
         ) : (
           <div className="battle-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
 
@@ -414,11 +414,11 @@ export default function OverClanBattle() {
                   <div key={b.id} className="battle-card">
                     <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {b.clan1?.emblem_image ? <img src={b.clan1.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan1.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>}
-                      <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
+                      <span className="matchup-name" style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
                       <div style={{ textAlign: "center", minWidth: 60 }}>
-                        <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 20, fontWeight: 700 }}>{b.clan1_score} - {b.clan2_score}</div>
+                        <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700 }}>{b.clan1_score} - {b.clan2_score}</div>
                       </div>
-                      <span className="matchup-name" style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
+                      <span className="matchup-name" style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
                       {b.clan2?.emblem_image ? <img src={b.clan2.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan2.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>}
                     </div>
                   </div>

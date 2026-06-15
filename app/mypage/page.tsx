@@ -49,7 +49,7 @@ export default function MyPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", fontSize: 18, letterSpacing: 2 }}>LOADING...</div>
+      <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 18, letterSpacing: 2 }}>LOADING...</div>
     </div>
   );
 
@@ -62,7 +62,7 @@ export default function MyPage() {
         .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .role-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
         .tier-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; }
       `}</style>
 
       <Navbar />
@@ -77,7 +77,7 @@ export default function MyPage() {
               👤
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{profile?.nickname}</div>
+              <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{profile?.nickname}</div>
               <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{profile?.battletag}</div>
               <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
                 {[
@@ -103,8 +103,8 @@ export default function MyPage() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignSelf: "flex-start" }}>
-              <a href="/profile-edit" style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>프로필 수정</a>
-              <a href="/settings" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.12)", color: "#a8b0c0", padding: "8px 16px", fontFamily: "Rajdhani, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", display: "inline-flex", alignItems: "center", gap: 6 }}>⚙ 설정</a>
+              <a href="/profile-edit" style={{ background: "rgba(255,107,35,0.12)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "8px 16px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>프로필 수정</a>
+              <a href="/settings" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.12)", color: "#a8b0c0", padding: "8px 16px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, textDecoration: "none", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)", display: "inline-flex", alignItems: "center", gap: 6 }}>⚙ 설정</a>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function MyPage() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 3, height: 16, background: "#ff6b23" }} />
-              <h2 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, letterSpacing: 2 }}>내 클랜</h2>
+              <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, letterSpacing: 2 }}>내 클랜</h2>
             </div>
             <a href="/clan/create" className="btn-primary">+ 클랜 만들기</a>
           </div>
@@ -125,7 +125,7 @@ export default function MyPage() {
               <div style={{ color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, marginBottom: 20 }}>아직 소속된 클랜이 없어요.</div>
               <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
                 <a href="/clan/create" className="btn-primary">클랜 만들기</a>
-                <a href="/find" style={{ background: "transparent", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "10px 24px", fontFamily: "Rajdhani, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>클랜 찾기</a>
+                <a href="/find" style={{ background: "transparent", border: "1px solid rgba(255,107,35,0.4)", color: "#ff6b23", padding: "10px 24px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>클랜 찾기</a>
               </div>
             </div>
           ) : myClans.map(m => (
@@ -135,7 +135,7 @@ export default function MyPage() {
                 : <ClanBadge memberCount={m.clans?.clan_members?.[0]?.count || 0} size={44} />}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                  <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.clans?.name}</span>
+                  <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.clans?.name}</span>
                   {m.clans?.emblem_image && <ClanTierChip memberCount={m.clans?.clan_members?.[0]?.count || 0} size={18} />}
                 </div>
                 <span className="role-tag" style={{
@@ -146,11 +146,11 @@ export default function MyPage() {
               <div style={{ textAlign: "right", flexShrink: 0 }}>
                 <div style={{ display: "flex", gap: 12 }}>
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: "#4caf50", fontFamily: "Rajdhani, sans-serif" }}>{m.clans?.wins || 0}</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: "#4caf50", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{m.clans?.wins || 0}</div>
                     <div style={{ fontSize: 10, color: "#8892a4" }}>승</div>
                   </div>
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: "#ef5350", fontFamily: "Rajdhani, sans-serif" }}>{m.clans?.losses || 0}</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: "#ef5350", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{m.clans?.losses || 0}</div>
                     <div style={{ fontSize: 10, color: "#8892a4" }}>패</div>
                   </div>
                 </div>

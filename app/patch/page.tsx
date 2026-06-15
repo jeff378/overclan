@@ -56,7 +56,7 @@ export default function PatchPage() {
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
         .post-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 20px 24px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); margin-bottom: 8px; position: relative; display: block; text-decoration: none; color: inherit; }
         .post-card:hover { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
@@ -76,7 +76,7 @@ export default function PatchPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             <div style={{ width: 3, height: 22, background: "#ff6b23", flexShrink: 0 }} />
-            <h1 style={{ fontFamily: "Rajdhani, sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap" }}>패치노트 토론장</h1>
+            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap" }}>패치노트 토론장</h1>
           </div>
           {user && <button className="btn-primary" onClick={() => setShowForm(!showForm)} style={{ flexShrink: 0 }}>{showForm ? "취소" : "글 작성"}</button>}
         </div>
@@ -95,7 +95,7 @@ export default function PatchPage() {
                 <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2 }}>블리자드 공식 패치노트를 확인하고 여기서 토론해보세요</div>
               </div>
             </div>
-            <span style={{ fontSize: 13, color: "#ff6b23", fontWeight: 600, fontFamily: "Rajdhani, sans-serif", letterSpacing: 1, whiteSpace: "nowrap", flexShrink: 0 }}>바로가기 →</span>
+            <span style={{ fontSize: 13, color: "#ff6b23", fontWeight: 600, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 1, whiteSpace: "nowrap", flexShrink: 0 }}>바로가기 →</span>
           </div>
         </a>
 
@@ -123,14 +123,14 @@ export default function PatchPage() {
 
         <div>
           {loading ? (
-            <div style={{ color: "#ff6b23", fontFamily: "Rajdhani, sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
+            <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
           ) : posts.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>아직 글이 없어요. 첫 번째 토론을 시작해보세요!</div>
           ) : posts.filter((p: any) => !search || p.title.includes(search) || p.content.includes(search)).map(post => (
             <a key={post.id} href={`/patch/${post.id}`} className="post-card">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                 {post.patch_version && <span className="patch-tag" style={{ flexShrink: 0 }}>v{post.patch_version}</span>}
-                <span style={{ fontFamily: "Rajdhani, sans-serif", fontSize: 16, fontWeight: 700, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.title}</span>
+                <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.title}</span>
                 {user?.id === post.user_id && (
                   <button className="btn-del" onClick={e => { e.preventDefault(); e.stopPropagation(); handleDelete(post.id); }} style={{ flexShrink: 0 }}>🗑</button>
                 )}
