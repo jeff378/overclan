@@ -268,7 +268,7 @@ export default function ClanDetailPage() {
 
       {/* YouTube 스타일 배너 - 이미지가 영역을 꽉 채움(cover) */}
       {clan.banner_image && (
-        <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden", background: "#080c14" }}>
+        <div style={{ width: "100%", aspectRatio: "5 / 1", minHeight: 120, maxHeight: 260, position: "relative", overflow: "hidden", background: "#080c14" }}>
           <img src={clan.banner_image} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.85))" }} />
         </div>
