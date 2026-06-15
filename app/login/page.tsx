@@ -14,12 +14,35 @@ export default function LoginPage() {
   const handleLogin = async () => {
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError("이메일 또는 비밀번호가 올바르지 않아요.");
-    } else {
-      router.push("/");
+      if (error.message.toLowerCase().includes("confirm")) {
+        setError("이메일 인증을 먼저 완료해주세요. 메일함(스팸함 포함)을 확인해주세요.");
+      } else {
+        setError("이메일 또는 비밀번호가 올바르지 않아요.");
+      }
+      setLoading(false);
+      return;
     }
+    // 인증 후 첫 로그인 — 프로필이 없으면 가입 시 저장한 메타데이터로 생성
+    const u = signInData.user;
+    if (u) {
+      const { data: prof } = await supabase.from("profiles").select("id").eq("id", u.id).limit(1);
+      if (!prof || prof.length === 0) {
+        const m: any = u.user_metadata || {};
+        await supabase.from("profiles").upsert({
+          id: u.id,
+          nickname: m.nickname || (u.email ? u.email.split("@")[0] : "유저"),
+          battletag: m.battletag || "",
+          email: u.email,
+          roles: m.roles || [],
+          tier_tank: m.tier_tank || "",
+          tier_dps: m.tier_dps || "",
+          tier_support: m.tier_support || "",
+        });
+      }
+    }
+    router.push("/");
     setLoading(false);
   };
 

@@ -23,6 +23,7 @@ export default function SignupPage() {
   const [tierSupport, setTierSupport] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const toggleRole = (role: string) => {
     setRoles(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
@@ -58,8 +59,9 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        emailRedirectTo: undefined,
-        data: { nickname, battletag }
+        emailRedirectTo: typeof window !== "undefined" ? `${window.location.origin}/login` : undefined,
+        // 인증 후 첫 로그인 때 프로필을 생성하기 위해 메타데이터에 보관
+        data: { nickname, battletag, roles, tier_tank: tierTank, tier_dps: tierDps, tier_support: tierSupport },
       }
     });
 
@@ -74,22 +76,38 @@ export default function SignupPage() {
       return;
     }
 
-    if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: data.user.id,
-        nickname,
-        battletag,
-        email,
-        roles,
-        tier_tank: tierTank,
-        tier_dps: tierDps,
-        tier_support: tierSupport,
+    if (data.session) {
+      // 이메일 확인이 꺼져 있으면 바로 로그인됨 → 프로필 생성
+      await supabase.from("profiles").upsert({
+        id: data.user!.id,
+        nickname, battletag, email, roles,
+        tier_tank: tierTank, tier_dps: tierDps, tier_support: tierSupport,
       });
-      if (profileError) console.error("프로필 저장 오류:", profileError);
       router.push("/");
+    } else {
+      // 이메일 확인이 켜져 있으면 인증 메일 발송 → 안내 화면
+      setSent(true);
     }
     setLoading(false);
   };
+
+  if (sent) {
+    return (
+      <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", padding: "0 24px" }}>
+        <div style={{ width: "100%", maxWidth: 440, textAlign: "center" }}>
+          <div style={{ fontSize: 46, marginBottom: 16 }}>📧</div>
+          <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2, color: "#fff", marginBottom: 14 }}>인증 메일을 보냈어요</h1>
+          <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 8 }}>
+            <span style={{ color: "#ff6b23", fontWeight: 700 }}>{email}</span> 로 보낸 메일의<br />인증 링크를 눌러 가입을 완료해주세요.
+          </p>
+          <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 28 }}>
+            메일이 안 보이면 스팸함도 확인해주세요. 인증 후 로그인하시면 됩니다.
+          </p>
+          <a href="/login" style={{ display: "inline-block", background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "13px 32px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>로그인하러 가기</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
