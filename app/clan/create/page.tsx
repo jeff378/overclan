@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import { VIBE_TAGS, ACCENT_COLORS } from "../../../lib/clanCustomization";
 import { isValueTaken } from "../../../lib/validate";
+import { computeClanTier } from "../../../lib/clanTier";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
-const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
 const TIMES = ["아침", "저녁", "밤", "새벽", "주말"];
 const STYLES = ["경쟁", "캐주얼", "친목"];
 
@@ -18,7 +18,7 @@ export default function CreateClanPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
-    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 50,
+    play_time: "저녁", style: "캐주얼", max_members: 50,
     accent_color: "#ff6b23", vibe_tags: [] as string[]
   });
 
@@ -78,10 +78,19 @@ export default function CreateClanPage() {
     setLoading(true);
     setError("");
 
+    // 창설자(클랜장)의 실제 티어로 전력 초기값 산출 — 이후 가입/티어변경 시 DB 트리거가 자동 재계산
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("tier_tank, tier_dps, tier_support")
+      .eq("id", user.id)
+      .single();
+    const initialTier = computeClanTier(prof ? [prof] : []);
+
     const { data: clan, error: clanError } = await supabase.from("clans").insert({
       ...form,
       tag: form.tag.toUpperCase(),
       owner_id: user.id,
+      ...(initialTier ? { tier: initialTier } : {}),
     }).select().single();
 
     if (clanError) {
@@ -149,14 +158,6 @@ export default function CreateClanPage() {
           <div>
             <label className="label">클랜 소개 *</label>
             <textarea className="input" placeholder="클랜을 소개해주세요. 어떤 유저를 찾고 있나요?" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">주요 티어</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {TIERS.map(t => (
-                <button key={t} className={`select-btn ${form.tier === t ? "active" : ""}`} onClick={() => setForm({ ...form, tier: t })}>{t}</button>
-              ))}
-            </div>
           </div>
           <div>
             <label className="label">주 활동 시간</label>

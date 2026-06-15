@@ -7,7 +7,6 @@ import { VIBE_TAGS, ACCENT_COLORS, BANNER_COLORS, uploadClanImage } from "../../
 import { isValueTaken } from "../../../../lib/validate";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
-const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
 const TIMES = ["아침", "저녁", "밤", "새벽", "주말"];
 const STYLES = ["경쟁", "캐주얼", "친목"];
 
@@ -20,7 +19,7 @@ export default function EditClanPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
-    tier: "골드", play_time: "저녁", style: "캐주얼", max_members: 50,
+    play_time: "저녁", style: "캐주얼", max_members: 50,
     discord_link: "", slogan: "", join_condition: "", banner_color: "#1a1f35",
     accent_color: "#ff6b23", vibe_tags: [] as string[], banner_image: "", emblem_image: "",
   });
@@ -53,7 +52,7 @@ export default function EditClanPage() {
       if (!clan || clan.owner_id !== userData.user.id) { router.push("/"); return; }
       setForm({
         name: clan.name, tag: clan.tag, description: clan.description || "",
-        badge: clan.badge, tier: clan.tier, play_time: clan.play_time,
+        badge: clan.badge, play_time: clan.play_time,
         style: clan.style, max_members: clan.max_members,
         discord_link: clan.discord_link || "",
         slogan: clan.slogan || "",
@@ -78,7 +77,7 @@ export default function EditClanPage() {
     setError("");
     const { error: updateError } = await supabase.from("clans").update({
       name: form.name, tag: form.tag.toUpperCase(), description: form.description,
-      badge: form.badge, tier: form.tier, play_time: form.play_time,
+      badge: form.badge, play_time: form.play_time,
       style: form.style, max_members: form.max_members,
       discord_link: form.discord_link, slogan: form.slogan,
       join_condition: form.join_condition, banner_color: form.banner_color,
@@ -174,14 +173,6 @@ export default function EditClanPage() {
               </div>
               <textarea id="desc-editor" className="input" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                 style={{ border: "none", minHeight: 140, resize: "vertical" }} placeholder="클랜을 소개하는 글을 작성해주세요." />
-            </div>
-          </div>
-          <div>
-            <label className="label">주요 티어</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {TIERS.map(t => (
-                <button key={t} className={`select-btn ${form.tier === t ? "active" : ""}`} onClick={() => setForm({ ...form, tier: t })}>{t}</button>
-              ))}
             </div>
           </div>
           <div>
