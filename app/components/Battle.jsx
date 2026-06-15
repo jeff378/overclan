@@ -465,8 +465,12 @@ export default function OverClanBattle() {
                       <div className="m-side">
                         {sideEmblem(b.clan1, 48)}
                         <span className="m-nm">{b.clan1?.name}</span>
-                        {b.clan1?.tier && tierTag(b.clan1.tier)}
-                        {v?.placement === "clan1" && verdictChip(v)}
+                        {(b.clan1?.tier || v?.placement === "clan1") && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            {b.clan1?.tier && tierTag(b.clan1.tier)}
+                            {v?.placement === "clan1" && verdictChip(v)}
+                          </div>
+                        )}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
                         <span className="m-vs" style={openRecruit ? { color: "#ce93d8", textShadow: "0 0 14px rgba(206,147,216,0.6)" } : {}}>VS</span>
@@ -482,8 +486,12 @@ export default function OverClanBattle() {
                           <>
                             {sideEmblem(b.clan2, 48)}
                             <span className="m-nm">{b.clan2?.name}</span>
-                            {b.clan2?.tier && tierTag(b.clan2.tier)}
-                            {v?.placement === "clan2" && verdictChip(v)}
+                            {(b.clan2?.tier || v?.placement === "clan2") && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                {b.clan2?.tier && tierTag(b.clan2.tier)}
+                                {v?.placement === "clan2" && verdictChip(v)}
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
