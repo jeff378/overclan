@@ -9,6 +9,9 @@ const tierColors = {
   "골드": "#ffd54f", "실버": "#90a4ae", "브론즈": "#a1887f",
 };
 
+// 랭킹 등재 기준: 완료된 정규전 N판 이상부터 (미만은 "배치 중")
+const PLACEMENT_GAMES = 2;
+
 const medalMeta = {
   1: { ribbon: "tp-ribbon-1", base: "tp-base-1", ring: "tp-ring-1" },
   2: { ribbon: "tp-ribbon-2", base: "tp-base-2", ring: "tp-ring-2" },
@@ -42,6 +45,7 @@ function FitText({ text, max, maxSm, min, className, style }) {
 
 export default function OverClanRanking() {
   const [clans, setClans] = useState([]);
+  const [gamesMap, setGamesMap] = useState({}); // clanId -> 완료된 정규전 경기 수
   const [loading, setLoading] = useState(true);
   const [league, setLeague] = useState("전체");
   const [mode, setMode] = useState("시즌"); // "시즌" | "누적"
@@ -55,6 +59,18 @@ export default function OverClanRanking() {
         .from("clans")
         .select("*, clan_members(count)")
         .order(orderCol, { ascending: false });
+      // 완료된 정규전 경기 수 카운트 (무승부 포함 — clans 테이블엔 draws 컬럼이 없어 직접 집계)
+      const { data: battles } = await supabase
+        .from("clan_battles")
+        .select("clan1_id, clan2_id")
+        .eq("status", "완료")
+        .eq("type", "정규전");
+      const counts = {};
+      (battles || []).forEach(b => {
+        if (b.clan1_id) counts[b.clan1_id] = (counts[b.clan1_id] || 0) + 1;
+        if (b.clan2_id) counts[b.clan2_id] = (counts[b.clan2_id] || 0) + 1;
+      });
+      setGamesMap(counts);
       setClans(data || []);
       setLoading(false);
     };
@@ -70,8 +86,13 @@ export default function OverClanRanking() {
     return true;
   });
 
-  const top3 = filtered.slice(0, 3);
-  const rest = filtered.slice(3);
+  const gamesOf = (c) => gamesMap[c.id] || 0;
+  // 정규전 N판 이상만 랭킹 등재, 미만은 "배치 중"
+  const ranked = filtered.filter(c => gamesOf(c) >= PLACEMENT_GAMES);
+  const placement = filtered.filter(c => gamesOf(c) < PLACEMENT_GAMES);
+
+  const top3 = ranked.slice(0, 3);
+  const rest = ranked.slice(3);
 
   // 챔피언 등장 시 광파 폭발 (시즌 모드, 1등 존재, 최초 1회)
   useEffect(() => {
@@ -172,6 +193,27 @@ export default function OverClanRanking() {
     );
   };
 
+  // 배치 중 섹션 (정규전 N판 미만 — 시즌/누적 공용)
+  const placementSection = placement.length > 0 && (
+    <div style={{ maxWidth: 640, margin: "34px auto 0" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+        <div style={{ width: 3, height: 16, background: "#8892a4" }} />
+        <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 2, color: "#c0c8d4" }}>배치 중</span>
+        <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>정규전 {PLACEMENT_GAMES}판을 치르면 랭킹에 등재돼요</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+        {placement.map(clan => (
+          <a key={clan.id} href={`/clan/${clan.id}`} className="rank-row" style={{ borderRadius: 6, clipPath: "none" }}>
+            <div style={{ flexShrink: 0 }}>{clan.emblem_image ? <img src={clan.emblem_image} alt="" style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 8, border: `1px solid ${clan.accent_color || "#ff6b23"}55` }} /> : <ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={36} />}</div>
+            <FitText text={clan.name} max={15} maxSm={15} min={9} style={{ fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", flex: 1, minWidth: 0 }} />
+            <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>
+            <span className="placement-chip">정규전 {gamesOf(clan)}/{PLACEMENT_GAMES}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Cinzel', 'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
@@ -238,6 +280,7 @@ export default function OverClanRanking() {
         .tp-empty .tp-emblem { border-color:rgba(255,107,35,0.25)!important; border-style:dashed; background:rgba(255,107,35,0.03); }
         .tp-empty .tp-name { color:#5a6478; }
         .tp-throne-cta { max-width:560px; margin:6px auto 0; border:1px dashed rgba(255,107,35,0.28); border-radius:8px; padding:22px; text-align:center; background:rgba(255,107,35,0.03); }
+        .placement-chip { font-size:12px; font-family:'Noto Sans KR',sans-serif; color:#9aa3b5; background:rgba(255,255,255,0.04); border:1px solid rgba(255,107,35,0.18); padding:3px 10px; border-radius:3px; flex-shrink:0; white-space:nowrap; }
         @keyframes tpFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
         @keyframes tpSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
         @keyframes tpPulse { 0%,100%{box-shadow:0 0 44px rgba(255,107,35,0.6), inset 0 0 22px rgba(255,107,35,0.15)} 50%{box-shadow:0 0 64px rgba(255,107,35,0.85), inset 0 0 30px rgba(255,107,35,0.25)} }
@@ -337,7 +380,7 @@ export default function OverClanRanking() {
                   <a key={clan.id} href={`/clan/${clan.id}`} className="rank-row" style={{ borderRadius: 6, clipPath: "none" }}>
                     <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", color: "#5a6478", width: 30, textAlign: "center", flexShrink: 0 }}>{i + 4}</span>
                     <div style={{ flexShrink: 0 }}>{clan.emblem_image ? <img src={clan.emblem_image} alt="" style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 8, border: `1px solid ${clan.accent_color || "#ff6b23"}55` }} /> : <ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={36} />}</div>
-                    <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}><span style={{ fontSize: 15, fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{clan.name}</span>{clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={18} />}</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}><FitText text={clan.name} max={15} maxSm={15} min={9} style={{ fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", flex: 1, minWidth: 0 }} />{clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={18} />}</span>
                     <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>
                     <span style={{ display: "flex", gap: 4, flexShrink: 0, fontSize: 13, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 600 }}><span style={{ color: "#4caf50" }}>{clan.wins}</span><span style={{ color: "#5a6478" }}>·</span><span style={{ color: "#ef5350" }}>{clan.losses}</span></span>
                     <div className="points-badge" style={{ textAlign: "center", fontSize: 14, flexShrink: 0, minWidth: 56 }}>{clan.points || 0}</div>
@@ -345,11 +388,18 @@ export default function OverClanRanking() {
                 ))}
               </div>
             )}
+            {placementSection}
           </>
         ) : (
           /* 누적 랭킹 */
+          <>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {filtered.map((clan, i) => (
+            {ranked.length === 0 && placement.length > 0 && (
+              <div style={{ textAlign: "center", padding: "10px 0 4px", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>
+                아직 배치를 마친 클랜이 없어요.
+              </div>
+            )}
+            {ranked.map((clan, i) => (
               <a key={clan.id} href={`/clan/${clan.id}`} className="hall-row">
                 <div style={{ minWidth: 48, textAlign: "center", flexShrink: 0 }}>
                   {i === 0 ? <span className="gold" style={{ fontSize: 28 }}>🥇</span>
@@ -387,6 +437,8 @@ export default function OverClanRanking() {
               </a>
             ))}
           </div>
+          {placementSection}
+          </>
         )}
       </div>
     </div>
