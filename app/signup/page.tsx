@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { isValueTaken } from "../../lib/validate";
 import { useRouter } from "next/navigation";
 
 const TIERS = ["", "브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
@@ -44,6 +45,10 @@ export default function SignupPage() {
     const btRegex = /^[a-zA-Z가-힣0-9]{2,12}#[0-9]{4,7}$/;
     if (!btRegex.test(battletag)) {
       setError("배틀태그 형식이 올바르지 않아요. 예) 닉네임#1234");
+      return;
+    }
+    if (await isValueTaken("profiles", "nickname", nickname)) {
+      setError("이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해주세요.");
       return;
     }
     setLoading(true);

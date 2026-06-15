@@ -4,6 +4,7 @@ import { supabase } from "../../../../lib/supabase";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
 import { VIBE_TAGS, ACCENT_COLORS, BANNER_COLORS, uploadClanImage } from "../../../../lib/clanCustomization";
+import { isValueTaken } from "../../../../lib/validate";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
 const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
@@ -71,6 +72,8 @@ export default function EditClanPage() {
   const handleSave = async () => {
     if (!form.name || !form.tag || !form.description) { setError("클랜명, 태그, 소개를 입력해주세요."); return; }
     if (form.name.length > 12) { setError("클랜명은 12자 이내로 입력해주세요."); return; }
+    if (await isValueTaken("clans", "name", form.name, id as string)) { setError("이미 사용 중인 클랜명이에요."); return; }
+    if (await isValueTaken("clans", "tag", form.tag.toUpperCase(), id as string)) { setError("이미 사용 중인 클랜 태그예요."); return; }
     setSaving(true);
     setError("");
     const { error: updateError } = await supabase.from("clans").update({
@@ -82,7 +85,7 @@ export default function EditClanPage() {
       accent_color: form.accent_color, vibe_tags: form.vibe_tags,
       banner_image: form.banner_image || null, emblem_image: form.emblem_image || null,
     }).eq("id", id);
-    if (updateError) { setError("저장에 실패했어요. 다시 시도해주세요."); setSaving(false); return; }
+    if (updateError) { setError(updateError.message.includes("unique") ? "이미 사용 중인 클랜명 또는 태그예요." : "저장에 실패했어요. 다시 시도해주세요."); setSaving(false); return; }
     router.push(`/clan/${id}`);
   };
 

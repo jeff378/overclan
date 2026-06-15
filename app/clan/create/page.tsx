@@ -4,6 +4,7 @@ import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import { VIBE_TAGS, ACCENT_COLORS } from "../../../lib/clanCustomization";
+import { isValueTaken } from "../../../lib/validate";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
 const TIERS = ["브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
@@ -64,6 +65,14 @@ export default function CreateClanPage() {
     }
     if (form.tag.length > 6) {
       setError("태그는 6자 이내로 입력해주세요.");
+      return;
+    }
+    if (await isValueTaken("clans", "name", form.name)) {
+      setError("이미 사용 중인 클랜명이에요.");
+      return;
+    }
+    if (await isValueTaken("clans", "tag", form.tag.toUpperCase())) {
+      setError("이미 사용 중인 클랜 태그예요.");
       return;
     }
     setLoading(true);

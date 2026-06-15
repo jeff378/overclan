@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { isValueTaken } from "../../lib/validate";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 
@@ -58,6 +59,11 @@ export default function ProfileEditPage() {
     if (form.nickname.length > 10) { alert("닉네임은 10자 이내로 입력해주세요."); return; }
     setSaving(true);
     const { data: userData } = await supabase.auth.getUser();
+    if (await isValueTaken("profiles", "nickname", form.nickname, userData.user!.id)) {
+      alert("이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해주세요.");
+      setSaving(false);
+      return;
+    }
     await supabase.from("profiles").update({
       nickname: form.nickname,
       battletag: form.battletag,
