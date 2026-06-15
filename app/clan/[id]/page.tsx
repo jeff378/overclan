@@ -321,7 +321,7 @@ export default function ClanDetailPage() {
                 </div>
                 {clan.slogan && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginBottom: 8, fontStyle: "italic" }}>"{clan.slogan}"</p>}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <span className="tier-tag" style={{ borderColor: `${TIER_COLORS[clan.tier]}44`, color: TIER_COLORS[clan.tier] || accent }}>{clan.tier}</span>
+                  {clan.tier && <span className="tier-tag" style={{ borderColor: `${TIER_COLORS[clan.tier]}44`, color: TIER_COLORS[clan.tier] || accent }}>{clan.tier}</span>}
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.style}</span>
                   <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.1)", color: "#8892a4" }}>{clan.play_time}</span>
                   <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", display: "flex", alignItems: "center", gap: 4 }}>

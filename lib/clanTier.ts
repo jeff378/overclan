@@ -45,6 +45,17 @@ export function computeClanTier(members: MemberTiers[]): string | null {
   return scoreToTier(avg - spread * 0.15);
 }
 
+// 티어별 색상 (전 화면 공용 — 각 컴포넌트의 중복 맵을 점진적으로 대체)
+export const TIER_COLORS: Record<string, string> = {
+  "브론즈": "#a1887f", "실버": "#90a4ae", "골드": "#ffd54f", "플래티넘": "#b0bec5",
+  "다이아": "#4fc3f7", "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700",
+};
+
+/** 티어 → 색. 미인식/없음은 포인트 컬러 폴백. */
+export function tierColor(tier?: string | null): string {
+  return (tier && TIER_COLORS[tier]) || "#ff6b23";
+}
+
 export type Verdict = { label: string; color: string; diff: number };
 
 const VERDICT_GOOD = "#4caf50"; // 우세

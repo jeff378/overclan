@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 import ClanBadge, { ClanTierChip, ClanEmblem } from "./ClanBadge";
+import { tierColor } from "../../lib/clanTier";
 
 // Count-up hook
 function useCountUp(target, duration = 1800, started = false) {
@@ -389,7 +390,7 @@ export default function Home() {
                           <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={22} />
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 5 }}>
-                          <span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.4)", color: "#ff6b23" }}>{clan.tier}</span>
+                          {clan.tier && <span className="tier-tag" style={{ borderColor: `${tierColor(clan.tier)}66`, color: tierColor(clan.tier) }}>{clan.tier}</span>}
                           <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.clan_members?.[0]?.count || 0}명</span>
                         </div>
                       </div>

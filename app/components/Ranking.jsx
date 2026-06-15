@@ -181,7 +181,7 @@ export default function OverClanRanking() {
         </div>
         <FitText text={clan.name} max={isFirst ? 22 : 16} maxSm={isFirst ? 15 : 12} min={isFirst ? 11 : 9} className={`tp-name ${isFirst ? "tp-name-1" : ""}`} />
         <div style={{ display: "flex", gap: 6, justifyContent: "center", margin: "7px 0 4px", flexWrap: "wrap" }}>
-          <span className="tp-tier" style={{ color: tierColors[clan.tier] || "#ff8c42", borderColor: `${tierColors[clan.tier] || "#ff8c42"}66` }}>{clan.tier}</span>
+          {clan.tier && <span className="tp-tier" style={{ color: tierColors[clan.tier] || "#ff8c42", borderColor: `${tierColors[clan.tier] || "#ff8c42"}66` }}>{clan.tier}</span>}
           <ClanTierChip memberCount={count} size={18} />
         </div>
         <div className={`tp-pt ${isFirst ? "tp-pt-1" : ""}`} style={{ color: isFirst ? "#ff6b23" : (rank === 2 ? "#c0c8d4" : "#cd9b6a") }}>
@@ -206,7 +206,7 @@ export default function OverClanRanking() {
           <a key={clan.id} href={`/clan/${clan.id}`} className="rank-row" style={{ borderRadius: 6, clipPath: "none" }}>
             <div style={{ flexShrink: 0 }}><ClanEmblem clan={clan} size={36} radius={8} /></div>
             <FitText text={clan.name} max={15} maxSm={15} min={9} style={{ fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", flex: 1, minWidth: 0 }} />
-            <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>
+            {clan.tier && <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>}
             <span className="placement-chip">정규전 {gamesOf(clan)}/{PLACEMENT_GAMES}</span>
           </a>
         ))}
@@ -381,7 +381,7 @@ export default function OverClanRanking() {
                     <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", color: "#5a6478", width: 30, textAlign: "center", flexShrink: 0 }}>{i + 4}</span>
                     <div style={{ flexShrink: 0 }}><ClanEmblem clan={clan} size={36} radius={8} /></div>
                     <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}><FitText text={clan.name} max={15} maxSm={15} min={9} style={{ fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif", flex: 1, minWidth: 0 }} /><ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={18} /></span>
-                    <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>
+                    {clan.tier && <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23", width: "fit-content", flexShrink: 0 }}>{clan.tier}</span>}
                     <span style={{ display: "flex", gap: 4, flexShrink: 0, fontSize: 13, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 600 }}><span style={{ color: "#4caf50" }}>{clan.wins}</span><span style={{ color: "#5a6478" }}>·</span><span style={{ color: "#ef5350" }}>{clan.losses}</span></span>
                     <div className="points-badge" style={{ textAlign: "center", fontSize: 14, flexShrink: 0, minWidth: 56 }}>{clan.points || 0}</div>
                   </a>
@@ -415,7 +415,7 @@ export default function OverClanRanking() {
                     <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={20} />
                   </div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23" }}>{clan.tier}</span>
+                    {clan.tier && <span className="tier-tag" style={{ borderColor: `${tierColors[clan.tier]}44`, color: tierColors[clan.tier] || "#ff6b23" }}>{clan.tier}</span>}
                     <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜원 {clan.clan_members?.[0]?.count || 0}명</span>
                   </div>
                 </div>

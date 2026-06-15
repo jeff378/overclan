@@ -184,7 +184,7 @@ export default function OverClanFind() {
                           </span>
                         </div>
                         <div style={{ display: "flex", gap: 5, margin: "8px 0", flexWrap: "wrap" }}>
-                          <span className="tier-tag" style={{ borderColor: tierColors[clan.tier]?.border || "rgba(255,107,35,0.3)", color: tierColors[clan.tier]?.color || "#ff6b23" }}>{clan.tier}</span>
+                          {clan.tier && <span className="tier-tag" style={{ borderColor: tierColors[clan.tier]?.border || "rgba(255,107,35,0.3)", color: tierColors[clan.tier]?.color || "#ff6b23" }}>{clan.tier}</span>}
                           <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.12)", color: "#8892a4" }}>{clan.style}</span>
                           <span className="tier-tag" style={{ borderColor: "rgba(255,255,255,0.12)", color: "#8892a4" }}>{clan.play_time}</span>
                         </div>
