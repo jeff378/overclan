@@ -80,7 +80,9 @@ export default function OverClanFind() {
         .fgroup { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 10px; }
         .flabel { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 2px; color: #8892a4; font-weight: 600; min-width: 64px; padding-top: 7px; flex-shrink: 0; }
         .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
-        .filter-toggle { display: none; }
+        .filters-panel { display: none; }
+        .filters-panel.open { display: block; }
+        .filter-toggle { display: inline-flex; align-items: center; gap: 8px; }
         .clan-card { position: relative; background: rgba(13,20,35,0.82); border: 1px solid rgba(255,107,35,0.12); padding: 18px 18px 18px 22px; transition: all 0.3s; cursor: pointer; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); text-decoration: none; color: inherit; display: block; }
         .clan-card:hover { border-color: rgba(255,107,35,0.4); transform: translateY(-3px); box-shadow: 0 10px 34px rgba(255,107,35,0.12); }
         .card-spine { position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 2px; }
@@ -89,9 +91,6 @@ export default function OverClanFind() {
         .cap-bar > i { display: block; height: 100%; border-radius: 3px; }
         .btn-create { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 11px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); text-decoration: none; white-space: nowrap; box-shadow: 0 0 20px rgba(255,107,35,0.3); }
         @media (max-width: 768px) {
-          .filters-panel { display: none; }
-          .filters-panel.open { display: block; }
-          .filter-toggle { display: inline-flex; align-items: center; gap: 8px; }
           .fgroup { flex-direction: column; gap: 6px; margin-bottom: 12px; }
           .flabel { padding-top: 0; }
           .chip-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; max-width: 100%; }
@@ -207,14 +206,6 @@ export default function OverClanFind() {
                   </a>
                 );
               })}
-
-              {/* 콜드스타트 도전장 카드 */}
-              <a href="/clan/create" className="clan-card" style={{ border: "1px dashed rgba(255,107,35,0.3)", background: "rgba(255,107,35,0.03)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 7, minHeight: 150 }}>
-                <div style={{ fontSize: 24, color: "#ff8c42", opacity: 0.9 }}>♛</div>
-                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: 2, color: "#ff8c42", fontWeight: 500 }}>이 자리, 아직 비어있음</div>
-                <div style={{ fontSize: 12, color: "#8892a4", fontWeight: 300, fontFamily: "Noto Sans KR, sans-serif" }}>당신의 클랜으로 채워보세요</div>
-                <span style={{ marginTop: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, letterSpacing: 1, color: "#ff6b23", border: "1px solid rgba(255,107,35,0.4)", padding: "7px 16px", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>+ 클랜 만들기</span>
-              </a>
             </div>
           )}
         </div>
