@@ -285,6 +285,8 @@ export default function ClanDetailPage() {
                 <div className="emblem-glow" style={{ background: accent }} />
                 {clan.emblem_image ? (
                   <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 0 4px ${accent}1a, 0 6px 16px rgba(0,0,0,0.45)` }} />
+                ) : clan.badge ? (
+                  <div style={{ width: 80, height: 80, borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 0 4px ${accent}1a, 0 6px 16px rgba(0,0,0,0.45)`, background: "rgba(8,12,20,0.6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44 }}>{clan.badge}</div>
                 ) : (
                   <ClanBadge memberCount={members.length} size={80} />
                 )}
@@ -310,7 +312,7 @@ export default function ClanDetailPage() {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
                   <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all", color: "#fff", textShadow: `0 0 22px ${accent}55` }}>{clan.name}</h1>
                   <span style={{ fontSize: 13, color: accent, opacity: 0.8, fontWeight: 600, whiteSpace: "nowrap" }}>[{clan.tag}]</span>
-                  {clan.emblem_image && <ClanTierChip memberCount={members.length} size={24} />}
+                  <ClanTierChip memberCount={members.length} size={24} />
                 </div>
                 {clan.slogan && <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300, marginBottom: 8, fontStyle: "italic" }}>"{clan.slogan}"</p>}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -764,6 +766,7 @@ function BattleTab({ battles, clanId }: any) {
 function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
   const router = useRouter();
   const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+    "모집중": { label: "상대 모집중", color: "#ba68c8" },
     "신청중": { label: "수락 대기", color: "#ffd54f" },
     "날짜확정": { label: "날짜 확정", color: "#4fc3f7" },
     "멤버모집": { label: "멤버 모집중", color: "#ff6b23" },
@@ -816,16 +819,20 @@ function ActiveBattleTab({ battles, clanId, isOwner, setBattles }: any) {
             onMouseLeave={e => { e.currentTarget.style.borderColor = `${borderColor}33`; }}>
 
             {gone ? (
-              <span style={{ background: "rgba(239,83,80,0.15)", color: "#ef5350", border: "1px solid rgba(239,83,80,0.3)", fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>상대 해체됨</span>
+              <span style={{ background: "rgba(239,83,80,0.15)", color: "#ef5350", border: "1px solid rgba(239,83,80,0.3)", fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "3px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0, minWidth: 74, textAlign: "center" }}>상대 해체됨</span>
             ) : (
-              <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "2px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0 }}>{status?.label}</span>
+              <span className="status-tag" style={{ background: `${status?.color}22`, color: status?.color, border: `1px solid ${status?.color}44`, fontSize: 10, fontWeight: 700, letterSpacing: 1, padding: "3px 8px", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap", flexShrink: 0, minWidth: 74, textAlign: "center" }}>{status?.label}</span>
             )}
 
-            {!gone && <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />}
+            {!gone && (opClan ? (
+              <ClanBadge memberCount={opClan?.clan_members?.[0]?.count || 0} size={28} />
+            ) : (
+              <span style={{ width: 28, height: 28, borderRadius: 6, border: "1px dashed rgba(186,104,200,0.5)", display: "flex", alignItems: "center", justifyContent: "center", color: "#ce93d8", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>?</span>
+            ))}
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: gone ? "#8892a4" : "#e8eaf0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                vs {gone ? "해체된 클랜" : (opClan?.name || "상대 모집중")}
+              <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, marginBottom: 4, color: gone ? "#8892a4" : (opClan ? "#e8eaf0" : "#ce93d8"), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {gone ? "해체된 클랜" : (opClan ? `vs ${opClan.name}` : "공개 모집")}
               </div>
               <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {gone ? "상대 클랜이 사라져 진행할 수 없어요." : `${b.type} · ${b.confirmed_date ? new Date(b.confirmed_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" }) : "날짜 협의중"}`}
