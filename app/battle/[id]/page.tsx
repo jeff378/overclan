@@ -5,9 +5,8 @@ import { supabase } from "../../../lib/supabase";
 import Navbar from "../../components/Navbar";
 import { createNotification } from "../../../lib/notifications";
 import { matchupVerdict } from "../../../lib/clanTier";
-import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../../components/ClanBadge";
+import { ClanTierChip as ClanTierChipJSX } from "../../components/ClanBadge";
 
-const ClanBadge = ClanBadgeJSX as any;
 const ClanTierChip = ClanTierChipJSX as any;
 
 const STATUS_LABEL: any = {
@@ -178,9 +177,19 @@ export default function BattleDetailPage() {
     const updateData: any = isClan1
       ? { clan1_result: `${resultForm.score1}-${resultForm.score2}`, clan1_screenshot: resultForm.screenshot, status: "결과입력" }
       : { clan2_result: `${resultForm.score1}-${resultForm.score2}`, clan2_screenshot: resultForm.screenshot, status: "결과입력" };
-    await supabase.from("clan_battles").update(updateData).eq("id", battle.id);
+    const { error: resErr } = await supabase.from("clan_battles").update(updateData).eq("id", battle.id);
+    if (resErr) {
+      alert("결과 저장에 실패했어요. 잠시 후 다시 시도해주세요.");
+      setSubmittingResult(false);
+      return;
+    }
 
     const { data: updated } = await supabase.from("clan_battles").select("*").eq("id", battle.id).single();
+    if (!updated) {
+      alert("결과를 저장했지만 확인에 실패했어요. 새로고침 후 확인해주세요.");
+      setSubmittingResult(false);
+      return;
+    }
     if (updated.clan1_result && updated.clan2_result) {
       if (updated.clan1_result === updated.clan2_result) {
         const [s1, s2] = updated.clan1_result.split("-").map(Number);

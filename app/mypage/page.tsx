@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../components/ClanBadge";
+import { tierColor } from "../../lib/clanTier";
 const ClanBadge = ClanBadgeJSX as any;
 const ClanTierChip = ClanTierChipJSX as any;
 
@@ -85,14 +86,9 @@ export default function MyPage() {
                   { icon: "⚔️", key: "tier_dps", color: "#ff6b23" },
                   { icon: "💊", key: "tier_support", color: "#4caf50" },
                 ].filter(r => profile?.[r.key]).map(r => {
-                  const TIER_COLORS: Record<string, string> = {
-                    "챔피언": "#ffd700", "그랜드마스터": "#ff9800", "마스터": "#ff6b23",
-                    "다이아": "#4fc3f7", "플래티넘": "#b0bec5", "골드": "#ffd54f",
-                    "실버": "#90a4ae", "브론즈": "#a1887f",
-                  };
                   const tier = profile[r.key];
                   return (
-                    <span key={r.key} style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", background: `${TIER_COLORS[tier]}22`, color: TIER_COLORS[tier] || r.color, border: `1px solid ${TIER_COLORS[tier]}44`, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", display: "flex", alignItems: "center", gap: 3 }}>
+                    <span key={r.key} style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", background: `${tierColor(tier)}22`, color: tierColor(tier), border: `1px solid ${tierColor(tier)}44`, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", display: "flex", alignItems: "center", gap: 3 }}>
                       {r.icon} {tier}
                     </span>
                   );

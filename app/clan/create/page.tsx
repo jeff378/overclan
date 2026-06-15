@@ -103,11 +103,19 @@ export default function CreateClanPage() {
       return;
     }
 
-    await supabase.from("clan_members").insert({
+    const { error: memberError } = await supabase.from("clan_members").insert({
       clan_id: clan.id,
       user_id: user.id,
       role: "클랜장",
     });
+
+    if (memberError) {
+      // 클랜은 생성됐지만 클랜장 등록 실패(RLS 등) → 좀비 클랜 방지 위해 롤백
+      await supabase.from("clans").delete().eq("id", clan.id);
+      setError("클랜장 등록에 실패했어요. 잠시 후 다시 시도해주세요.");
+      setLoading(false);
+      return;
+    }
 
     router.push(`/clan/${clan.id}`);
   };

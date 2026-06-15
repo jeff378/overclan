@@ -30,7 +30,7 @@ export default function LoginPage() {
       const { data: prof } = await supabase.from("profiles").select("id").eq("id", u.id).limit(1);
       if (!prof || prof.length === 0) {
         const m: any = u.user_metadata || {};
-        await supabase.from("profiles").upsert({
+        const { error: profErr } = await supabase.from("profiles").upsert({
           id: u.id,
           nickname: m.nickname || (u.email ? u.email.split("@")[0] : "유저"),
           battletag: m.battletag || "",
@@ -40,6 +40,11 @@ export default function LoginPage() {
           tier_dps: m.tier_dps || "",
           tier_support: m.tier_support || "",
         });
+        if (profErr) {
+          setError("프로필 생성에 실패했어요. 잠시 후 다시 시도해주세요.");
+          setLoading(false);
+          return;
+        }
       }
     }
     router.push("/");
