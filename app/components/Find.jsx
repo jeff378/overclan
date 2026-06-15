@@ -88,7 +88,7 @@ export default function OverClanFind() {
               현재 <span style={{ color: "#ff6b23", fontWeight: 700, fontSize: 15, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{filtered.length}</span>개의 클랜이 모집 중이에요.
             </p>
           </div>
-          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", flexShrink: 0 }} onClick={e => { if (!document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
+          <a href="/clan/create" className="btn-create" style={{ whiteSpace: "nowrap", fontSize: 13, padding: "10px 20px", flexShrink: 0 }}>+ 클랜 만들기</a>
         </div>
 
         {/* 모바일 필터 - 토글 */}

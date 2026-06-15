@@ -301,7 +301,7 @@ export default function OverClanRanking() {
                 <div style={{ fontSize: 13, color: "#8892a4", fontWeight: 300, fontFamily: "Noto Sans KR, sans-serif", marginBottom: 16 }}>
                   아직 정복되지 않은 자리. 다음 정복자가 되어보세요.
                 </div>
-                <a href="/clan/create" style={{ display: "inline-block", background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "9px 24px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }} onClick={e => { if (typeof document !== "undefined" && !document.cookie.includes("sb-")) { e.preventDefault(); window.location.href = "/login"; } }}>+ 클랜 만들기</a>
+                <a href="/clan/create" style={{ display: "inline-block", background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "9px 24px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>+ 클랜 만들기</a>
               </div>
             )}
 
