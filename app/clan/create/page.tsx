@@ -188,9 +188,9 @@ export default function CreateClanPage() {
           </div>
           <div>
             <label className="label">최대 클랜원 수</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)" }}>
-              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23" }}>50명</span>
-              <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>(기본 제공 · 추후 클랜확장권으로 확대 가능)</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)" }}>
+              <input type="range" min={5} max={50} step={5} value={form.max_members} onChange={e => setForm({ ...form, max_members: Number(e.target.value) })} style={{ flex: 1, accentColor: "#ff6b23" }} />
+              <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, color: "#ff6b23", minWidth: 48, textAlign: "right" }}>{form.max_members}명</span>
             </div>
           </div>
           {error && <div style={{ fontSize: 13, color: "#ef5350", fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}
