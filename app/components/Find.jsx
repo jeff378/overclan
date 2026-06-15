@@ -169,7 +169,7 @@ export default function OverClanFind() {
                       {clan.emblem_image ? (
                         <img src={clan.emblem_image} alt="" style={{ width: 46, height: 46, objectFit: "cover", borderRadius: 10, flexShrink: 0, border: `1.5px solid ${accent}`, boxShadow: `0 0 14px ${accent}40` }} />
                       ) : (
-                        <div style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 10, border: `1.5px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${accent}40`, overflow: "hidden" }}><ClanBadge memberCount={count} size={42} /></div>
+                        <div style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 10, border: `1.5px solid ${accent}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${accent}40`, overflow: "hidden", background: "rgba(8,12,20,0.5)", fontSize: 26, lineHeight: 1 }}>{clan.badge ? clan.badge : <ClanBadge memberCount={count} size={42} />}</div>
                       )}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>

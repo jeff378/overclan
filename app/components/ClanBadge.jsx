@@ -324,6 +324,19 @@ export function ClanTierChip({ memberCount = 0, tierIndex, size = 22, showName =
   );
 }
 
+// ─── 클랜 엠블럼 (프로필 이미지 > 클랜장이 고른 이모지 > 성장배지 폴백) ──────
+export function ClanEmblem({ clan, size = 40, radius = 8, accent, style = {} }) {
+  const ac = accent || clan?.accent_color || "#ff6b23";
+  const count = clan?.clan_members?.[0]?.count || 0;
+  if (clan?.emblem_image) {
+    return <img src={clan.emblem_image} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: radius, border: `1px solid ${ac}55`, flexShrink: 0, ...style }} />;
+  }
+  if (clan?.badge) {
+    return <div style={{ width: size, height: size, borderRadius: radius, border: `1px solid ${ac}55`, background: "rgba(8,12,20,0.55)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: Math.round(size * 0.55), lineHeight: 1, flexShrink: 0, ...style }}>{clan.badge}</div>;
+  }
+  return <ClanBadge memberCount={count} size={size} />;
+}
+
 // ─── 글로벌 CSS 주입 ─────────────────────────────────────────────────────────
 let cssInjected = false;
 function injectCSS() {

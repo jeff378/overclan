@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
-import ClanBadge, { ClanTierChip } from "./ClanBadge";
+import ClanBadge, { ClanTierChip, ClanEmblem } from "./ClanBadge";
 
 // Count-up hook
 function useCountUp(target, duration = 1800, started = false) {
@@ -381,16 +381,12 @@ export default function Home() {
                   <a href={`/clan/${clan.id}`} className="clan-card">
                     <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
                       <div className="rank-badge" style={{ background: i===0?"#ff6b23":i===1?"#8892a4":i===2?"#cd7f32":"#1a2535", color: i<3?"#fff":"#8892a4" }}>{i+1}</div>
-                      {clan.emblem_image ? (
-                        <img src={clan.emblem_image} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8, flexShrink: 0, border: `1px solid ${clan.accent_color || "#ff6b23"}55` }} />
-                      ) : (
-                        <ClanBadge memberCount={clan.clan_members?.[0]?.count || 0} size={44} />
-                      )}
+                      <ClanEmblem clan={clan} size={44} radius={8} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                           <span style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{clan.name}</span>
                           <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, opacity: 0.7 }}>[{clan.tag}]</span>
-                          {clan.emblem_image && <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={22} />}
+                          <ClanTierChip memberCount={clan.clan_members?.[0]?.count || 0} size={22} />
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 5 }}>
                           <span className="tier-tag" style={{ borderColor: "rgba(255,107,35,0.4)", color: "#ff6b23" }}>{clan.tier}</span>
