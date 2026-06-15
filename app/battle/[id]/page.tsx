@@ -87,6 +87,8 @@ export default function BattleDetailPage() {
   const isMyBattle = (b: any) => myClan && b && (b.clan1_id === myClan.id || b.clan2_id === myClan.id);
   const isOpponent = (b: any) => myClan && b && b.clan2_id === myClan.id;
   const scrimTitle = (b: any) => `[오버클랜] ${b.clan1?.name} vs ${b.clan2?.name}`;
+  // 참가 클랜의 클랜장(소유자)만 대전 관리(취소/날짜확정/멤버확정 등) 가능
+  const isClanOwner = (b: any) => !!(user && b && ((b.clan1?.owner_id && b.clan1.owner_id === user.id) || (b.clan2?.owner_id && b.clan2.owner_id === user.id)));
 
   // 열린 모집 — 지원
   const handleApply = async () => {
@@ -284,7 +286,7 @@ export default function BattleDetailPage() {
           <div className="detail-panel">
             {/* 상단 버튼 줄 */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, alignItems: "center", marginBottom: 12 }}>
-              {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) &&
+              {isClanOwner(battle) &&
                (battle.status === "멤버모집" || battle.status === "대전준비" || battle.status === "결과입력") && (
                 <button onClick={async () => {
                   if (!confirm("대전을 취소할까요? 모집된 멤버 정보도 모두 삭제돼요.")) return;
@@ -326,7 +328,7 @@ export default function BattleDetailPage() {
 
             {/* 열린 모집 — 상대 모집중 */}
             {battle.status === "모집중" && (() => {
-              const isPoster = myClan && myClan.id === battle.clan1_id;
+              const isPoster = isClanOwner(battle) && myClan && myClan.id === battle.clan1_id;
               const alreadyApplied = applicants.some((a) => a.clan_id === myClan?.id);
               const canApply = user && myClan && myClan.id !== battle.clan1_id && !alreadyApplied;
               return (
@@ -400,7 +402,7 @@ export default function BattleDetailPage() {
             )}
 
             {/* 신청중 - 상대 클랜 날짜 선택 */}
-            {battle.status === "신청중" && isOpponent(battle) && (
+            {battle.status === "신청중" && isOpponent(battle) && isClanOwner(battle) && (
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                   <div style={{ fontSize: 12, color: "#ff6b23", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 600 }}>📅 날짜를 선택해주세요</div>
@@ -436,11 +438,13 @@ export default function BattleDetailPage() {
                   <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", flex: 1, marginRight: 8 }}>
                     ⏳ 상대 클랜의 날짜 수락을 기다리고 있어요.
                   </div>
+                  {isClanOwner(battle) && (
                   <button onClick={async () => {
                     if (!confirm("대전 신청을 취소할까요?")) return;
                     await supabase.from("clan_battles").delete().eq("id", battle.id);
                     router.push("/battle");
                   }} style={{ background: "rgba(239,83,80,0.1)", border: "1px solid rgba(239,83,80,0.3)", color: "#ef5350", padding: "5px 14px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", whiteSpace: "nowrap" }}>신청 취소</button>
+                  )}
                 </div>
                 <div style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 4 }}>제안한 날짜</div>
                 {(battle.proposed_dates || []).map((date: string, i: number) => (
@@ -481,7 +485,7 @@ export default function BattleDetailPage() {
                               <span style={{ fontSize: 16 }}>{cfg.icon}</span>
                               <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, color: "#4caf50" }}>{v.profiles?.nickname}</span>
                             </div>
-                            {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
+                            {isClanOwner(battle) && (
                               <button onClick={async () => {
                                 await supabase.from("battle_volunteers").update({ is_confirmed: false, confirmed_role: null }).eq("id", v.id);
                                 await loadVolunteers(battle.id);
@@ -494,7 +498,7 @@ export default function BattleDetailPage() {
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <span style={{ fontSize: 14 }}>{cfg.icon}</span>
                               <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13 }}>{v.profiles?.nickname}</span>                            </div>
-                            {myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id) && (
+                            {isClanOwner(battle) && (
                               <button className="btn-green" style={{ fontSize: 10 }} onClick={() => handleConfirmMember(v.id, role)}>확정</button>
                             )}
                           </div>
