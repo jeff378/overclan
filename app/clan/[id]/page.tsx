@@ -310,7 +310,7 @@ export default function ClanDetailPage() {
               })()}
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                  <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all", color: "#fff", textShadow: `0 0 22px ${accent}55` }}>{clan.name}</h1>
+                  <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(16px, min(5.2vw, ${Math.min(32, Math.round(360 / Math.max(clan.name.length, 1)))}px), 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all", color: "#fff", textShadow: `0 0 22px ${accent}55` }}>{clan.name}</h1>
                   <span style={{ fontSize: 13, color: accent, opacity: 0.8, fontWeight: 600, whiteSpace: "nowrap" }}>[{clan.tag}]</span>
                   <ClanTierChip memberCount={members.length} size={24} />
                 </div>
