@@ -246,7 +246,11 @@ export default function ClanDetailPage() {
         .btn-discord { background: rgba(88,101,242,0.15); border: 1px solid rgba(88,101,242,0.4); color: #8ea1e1; padding: 8px 18px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); text-decoration: none; display: inline-block; }
         .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-        .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); }
+        .stat-box { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; text-align: center; clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition: all 0.2s; }
+        .stat-box:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .emblem-glow { position: absolute; inset: -7px; border-radius: 16px; filter: blur(15px); opacity: 0.3; z-index: -1; pointer-events: none; animation: emblemPulse 3s ease-in-out infinite; }
+        @keyframes emblemPulse { 0%,100% { opacity: 0.22; transform: scale(0.97); } 50% { opacity: 0.45; transform: scale(1.05); } }
+        @media (prefers-reduced-motion: reduce) { .emblem-glow { animation: none !important; } }
         .tier-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border: 1px solid; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); white-space: nowrap; }
         .member-row { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 4px; transition: all 0.2s; }
         .member-row:hover { border-color: rgba(255,107,35,0.2); }
@@ -277,7 +281,8 @@ export default function ClanDetailPage() {
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               {/* 클랜 배지/엠블럼 */}
-              <div style={{ position: "relative" }} className={tierUpAnim ? "tier-up-badge" : ""}>
+              <div style={{ position: "relative", isolation: "isolate" }} className={tierUpAnim ? "tier-up-badge" : ""}>
+                <div className="emblem-glow" style={{ background: accent }} />
                 {clan.emblem_image ? (
                   <img src={clan.emblem_image} alt={clan.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: `2px solid ${accent}`, boxShadow: `0 0 0 4px ${accent}1a, 0 6px 16px rgba(0,0,0,0.45)` }} />
                 ) : (
@@ -303,7 +308,7 @@ export default function ClanDetailPage() {
               })()}
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                  <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all" }}>{clan.name}</h1>
+                  <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: `clamp(18px, ${Math.max(18, Math.min(32, 320 / Math.max(clan.name.length, 1)))}px, 32px)`, fontWeight: 700, letterSpacing: 1, lineHeight: 1.2, wordBreak: "keep-all", color: "#fff", textShadow: `0 0 22px ${accent}55` }}>{clan.name}</h1>
                   <span style={{ fontSize: 13, color: accent, opacity: 0.8, fontWeight: 600, whiteSpace: "nowrap" }}>[{clan.tag}]</span>
                   {clan.emblem_image && <ClanTierChip memberCount={members.length} size={24} />}
                 </div>
