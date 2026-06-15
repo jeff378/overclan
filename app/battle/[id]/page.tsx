@@ -256,11 +256,13 @@ export default function BattleDetailPage() {
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
         .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
         .role-btn { padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
-        .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
         .member-slot { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .member-slot.confirmed { border-color: rgba(76,175,80,0.3); }
         .empty-slot { background: rgba(13,20,35,0.3); border: 1px dashed rgba(255,255,255,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
+        .detail-panel { position: relative; background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; clip-path: polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px)); }
+        .hero-glow { position: absolute; top: -90px; left: 0; right: 0; height: 240px; background: radial-gradient(ellipse 55% 100% at 50% 0%, rgba(255,107,35,0.12), transparent 70%); pointer-events: none; animation: heroPulse 5s ease-in-out infinite; }
+        @keyframes heroPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
         @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
         .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Cinzel','Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
         .back-link { display:inline-flex; align-items:center; gap:6px; color:#8892a4; font-family:'Cinzel','Rajdhani',sans-serif; font-size:13px; font-weight:600; letter-spacing:1px; text-decoration:none; transition:color .2s; }
@@ -270,8 +272,9 @@ export default function BattleDetailPage() {
 
       <Navbar active="클랜대전" />
 
-      <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 24px 60px" }}>
-        <div style={{ marginBottom: 20 }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 24px 60px", position: "relative" }}>
+        <div className="hero-glow" />
+        <div style={{ marginBottom: 20, position: "relative" }}>
           <a href="/battle" className="back-link">← 클랜대전 목록</a>
         </div>
 
@@ -390,6 +393,16 @@ export default function BattleDetailPage() {
               );
             })()}
 
+            {/* 확정 날짜 (스크림방 제목 위) */}
+            {battle.confirmed_date && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, padding: "12px 16px", background: "rgba(76,175,80,0.08)", border: "1px solid rgba(76,175,80,0.3)", clipPath: "polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))" }}>
+                <span style={{ fontSize: 12, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>📅 확정 날짜</span>
+                <span style={{ fontSize: 14, color: "#fff", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 500 }}>
+                  {new Date(battle.confirmed_date).toLocaleString("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+            )}
+
             {/* 스크림방 제목 */}
             {(battle.status === "대전준비" || battle.status === "멤버모집") && (
               <div className="scrim-box" style={{ marginBottom: 16 }}>
@@ -452,16 +465,6 @@ export default function BattleDetailPage() {
                     {new Date(date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })} {new Date(date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
                   </div>
                 ))}
-              </div>
-            )}
-
-            {/* 확정 날짜 */}
-            {battle.confirmed_date && (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "10px 14px", background: "rgba(76,175,80,0.06)", border: "1px solid rgba(76,175,80,0.2)" }}>
-                <span style={{ fontSize: 12, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>📅 확정 날짜</span>
-                <span style={{ fontSize: 13, color: "#e8eaf0", fontFamily: "Noto Sans KR, sans-serif" }}>
-                  {new Date(battle.confirmed_date).toLocaleString("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })}
-                </span>
               </div>
             )}
 
