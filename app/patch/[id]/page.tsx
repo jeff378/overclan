@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { ClanSuffix } from "../../components/ClanBadge";
+import LikeButton from "../../components/LikeButton";
 
 export default function PatchDetailPage() {
   const { id } = useParams();
@@ -119,6 +120,9 @@ export default function PatchDetailPage() {
             )}
           </div>
           <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.9, paddingTop: 20, borderTop: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.content}</p>
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,107,35,0.1)", display: "flex", justifyContent: "center" }}>
+            <LikeButton postType="patch" postId={id as string} />
+          </div>
         </div>
 
         <div style={{ marginTop: 28 }}>

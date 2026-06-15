@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { ClanSuffix } from "../../components/ClanBadge";
+import LikeButton from "../../components/LikeButton";
 
 export default function ReplayDetailPage() {
   const { id } = useParams();
@@ -147,6 +148,9 @@ export default function ReplayDetailPage() {
             )}
           </div>
           {post.description && <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.description}</p>}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+            <LikeButton postType="replay" postId={id as string} />
+          </div>
 
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, marginBottom: 14, color: "#e8eaf0", fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>이 유저, 핵인가요?</div>
