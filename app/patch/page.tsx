@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../components/Navbar";
 import { ClanSuffix } from "../components/ClanBadge";
+import CommunityLayout from "../components/CommunityLayout";
 
 export default function PatchPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -74,9 +75,9 @@ export default function PatchPage() {
         @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
-      <Navbar />
+      <Navbar active="커뮤니티" />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)", position: "relative" }}>
+      <CommunityLayout active="/patch">
         <div className="hero-glow" />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12, position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
@@ -147,7 +148,7 @@ export default function PatchPage() {
             </a>
           ))}
         </div>
-      </div>
+      </CommunityLayout>
     </div>
   );
 }

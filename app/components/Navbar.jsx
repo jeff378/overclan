@@ -64,8 +64,7 @@ export default function Navbar({ active = "" }) {
     { label: "클랜대전", href: "/battle" },
     { label: "랭킹", href: "/ranking" },
     { label: "공지사항", href: "/notice" },
-    { label: "패치노트", href: "/patch" },
-    { label: "핵 제보", href: "/replay" },
+    { label: "커뮤니티", href: "/free" },
   ];
 
   return (

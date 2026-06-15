@@ -68,6 +68,32 @@ body::after {
   body::after, .bg-glow-blue { animation: none !important; }
 }
 
+/* ===== 커뮤니티 좌측 사이드바 레이아웃 (인벤식) ===== */
+.community-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 32px) 80px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  align-items: start;
+  position: relative;
+}
+.community-sidebar { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 4px; }
+.cs-title { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; color: #ff6b23; padding: 6px 12px 10px; display: flex; align-items: center; gap: 8px; }
+.cs-link { display: block; padding: 11px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500; color: #8892a4; text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 0 100%); }
+.cs-link:hover { color: #e8eaf0; background: rgba(255,107,35,0.06); }
+.cs-link.active { color: #ff6b23; background: rgba(255,107,35,0.12); border-left-color: #ff6b23; font-weight: 700; }
+.community-main { min-width: 0; }
+@media (max-width: 820px) {
+  .community-wrap { grid-template-columns: 1fr; gap: 14px; }
+  .community-sidebar { position: static; flex-direction: row; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .community-sidebar::-webkit-scrollbar { display: none; }
+  .cs-title { display: none; }
+  .cs-link { white-space: nowrap; flex-shrink: 0; border-left: none; border-bottom: 2px solid transparent; clip-path: none; border-radius: 6px 6px 0 0; padding: 9px 14px; }
+  .cs-link.active { border-left: none; border-bottom-color: #ff6b23; }
+}
+
 /* ===== 모바일 전역 안전장치 ===== */
 @media (max-width: 640px) {
   /* 2단 그리드(목록+상세)를 모바일에선 무조건 1단으로 */
