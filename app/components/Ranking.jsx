@@ -73,7 +73,7 @@ export default function OverClanRanking() {
       for (const s of sparks) {
         if (s.life <= 0) continue; alive = true;
         s.x += s.vx; s.y += s.vy; s.vy += 0.12; s.life -= 0.018;
-        bx.beginPath(); bx.arc(s.x, s.y, s.s * s.life, 0, Math.PI * 2);
+        bx.beginPath(); bx.arc(s.x, s.y, Math.max(0, s.s * s.life), 0, Math.PI * 2);
         bx.fillStyle = "rgba(255," + (150 + Math.random() * 80) + ",60," + s.life + ")"; bx.fill();
       }
       if (alive || ring < 180) requestAnimationFrame(bl); else bx.clearRect(0, 0, bc.width, bc.height);
