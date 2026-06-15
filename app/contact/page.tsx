@@ -80,10 +80,13 @@ export default function ContactPage() {
     <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani','Noto Sans KR',sans-serif" }}>
       <style>{`
         * { box-sizing:border-box; margin:0; padding:0; }
-        .faq-item { background:rgba(13,20,35,0.7); border:1px solid rgba(255,107,35,0.1); margin-bottom:8px; transition:border-color 0.2s; cursor:pointer; }
-        .faq-item:hover, .faq-item.open { border-color:rgba(255,107,35,0.35); }
-        .faq-q { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; }
-        .faq-a { padding:0 20px 18px; font-size:13.5px; color:#c8cad0; font-family:'Noto Sans KR',sans-serif; line-height:1.8; }
+        .faq-item { background:rgba(13,20,35,0.7); border:1px solid rgba(255,107,35,0.12); margin-bottom:10px; transition:all 0.2s; cursor:pointer; clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
+        .faq-item:hover { border-color:rgba(255,107,35,0.3); }
+        .faq-item.open { border-color:rgba(255,107,35,0.4); background:rgba(20,30,50,0.7); }
+        .faq-q { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 20px; }
+        .faq-a { margin:0 20px; padding:14px 0 18px; font-size:14.5px; color:#d4d8e0; font-family:'Noto Sans KR',sans-serif; line-height:1.85; border-top:1px solid rgba(255,107,35,0.12); }
+        .hero-glow { position:absolute; top:-90px; left:0; right:0; height:240px; background:radial-gradient(ellipse 55% 100% at 22% 0%, rgba(255,107,35,0.12), transparent 70%); pointer-events:none; animation:heroPulse 5s ease-in-out infinite; }
+        @keyframes heroPulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
         .cat-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:#8892a4; padding:6px 14px; font-family:'Noto Sans KR',sans-serif; font-size:12px; cursor:pointer; transition:all 0.2s; white-space:nowrap; clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%); }
         .cat-btn.active { background:rgba(255,107,35,0.15); border-color:#ff6b23; color:#ff6b23; }
         .chat-bubble { max-width:80%; padding:12px 16px; font-family:'Noto Sans KR',sans-serif; font-size:13.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word; }
@@ -107,10 +110,11 @@ export default function ContactPage() {
 
       <Navbar />
 
-      <div style={{ maxWidth:900, margin:"0 auto", padding:"clamp(24px,4vw,48px) clamp(16px,4vw,32px) 80px" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:6 }}>
-          <div style={{ width:3, height:22, background:"#ff6b23", flexShrink:0 }} />
-          <h1 style={{ fontFamily:"Rajdhani,sans-serif", fontSize:"clamp(20px,5vw,26px)", fontWeight:700, letterSpacing:2 }}>고객 지원</h1>
+      <div style={{ maxWidth:900, margin:"0 auto", padding:"clamp(24px,4vw,48px) clamp(16px,4vw,32px) 80px", position:"relative" }}>
+        <div className="hero-glow" />
+        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:6, position:"relative" }}>
+          <div style={{ width:3, height:24, background:"#ff6b23", flexShrink:0, boxShadow:"0 0 10px rgba(255,107,35,0.7)" }} />
+          <h1 style={{ fontFamily:"Rajdhani,sans-serif", fontSize:"clamp(20px,5vw,26px)", fontWeight:700, letterSpacing:2, color:"#fff", textShadow:"0 0 24px rgba(255,107,35,0.35)" }}>고객 지원</h1>
         </div>
         <p style={{ fontSize:13, color:"#8892a4", fontFamily:"Noto Sans KR,sans-serif", marginBottom:40, marginLeft:15 }}>자주 묻는 질문을 확인하거나, AI에게 바로 물어보세요.</p>
 
@@ -138,7 +142,7 @@ export default function ContactPage() {
                   <div className="faq-q">
                     <div style={{ display:"flex", alignItems:"center", gap:10, minWidth:0 }}>
                       <span style={{ fontSize:10, background:"rgba(255,107,35,0.15)", color:"#ff6b23", border:"1px solid rgba(255,107,35,0.3)", padding:"2px 7px", fontFamily:"Rajdhani,sans-serif", fontWeight:700, letterSpacing:1, flexShrink:0 }}>{faq.c}</span>
-                      <span style={{ fontFamily:"Noto Sans KR,sans-serif", fontSize:13.5, fontWeight:600, color:"#e8eaf0", lineHeight:1.4 }}>{faq.q}</span>
+                      <span style={{ fontFamily:"Noto Sans KR,sans-serif", fontSize:14.5, fontWeight:700, color:"#fff", lineHeight:1.45 }}>{faq.q}</span>
                     </div>
                     <span style={{ color:"#ff6b23", fontSize:16, flexShrink:0, transition:"transform 0.2s", transform:isOpen?"rotate(180deg)":"rotate(0deg)" }}>▾</span>
                   </div>
