@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 import { createNotification } from "../../lib/notifications";
+import { matchupVerdict } from "../../lib/clanTier";
 
 const STATUS_LABEL = {
   "모집중": { label: "상대 모집중", color: "#ba68c8" },
@@ -219,6 +220,17 @@ export default function OverClanBattle() {
 
   const isMyBattle = (battle) => myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id);
   const isOpponent = (battle) => myClan && battle.clan2_id === myClan.id;
+
+  // "우리 vs 상대" 판정 — 내 클랜 기준. 내 클랜이 참가/도전 가능한 대전에서만 표시.
+  const verdictFor = (b) => {
+    if (!myClan) return null;
+    let myT, oppT;
+    if (b.clan1_id === myClan.id) { myT = b.clan1?.tier; oppT = b.clan2?.tier; }
+    else if (b.clan2_id === myClan.id) { myT = b.clan2?.tier; oppT = b.clan1?.tier; }
+    else if (!b.clan2_id) { myT = myClan.tier; oppT = b.clan1?.tier; } // 도전자 모집중 → 도전 시 전력
+    else return null; // 남의 클랜끼리의 대전
+    return matchupVerdict(myT, oppT);
+  };
   const scrimTitle = (battle) => `[오버클랜] ${battle.clan1?.name} vs ${battle.clan2?.name}`;
 
   const getMyClanVolunteers = () => volunteers.filter(v => v.clan_id === myClan?.id);
@@ -439,7 +451,21 @@ export default function OverClanBattle() {
                         <span className="m-nm">{b.clan1?.name}</span>
                         {b.clan1?.tier && tierTag(b.clan1.tier)}
                       </div>
-                      <div className="m-vs" style={openRecruit ? { color: "#ce93d8", textShadow: "0 0 14px rgba(206,147,216,0.6)" } : {}}>VS</div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                        <span className="m-vs" style={openRecruit ? { color: "#ce93d8", textShadow: "0 0 14px rgba(206,147,216,0.6)" } : {}}>VS</span>
+                        {(() => {
+                          const v = verdictFor(b);
+                          return v ? (
+                            <span style={{
+                              fontSize: 10, fontWeight: 700, color: v.color,
+                              background: `${v.color}1f`, border: `1px solid ${v.color}55`,
+                              padding: "2px 8px", whiteSpace: "nowrap", letterSpacing: 0.3,
+                              fontFamily: "'Noto Sans KR', sans-serif",
+                              clipPath: "polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)",
+                            }}>{v.label}</span>
+                          ) : null;
+                        })()}
+                      </div>
                       <div className="m-side">
                         {openRecruit ? (
                           <>

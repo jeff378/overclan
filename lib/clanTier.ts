@@ -44,3 +44,25 @@ export function computeClanTier(members: MemberTiers[]): string | null {
   const spread = Math.max(...scores) - Math.min(...scores);
   return scoreToTier(avg - spread * 0.15);
 }
+
+export type Verdict = { label: string; color: string; diff: number };
+
+const VERDICT_GOOD = "#4caf50"; // 우세
+const VERDICT_EVEN = "#ff6b23"; // 호각 (포인트 컬러)
+const VERDICT_BAD = "#ef5350"; // 열세
+
+/**
+ * "우리 vs 상대" 판정 칩. 두 티어 모두 있어야 산출, 아니면 null.
+ * myTier 기준 — 양수 diff면 우리가 위.
+ */
+export function matchupVerdict(myTier?: string | null, oppTier?: string | null): Verdict | null {
+  const a = tierScore(myTier);
+  const b = tierScore(oppTier);
+  if (a == null || b == null) return null;
+  const diff = a - b;
+  if (diff >= 2) return { label: `▲ 우세 +${diff}단계`, color: VERDICT_GOOD, diff };
+  if (diff === 1) return { label: "▲ 우세", color: VERDICT_GOOD, diff };
+  if (diff === 0) return { label: "⚖ 호각", color: VERDICT_EVEN, diff };
+  if (diff === -1) return { label: "▼ 열세", color: VERDICT_BAD, diff };
+  return { label: `▼ 열세 ${-diff}단계`, color: VERDICT_BAD, diff };
+}
