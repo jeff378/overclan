@@ -20,6 +20,11 @@ const ROLE_CONFIG = {
   "힐러": { icon: "💊", color: "#4caf50", max: 2 },
 };
 
+const TIER_COLOR = {
+  "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7",
+  "플래티넘": "#b0bec5", "골드": "#ffd54f", "실버": "#90a4ae", "브론즈": "#a1887f",
+};
+
 export default function OverClanBattle() {
   const [activeTab, setActiveTab] = useState("진행중");
   const [battles, setBattles] = useState([]);
@@ -223,64 +228,100 @@ export default function OverClanBattle() {
     return { "탱커": confirmed.filter(v => v.confirmed_role === "탱커"), "딜러": confirmed.filter(v => v.confirmed_role === "딜러"), "힐러": confirmed.filter(v => v.confirmed_role === "힐러") };
   };
 
+  // ── 렌더 헬퍼 ──
+  const fmtDate = (d) => new Date(d).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
+  const battleDate = (b) => {
+    if (b.confirmed_date) {
+      const d = new Date(b.confirmed_date);
+      const time = b.confirmed_date.includes("T") ? " " + d.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }) : "";
+      return fmtDate(b.confirmed_date) + time;
+    }
+    if (b.mode === "모집" && b.recruit_date) return `${fmtDate(b.recruit_date)} ${b.recruit_start || ""}~${b.recruit_end || ""}`;
+    return null;
+  };
+  const sideEmblem = (clan, size) => {
+    const accent = clan?.accent_color || "#ff6b23";
+    return clan?.emblem_image
+      ? <div className="m-em" style={{ width: size, height: size, borderColor: accent, boxShadow: `0 0 12px ${accent}40` }}><img src={clan.emblem_image} alt="" /></div>
+      : <div className="m-em" style={{ width: size, height: size, borderColor: accent, background: "rgba(255,107,35,0.06)" }}><span style={{ fontSize: Math.round(size * 0.5) }}>{clan?.badge || "⚔"}</span></div>;
+  };
+  const tierTag = (tier) => (
+    <span className="status-tag" style={{ color: TIER_COLOR[tier] || "#ff6b23", border: `1px solid ${(TIER_COLOR[tier] || "#ff6b23")}55`, background: "transparent" }}>{tier}</span>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
-        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 11px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; box-shadow: 0 0 20px rgba(255,107,35,0.3); }
+        .btn-primary:hover { opacity: 0.92; }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-sm { background: transparent; border: 1px solid rgba(255,107,35,0.4); color: #ff6b23; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); transition: all 0.2s; }
-        .btn-sm:hover { background: rgba(255,107,35,0.1); }
-        .btn-green { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); color: #4caf50; padding: 6px 14px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
         .tab-btn { background: transparent; border: none; color: #8892a4; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab-btn.active { color: #ff6b23; border-bottom-color: #ff6b23; }
-        .battle-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 18px 22px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
-        .battle-card:hover, .battle-card.active { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
-        .battle-card.mine { border-color: rgba(255,107,35,0.25); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .input:focus { border-color: #ff6b23; }
         .select { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 10px 14px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
+        .select:focus { border-color: #ff6b23; }
         .label { font-size: 11px; color: #8892a4; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; display: block; }
-        .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
-        .role-btn { padding: 8px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 2px; transition: all 0.2s; border: 1px solid; }
-        .scrim-box { background: rgba(255,107,35,0.06); border: 1px solid rgba(255,107,35,0.2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .member-slot { background: rgba(13,20,35,0.6); border: 1px solid rgba(255,107,35,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .member-slot.confirmed { border-color: rgba(76,175,80,0.3); }
-        .empty-slot { background: rgba(13,20,35,0.3); border: 1px dashed rgba(255,255,255,0.08); padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .detail-panel { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); padding: 24px; }
+        .status-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); white-space: nowrap; }
         @keyframes glow { 0%,100%{text-shadow:0 0 8px rgba(255,107,35,0.5)} 50%{text-shadow:0 0 16px rgba(255,107,35,0.9)} }
-        .vs { animation: glow 2s infinite; color: #ff6b23; font-family:'Cinzel','Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:2px; }
-        .clan-name { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
+        .hero-glow { position: absolute; top: -110px; left: 0; right: 0; height: 280px; background: radial-gradient(ellipse 55% 100% at 50% 0%, rgba(255,107,35,0.13), transparent 70%); pointer-events: none; animation: heroPulse 5s ease-in-out infinite; }
+        @keyframes heroPulse { 0%,100% { opacity: 0.65; } 50% { opacity: 1; } }
+        .form-panel { position: relative; background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.22); padding: 24px; margin-bottom: 22px; clip-path: polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px)); }
+        .m-card { position: relative; display: block; text-decoration: none; color: inherit; background: rgba(13,20,35,0.82); border: 1px solid rgba(255,107,35,0.12); padding: 18px 20px; transition: all 0.25s; clip-path: polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px)); }
+        .m-card:hover { border-color: rgba(255,107,35,0.4); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,107,35,0.12); }
+        .m-card.mine { border-color: rgba(255,107,35,0.25); }
+        .m-row { display: flex; align-items: center; gap: 10px; }
+        .m-side { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 1; min-width: 0; }
+        .m-em { display: flex; align-items: center; justify-content: center; border-radius: 11px; border: 1.5px solid; overflow: hidden; flex-shrink: 0; }
+        .m-em img { width: 100%; height: 100%; object-fit: cover; }
+        .m-nm { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; text-align: center; }
+        .m-vs { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 2px; color: #ff6b23; text-shadow: 0 0 14px rgba(255,107,35,0.7); flex-shrink: 0; padding: 0 4px; animation: glow 2s infinite; }
+        .m-pill { position: absolute; top: 14px; right: 16px; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; clip-path: polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%); }
+        .m-foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; }
+        .sb-card { background: rgba(13,20,35,0.82); border: 1px solid rgba(255,107,35,0.1); padding: 16px 20px; margin-bottom: 8px; clip-path: polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px)); }
+        .sb-nm { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .empty-box { text-align: center; padding: 54px 20px; background: rgba(13,20,35,0.5); border: 1px dashed rgba(255,107,35,0.18); }
         @media (max-width: 640px) {
-          .battle-grid { grid-template-columns: 1fr !important; }
-          .detail-panel { padding: 16px; }
           .tab-btn { padding: 8px 12px; font-size: 12px; letter-spacing: 1px; }
-          .clan-name { max-width: 90px; font-size: 13px; }
+          .m-card { padding-top: 40px; }
+          .m-nm { max-width: 92px; font-size: 13px; }
+          .m-vs { font-size: 17px; }
+          .form-grid-3 { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
       <Navbar active="클랜대전" />
 
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 32px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 3, height: 20, background: "#ff6b23" }} />
-            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>클랜대전</h1>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "clamp(20px,4vw,48px)", position: "relative" }}>
+        <div className="hero-glow" />
+
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, gap: 12, position: "relative" }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+              <div style={{ width: 3, height: 24, background: "#ff6b23", boxShadow: "0 0 10px rgba(255,107,35,0.7)" }} />
+              <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(24px,5vw,28px)", fontWeight: 700, letterSpacing: 3, color: "#fff", textShadow: "0 0 24px rgba(255,107,35,0.35)" }}>클랜대전</h1>
+            </div>
+            <p style={{ fontSize: 13, color: "#8892a4", margin: "8px 0 0 14px", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>
+              <span style={{ color: "#ff6b23", fontWeight: 700, fontSize: 16, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{loading ? "—" : battles.length}</span>개의 전장이 펼쳐지고 있습니다
+            </p>
           </div>
-          {myClan && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "대전 신청"}</button>}
+          {myClan && <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{showForm ? "취소" : "+ 대전 신청"}</button>}
         </div>
 
         {/* 대전 신청 폼 */}
         {showForm && (
-          <div style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", padding: 24, marginBottom: 20 }}>
-            <h3 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, letterSpacing: 2, marginBottom: 16, color: "#ff6b23" }}>클랜대전 신청</h3>
+          <div className="form-panel">
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 18 }}>
+              <div style={{ width: 3, height: 16, background: "#ff6b23", boxShadow: "0 0 8px rgba(255,107,35,0.7)" }} />
+              <h3 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, letterSpacing: 2, color: "#ff6b23" }}>클랜대전 신청</h3>
+            </div>
 
             {/* 모드 토글 */}
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
               {[["지목", "특정 클랜 지목"], ["모집", "열린 모집 (상대 구함)"]].map(([m, lbl]) => (
                 <button key={m} onClick={() => setForm({ ...form, mode: m })} style={{
-                  flex: 1, padding: "10px 12px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer",
+                  flex: 1, padding: "11px 12px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer",
                   background: form.mode === m ? "rgba(255,107,35,0.15)" : "rgba(13,20,35,0.8)",
                   border: `1px solid ${form.mode === m ? "#ff6b23" : "rgba(255,255,255,0.1)"}`,
                   color: form.mode === m ? "#ff6b23" : "#8892a4",
@@ -306,7 +347,7 @@ export default function OverClanBattle() {
                     {allClans.filter(c => c.id !== myClan?.id).map(c => <option key={c.id} value={c.id}>{c.badge} {c.name}</option>)}
                   </select>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+                <div className="form-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                   {[1,2,3].map(n => (
                     <div key={n}>
                       <label className="label">희망 날짜 {n}{n===1?" *":""}</label>
@@ -347,10 +388,12 @@ export default function OverClanBattle() {
         )}
 
         {/* 탭 */}
-        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
           <div style={{ display: "flex" }}>
-            {["진행중", "완료된 대전"].map(t => (
-              <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>{t}</button>
+            {[["진행중", battles.length], ["완료된 대전", completedBattles.length]].map(([t, n]) => (
+              <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>
+                {t}{!loading && <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.7 }}>{n}</span>}
+              </button>
             ))}
           </div>
           {myClan && (
@@ -369,62 +412,89 @@ export default function OverClanBattle() {
         {loading ? (
           <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2, textAlign: "center", padding: "40px 0" }}>LOADING...</div>
         ) : (
-          <div className="battle-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, position: "relative" }}>
 
-            {/* 대전 목록 */}
-            <div>
-              {activeTab === "진행중" && (() => {
-                const filteredBattles = myClanOnly ? battles.filter(isMyBattle) : battles;
-                return filteredBattles.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>진행중인 클랜대전이 없어요.</div>
-                ) : filteredBattles.map(b => (
-                  <a key={b.id} href={`/battle/${b.id}`} className={`battle-card ${isMyBattle(b) ? "mine" : ""}`} style={{ display: "block", textDecoration: "none", color: "inherit" }}>
-                    <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                      {b.clan1?.emblem_image ? <img src={b.clan1.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan1.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>}
-                      <span className="clan-name">{b.clan1?.name}</span>
-                      {b.clan2_id ? (
-                        <>
-                          <span className="vs">VS</span>
-                          <span className="clan-name">{b.clan2?.name}</span>
-                          {b.clan2?.emblem_image ? <img src={b.clan2.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan2.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>}
-                        </>
-                      ) : (
-                        <span style={{ fontSize: 13, color: "#ba68c8", fontWeight: 700, letterSpacing: 1, whiteSpace: "nowrap" }}>· 상대 모집중</span>
-                      )}
-                    </div>
-                    {b.mode === "모집" && b.recruit_date && (
-                      <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 8 }}>
-                        🗓 {new Date(b.recruit_date).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })} {b.recruit_start}~{b.recruit_end}
+            {/* 진행중 */}
+            {activeTab === "진행중" && (() => {
+              const filteredBattles = myClanOnly ? battles.filter(isMyBattle) : battles;
+              if (filteredBattles.length === 0) {
+                return (
+                  <div className="empty-box">
+                    <div style={{ fontSize: 30, marginBottom: 12, color: "#ff8c42", opacity: 0.85 }}>⚔</div>
+                    <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 17, fontWeight: 700, color: "#e8eaf0", marginBottom: 6 }}>진행중인 클랜대전이 없어요.</div>
+                    <div style={{ fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{myClan ? "먼저 도전장을 내밀어보세요." : "클랜에 가입하면 대전을 신청할 수 있어요."}</div>
+                  </div>
+                );
+              }
+              return filteredBattles.map(b => {
+                const st = STATUS_LABEL[b.status] || {};
+                const dt = battleDate(b);
+                const openRecruit = !b.clan2_id;
+                return (
+                  <a key={b.id} href={`/battle/${b.id}`} className={`m-card ${isMyBattle(b) ? "mine" : ""}`}>
+                    <span className="m-pill" style={{ background: `${st.color}22`, color: st.color, border: `1px solid ${st.color}55` }}>{st.label}</span>
+                    <div className="m-row">
+                      <div className="m-side">
+                        {sideEmblem(b.clan1, 48)}
+                        <span className="m-nm">{b.clan1?.name}</span>
+                        {b.clan1?.tier && tierTag(b.clan1.tier)}
                       </div>
-                    )}
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <span className="status-tag" style={{ background: `${STATUS_LABEL[b.status]?.color}22`, color: STATUS_LABEL[b.status]?.color, border: `1px solid ${STATUS_LABEL[b.status]?.color}44` }}>{STATUS_LABEL[b.status]?.label}</span>
+                      <div className="m-vs" style={openRecruit ? { color: "#ce93d8", textShadow: "0 0 14px rgba(206,147,216,0.6)" } : {}}>VS</div>
+                      <div className="m-side">
+                        {openRecruit ? (
+                          <>
+                            <div className="m-em" style={{ width: 48, height: 48, border: "1.5px dashed rgba(206,147,216,0.5)", background: "rgba(206,147,216,0.04)" }}><span style={{ fontFamily: "'Cinzel', serif", fontWeight: 700, fontSize: 18, color: "#ce93d8" }}>?</span></div>
+                            <span style={{ color: "#ce93d8", fontSize: 12, fontFamily: "'Noto Sans KR', sans-serif", fontWeight: 700, textAlign: "center" }}>도전자 구하는 중</span>
+                          </>
+                        ) : (
+                          <>
+                            {sideEmblem(b.clan2, 48)}
+                            <span className="m-nm">{b.clan2?.name}</span>
+                            {b.clan2?.tier && tierTag(b.clan2.tier)}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="m-foot">
                       <span className="status-tag" style={{ background: b.type === "정규전" ? "rgba(255,107,35,0.12)" : "rgba(255,255,255,0.05)", color: b.type === "정규전" ? "#ff6b23" : "#8892a4", border: "none" }}>{b.type}</span>
-                      {isMyBattle(b) && <span style={{ fontSize: 10, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>내 클랜</span>}
-                      {b.is_disputed && <span style={{ fontSize: 10, color: "#ef5350", fontWeight: 700 }}>⚠️ 분쟁</span>}
+                      {dt && <span style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif" }}>🗓 {dt}</span>}
+                      {isMyBattle(b) && <span style={{ marginLeft: "auto", fontSize: 10, color: "#4caf50", fontWeight: 700, letterSpacing: 1 }}>내 클랜</span>}
+                      {b.is_disputed && <span style={{ fontSize: 10, color: "#ef5350", fontWeight: 700 }}>⚠ 분쟁</span>}
                     </div>
                   </a>
-                ));
-              })()}
+                );
+              });
+            })()}
 
-              {activeTab === "완료된 대전" && (
-                completedBattles.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "48px 0", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>완료된 대전이 없어요.</div>
-                ) : completedBattles.map(b => (
-                  <div key={b.id} className="battle-card">
-                    <div className="matchup-row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      {b.clan1?.emblem_image ? <img src={b.clan1.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan1.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan1?.badge}</span>}
-                      <span className="matchup-name" style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4" }}>{b.clan1?.name}</span>
-                      <div style={{ textAlign: "center", minWidth: 60 }}>
-                        <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700 }}>{b.clan1_score} - {b.clan2_score}</div>
-                      </div>
-                      <span className="matchup-name" style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4" }}>{b.clan2?.name}</span>
-                      {b.clan2?.emblem_image ? <img src={b.clan2.emblem_image} alt="" style={{ width: 26, height: 26, objectFit: "cover", borderRadius: 5, flexShrink: 0, border: `1px solid ${b.clan2.accent_color || "#ff6b23"}55` }} /> : <span style={{ fontSize: 22 }}>{b.clan2?.badge}</span>}
+            {/* 완료된 대전 */}
+            {activeTab === "완료된 대전" && (
+              completedBattles.length === 0 ? (
+                <div className="empty-box">
+                  <div style={{ fontSize: 30, marginBottom: 12, color: "#5a6478" }}>🏁</div>
+                  <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 17, fontWeight: 700, color: "#e8eaf0" }}>완료된 대전이 없어요.</div>
+                </div>
+              ) : completedBattles.map(b => (
+                <div key={b.id} className="sb-card">
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, minWidth: 0 }}>
+                      {sideEmblem(b.clan1, 38)}
+                      <span className="sb-nm" style={{ color: b.winner_id === b.clan1_id ? "#ff6b23" : "#8892a4", display: "flex", alignItems: "center", gap: 5 }}>
+                        {b.winner_id === b.clan1_id && <span style={{ color: "#ffd24a" }}>♛</span>}{b.clan1?.name}
+                      </span>
+                    </div>
+                    <div style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontWeight: 700, fontSize: 22, color: "#fff", letterSpacing: 2, flexShrink: 0 }}>
+                      {b.clan1_score} <span style={{ color: "#5a6478" }}>-</span> {b.clan2_score}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 9, flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
+                      <span className="sb-nm" style={{ color: b.winner_id === b.clan2_id ? "#ff6b23" : "#8892a4", display: "flex", alignItems: "center", gap: 5 }}>
+                        {b.winner_id === b.clan2_id && <span style={{ color: "#ffd24a" }}>♛</span>}{b.clan2?.name}
+                      </span>
+                      {sideEmblem(b.clan2, 38)}
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                </div>
+              ))
+            )}
 
           </div>
         )}
