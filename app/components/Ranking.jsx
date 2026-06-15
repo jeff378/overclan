@@ -15,6 +15,31 @@ const medalMeta = {
   3: { ribbon: "tp-ribbon-3", base: "tp-base-3", ring: "tp-ring-3" },
 };
 
+// 긴 닉네임을 칸 너비에 맞게 폰트 크기를 자동 축소 (짧으면 기준 크기 유지, 한계까지 줄여도 넘치면 말줄임)
+function FitText({ text, max, maxSm, min, className, style }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      let fs = window.innerWidth <= 600 ? maxSm : max;
+      el.style.fontSize = fs + "px";
+      let guard = 0;
+      while (el.scrollWidth > el.clientWidth && fs > min && guard < 80) {
+        fs -= 0.5;
+        el.style.fontSize = fs + "px";
+        guard++;
+      }
+    };
+    fit();
+    let ro;
+    if (typeof ResizeObserver !== "undefined") { ro = new ResizeObserver(fit); ro.observe(el); }
+    window.addEventListener("resize", fit);
+    return () => { if (ro) ro.disconnect(); window.removeEventListener("resize", fit); };
+  }, [text, max, maxSm, min]);
+  return <div ref={ref} className={className} style={{ ...style, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{text}</div>;
+}
+
 export default function OverClanRanking() {
   const [clans, setClans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,7 +158,7 @@ export default function OverClanRanking() {
             {clan.emblem_image ? <img src={clan.emblem_image} alt="" /> : <ClanBadge memberCount={count} size={isFirst ? 88 : 60} />}
           </div>
         </div>
-        <div className={`tp-name ${isFirst ? "tp-name-1" : ""}`}>{clan.name}</div>
+        <FitText text={clan.name} max={isFirst ? 22 : 16} maxSm={isFirst ? 15 : 12} min={isFirst ? 11 : 9} className={`tp-name ${isFirst ? "tp-name-1" : ""}`} />
         <div style={{ display: "flex", gap: 6, justifyContent: "center", margin: "7px 0 4px", flexWrap: "wrap" }}>
           <span className="tp-tier" style={{ color: tierColors[clan.tier] || "#ff8c42", borderColor: `${tierColors[clan.tier] || "#ff8c42"}66` }}>{clan.tier}</span>
           {clan.emblem_image && <ClanTierChip memberCount={count} size={18} />}
