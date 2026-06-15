@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { isValueTaken } from "../../lib/validate";
 import { useRouter } from "next/navigation";
@@ -24,9 +24,50 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [resendMsg, setResendMsg] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   const toggleRole = (role: string) => {
     setRoles(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
+  };
+
+  // 인증번호 확인 → 프로필 생성 → 로그인 완료
+  const handleVerify = async () => {
+    const code = otp.replace(/\D/g, "");
+    if (code.length !== 6) { setError("6자리 인증번호를 입력해주세요."); return; }
+    setVerifying(true);
+    setError("");
+    const { data, error: vErr } = await supabase.auth.verifyOtp({ email, token: code, type: "signup" });
+    if (vErr || !data.user) {
+      setError("인증번호가 올바르지 않거나 만료됐어요. 다시 확인해주세요.");
+      setVerifying(false);
+      return;
+    }
+    await supabase.from("profiles").upsert({
+      id: data.user.id,
+      nickname, battletag, email, roles,
+      tier_tank: tierTank, tier_dps: tierDps, tier_support: tierSupport,
+    });
+    router.push("/");
+  };
+
+  // 인증번호 재발송 (60초 쿨다운)
+  const handleResend = async () => {
+    if (cooldown > 0) return;
+    setResendMsg("");
+    setError("");
+    const { error: rErr } = await supabase.auth.resend({ type: "signup", email });
+    if (rErr) { setError("재발송에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
+    setResendMsg("인증번호를 다시 보냈어요. 메일함(스팸함 포함)을 확인해주세요.");
+    setCooldown(60);
   };
 
   const handleSignup = async () => {
@@ -94,16 +135,48 @@ export default function SignupPage() {
   if (sent) {
     return (
       <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", padding: "0 24px" }}>
-        <div style={{ width: "100%", maxWidth: 440, textAlign: "center" }}>
+        <div style={{ width: "100%", maxWidth: 420, textAlign: "center" }}>
           <div style={{ fontSize: 46, marginBottom: 16 }}>📧</div>
-          <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2, color: "#fff", marginBottom: 14 }}>인증 메일을 보냈어요</h1>
-          <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 8 }}>
-            <span style={{ color: "#ff6b23", fontWeight: 700 }}>{email}</span> 로 보낸 메일의<br />인증 링크를 눌러 가입을 완료해주세요.
+          <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, letterSpacing: 2, color: "#fff", marginBottom: 14 }}>인증번호를 보냈어요</h1>
+          <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 22 }}>
+            <span style={{ color: "#ff6b23", fontWeight: 700 }}>{email}</span> 로 보낸<br />6자리 인증번호를 입력해주세요.
           </p>
-          <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginBottom: 28 }}>
-            메일이 안 보이면 스팸함도 확인해주세요. 인증 후 로그인하시면 됩니다.
+
+          <input
+            value={otp}
+            onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            onKeyDown={e => e.key === "Enter" && handleVerify()}
+            inputMode="numeric"
+            autoFocus
+            placeholder="------"
+            style={{
+              width: "100%", background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.35)",
+              color: "#ff8c42", fontFamily: "'Courier New', monospace", fontSize: 32, fontWeight: 700,
+              letterSpacing: 14, textAlign: "center", padding: "16px 0", outline: "none", marginBottom: 16,
+              clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
+            }}
+          />
+
+          {error && <div style={{ fontSize: 13, color: "#ef5350", marginBottom: 14, fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}
+          {resendMsg && <div style={{ fontSize: 13, color: "#4caf50", marginBottom: 14, fontFamily: "Noto Sans KR, sans-serif" }}>{resendMsg}</div>}
+
+          <button onClick={handleVerify} disabled={verifying || otp.length !== 6} style={{
+            width: "100%", background: "linear-gradient(135deg, #ff6b23, #ff8c42)", border: "none", color: "#fff",
+            padding: 14, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 2,
+            cursor: verifying || otp.length !== 6 ? "not-allowed" : "pointer", opacity: verifying || otp.length !== 6 ? 0.5 : 1,
+            clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
+          }}>{verifying ? "인증 중..." : "인증하고 가입 완료"}</button>
+
+          <div style={{ marginTop: 20, fontSize: 13, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>
+            번호가 안 왔나요?{" "}
+            <button onClick={handleResend} disabled={cooldown > 0} style={{
+              background: "none", border: "none", color: cooldown > 0 ? "#5a6478" : "#ff6b23", fontWeight: 600,
+              cursor: cooldown > 0 ? "default" : "pointer", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, padding: 0,
+            }}>{cooldown > 0 ? `재발송 (${cooldown}초)` : "다시 보내기"}</button>
+          </div>
+          <p style={{ fontSize: 12, color: "#5a6478", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.7, marginTop: 14 }}>
+            메일이 안 보이면 스팸함도 확인해주세요. 인증번호는 10분 후 만료돼요.
           </p>
-          <a href="/login" style={{ display: "inline-block", background: "linear-gradient(135deg, #ff6b23, #ff8c42)", color: "#fff", padding: "13px 32px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: 2, textDecoration: "none", clipPath: "polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)" }}>로그인하러 가기</a>
         </div>
       </div>
     );
