@@ -269,9 +269,12 @@ export default function ClanDetailPage() {
       {/* YouTube 스타일 배너 - 이미지 있을 때만 표시 */}
       {clan.banner_image && (
         <div style={{ width: "100%", height: "clamp(120px, 20vw, 220px)", position: "relative", overflow: "hidden", background: "#080c14" }}>
-          <img src={clan.banner_image} alt="배너" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center" }} />
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.06)' stroke-width='1'/%3E%3C/svg%3E\")" }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.9))" }} />
+          {/* 블러 배경 채움 — 어떤 비율 이미지든 양옆 빈틈 없이 자연스럽게 채움 */}
+          <img src={clan.banner_image} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(30px) brightness(0.6)", transform: "scale(1.2)" }} />
+          {/* 원본 전체 표시 (잘리지 않게 contain) */}
+          <img src={clan.banner_image} alt="배너" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", zIndex: 1 }} />
+          <div style={{ position: "absolute", inset: 0, zIndex: 2, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='46'%3E%3Cpolygon points='20,2 38,12 38,34 20,44 2,34 2,12' fill='none' stroke='rgba(255,107,35,0.06)' stroke-width='1'/%3E%3C/svg%3E\")" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", zIndex: 2, background: "linear-gradient(to bottom, transparent, rgba(8,12,20,0.9))" }} />
         </div>
       )}
 
