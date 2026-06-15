@@ -128,13 +128,13 @@ export default function SettingsPage() {
   };
 
   if (loading) return (
-    <div style={{ minHeight:"100vh", background:"#080c14", display:"flex", alignItems:"center", justifyContent:"center" }}>
+    <div style={{ minHeight:"100vh", background: "transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
       <div style={{ color:"#ff6b23", fontFamily:"'Cinzel', 'Rajdhani', sans-serif", letterSpacing:2 }}>LOADING...</div>
     </div>
   );
 
   return (
-    <div style={{ minHeight:"100vh", background:"#080c14", color:"#e8eaf0", fontFamily:"'Rajdhani','Noto Sans KR',sans-serif" }}>
+    <div style={{ minHeight:"100vh", background: "transparent", color:"#e8eaf0", fontFamily:"'Rajdhani','Noto Sans KR',sans-serif" }}>
       <style>{`
         * { box-sizing:border-box; margin:0; padding:0; }
         .toggle { position:relative; width:48px; height:26px; flex-shrink:0; cursor:pointer; }

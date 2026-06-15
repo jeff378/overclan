@@ -215,13 +215,13 @@ export default function ClanDetailPage() {
 
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#ff6b23", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>LOADING...</div>
     </div>
   );
 
   if (!clan) return (
-    <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>클랜을 찾을 수 없어요.</div>
     </div>
   );
@@ -229,7 +229,7 @@ export default function ClanDetailPage() {
   const accent = clan.accent_color || "#ff6b23";
 
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", ["--accent" as any]: accent }}>
+    <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", ["--accent" as any]: accent }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes tierUpBadge { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.3)} 80%{transform:scale(0.95)} 100%{transform:scale(1);opacity:1} }

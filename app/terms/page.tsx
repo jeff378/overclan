@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 
 export default function TermsPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; } h2 { font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; color: #ff6b23; margin: 28px 0 12px; } p, li { font-size: 14px; color: #8892a4; font-family: 'Noto Sans KR', sans-serif; line-height: 1.9; font-weight: 300; } ul { padding-left: 20px; }`}</style>
       <Navbar />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px" }}>

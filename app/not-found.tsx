@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", flexDirection: "column", gap: 24, textAlign: "center", padding: "0 24px" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", flexDirection: "column", gap: 24, textAlign: "center", padding: "0 24px" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+KR:wght@300;400&display=swap');`}</style>
       <svg width="64" height="72" viewBox="0 0 32 36">
         <polygon points="16,2 30,10 30,26 16,34 2,26 2,10" fill="none" stroke="#ff6b23" strokeWidth="1.5" strokeDasharray="4 2"/>

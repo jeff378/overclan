@@ -155,7 +155,7 @@ export default function Home() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#080c14", color: "#e8eaf0", fontFamily: "'Rajdhani','Noto Sans KR',sans-serif", position: "relative", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani','Noto Sans KR',sans-serif", position: "relative", overflow: "hidden" }}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0;}
 

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import './globals.css'
 import IntroOverlay from './components/IntroOverlay'
 
 export const viewport = {
@@ -76,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }) }}
         />
       </head>
-      <body style={{ margin: 0, padding: 0, background: "#080c14", fontFamily: "'Cinzel', 'Rajdhani', 'Noto Sans KR', sans-serif" }}>
+      <body style={{ margin: 0, padding: 0, fontFamily: "'Cinzel', 'Rajdhani', 'Noto Sans KR', sans-serif" }}>
         <div className="bg-glow-blue" aria-hidden="true" />
         <IntroOverlay />
         {children}
