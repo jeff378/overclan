@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import Navbar from "../../components/Navbar";
 import { createNotification } from "../../../lib/notifications";
+import { matchupVerdict } from "../../../lib/clanTier";
 import ClanBadgeJSX, { ClanTierChip as ClanTierChipJSX } from "../../components/ClanBadge";
 
 const ClanBadge = ClanBadgeJSX as any;
@@ -365,6 +366,19 @@ export default function BattleDetailPage() {
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                 <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.clans?.name}</span>
                                 <ClanTierChip memberCount={a.clans?.clan_members?.[0]?.count || 0} size={16} showName={false} />
+                                {a.clans?.tier && <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", flexShrink: 0 }}>{a.clans.tier}</span>}
+                                {(() => {
+                                  const v = matchupVerdict(myClan?.tier, a.clans?.tier);
+                                  return v ? (
+                                    <span style={{
+                                      fontSize: 10, fontWeight: 700, color: v.color,
+                                      background: `${v.color}1f`, border: `1px solid ${v.color}55`,
+                                      padding: "2px 8px", whiteSpace: "nowrap", letterSpacing: 0.3, flexShrink: 0,
+                                      fontFamily: "'Noto Sans KR', sans-serif",
+                                      clipPath: "polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)",
+                                    }}>{v.label}</span>
+                                  ) : null;
+                                })()}
                               </div>
                               {a.message && <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.message}</div>}
                             </div>
