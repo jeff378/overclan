@@ -63,8 +63,10 @@ export default function ReplayPage() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 24px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
-        .post-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 20px 24px; cursor: pointer; transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); margin-bottom: 8px; display: block; text-decoration: none; color: inherit; }
-        .post-card:hover { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); }
+        .hero-glow { position: absolute; top: -90px; left: 0; right: 0; height: 240px; background: radial-gradient(ellipse 55% 100% at 25% 0%, rgba(255,107,35,0.12), transparent 70%); pointer-events: none; animation: heroPulse 5s ease-in-out infinite; }
+        @keyframes heroPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .post-card { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.1); padding: 20px 24px; cursor: pointer; transition: all 0.25s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); margin-bottom: 8px; display: block; text-decoration: none; color: inherit; }
+        .post-card:hover { border-color: rgba(255,107,35,0.4); background: rgba(20,30,50,0.9); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,107,35,0.12); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .input:focus { border-color: #ff6b23; }
         .input::placeholder { color: #8892a4; }
@@ -77,11 +79,12 @@ export default function ReplayPage() {
 
       <Navbar />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, gap: 12 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)", position: "relative" }}>
+        <div className="hero-glow" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, gap: 12, position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <div style={{ width: 3, height: 22, background: "#ff6b23", flexShrink: 0 }} />
-            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap" }}>핵 의심 리플레이</h1>
+            <div style={{ width: 3, height: 24, background: "#ff6b23", flexShrink: 0, boxShadow: "0 0 10px rgba(255,107,35,0.7)" }} />
+            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap", color: "#fff", textShadow: "0 0 24px rgba(255,107,35,0.35)" }}>핵 의심 리플레이</h1>
           </div>
           {user && <button className="btn-primary" onClick={() => setShowForm(!showForm)} style={{ flexShrink: 0 }}>{showForm ? "취소" : "리플레이 제보"}</button>}
         </div>

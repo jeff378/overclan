@@ -65,8 +65,10 @@ export default function NoticePage() {
         .btn-primary { background: linear-gradient(135deg, #ff6b23, #ff8c42); border: none; color: #fff; padding: 10px 22px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); }
         .filter-btn { background: rgba(13,20,35,0.8); border: 1px solid rgba(255,107,35,0.15); color: #8892a4; padding: 6px 16px; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); transition: all 0.2s; white-space: nowrap; }
         .filter-btn.active { background: rgba(255,107,35,0.15); border-color: #ff6b23; color: #ff6b23; }
-        .notice-row { background: rgba(13,20,35,0.7); border: 1px solid rgba(255,107,35,0.08); padding: 16px 20px; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; display: flex; align-items: center; gap: 14px; flex-wrap: nowrap; text-decoration: none; color: inherit; }
-        .notice-row:hover { border-color: rgba(255,107,35,0.3); background: rgba(20,30,50,0.8); }
+        .hero-glow { position: absolute; top: -90px; left: 0; right: 0; height: 240px; background: radial-gradient(ellipse 55% 100% at 25% 0%, rgba(255,107,35,0.12), transparent 70%); pointer-events: none; animation: heroPulse 5s ease-in-out infinite; }
+        @keyframes heroPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .notice-row { position: relative; background: rgba(13,20,35,0.7); border: 1px solid rgba(255,107,35,0.1); padding: 15px 20px; cursor: pointer; transition: all 0.2s; margin-bottom: 6px; display: flex; align-items: center; gap: 14px; flex-wrap: nowrap; text-decoration: none; color: inherit; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+        .notice-row:hover { border-color: rgba(255,107,35,0.35); background: rgba(20,30,50,0.85); transform: translateX(4px); box-shadow: -3px 0 0 rgba(255,107,35,0.5); }
         .input { background: rgba(13,20,35,0.9); border: 1px solid rgba(255,107,35,0.2); color: #e8eaf0; padding: 12px 16px; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; width: 100%; }
         .input:focus { border-color: #ff6b23; }
         .input::placeholder { color: #8892a4; }
@@ -77,12 +79,14 @@ export default function NoticePage() {
 
       <Navbar />
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)" }}>
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-            <div style={{ width: 3, height: 22, background: "#ff6b23", flexShrink: 0 }} />
-            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(20px, 5vw, 24px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap" }}>오버클랜 공지사항</h1>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px)", position: "relative" }}>
+        <div className="hero-glow" />
+        <div style={{ marginBottom: 24, position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+            <div style={{ width: 3, height: 24, background: "#ff6b23", flexShrink: 0, boxShadow: "0 0 10px rgba(255,107,35,0.7)" }} />
+            <h1 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, letterSpacing: 2, whiteSpace: "nowrap", color: "#fff", textShadow: "0 0 24px rgba(255,107,35,0.35)" }}>오버클랜 공지사항</h1>
           </div>
+          <p style={{ fontSize: 12, color: "#8892a4", margin: "0 0 14px 15px", fontFamily: "Noto Sans KR, sans-serif", fontWeight: 300 }}>클랜 운영 소식과 업데이트를 전해드려요</p>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             {CATEGORIES.map(c => (
               <button key={c} className={`filter-btn ${filter === c ? "active" : ""}`} onClick={() => setFilter(c)}>{c}</button>
