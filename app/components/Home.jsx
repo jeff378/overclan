@@ -436,18 +436,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <footer style={{ padding: "28px clamp(20px,5vw,48px)", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", flexWrap: "wrap", gap: 12 }}>
-          <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", letterSpacing: 2 }}>© 2026 OVERCLAN — 비공식 팬 플랫폼</span>
-          <div style={{ display: "flex", gap: 24 }}>
-            {[{label:"이용약관",href:"/terms"},{label:"개인정보처리방침",href:"/privacy"},{label:"문의하기",href:"/contact"}].map(item => (
-              <a key={item.label} href={item.href} style={{ fontSize: 11, color: "#8892a4", textDecoration: "none", letterSpacing: 1, fontFamily: "Noto Sans KR, sans-serif", transition: "color 0.2s" }}
-                onMouseEnter={e=>e.target.style.color="#e8eaf0"} onMouseLeave={e=>e.target.style.color="#8892a4"}>
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </footer>
       </div>
     </div>
   );

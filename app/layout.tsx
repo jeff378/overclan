@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import IntroOverlay from './components/IntroOverlay'
+import Footer from './components/Footer'
 
 export const viewport = {
   width: 'device-width',
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="bg-glow-blue" aria-hidden="true" />
         <IntroOverlay />
         {children}
+        <Footer />
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
