@@ -202,13 +202,6 @@ export default function ClanDetailPage() {
     setHasRequested(false);
   };
 
-  // 티어 분포
-  const tierDist = members.reduce((acc: Record<string, number>, m) => {
-    const t = m.profiles?.tier;
-    if (t) acc[t] = (acc[t] || 0) + 1;
-    return acc;
-  }, {});
-
   // 역할군 분포
   const roleDist = members.reduce((acc: Record<string, number>, m) => {
     (m.profiles?.roles || []).forEach((r: string) => { acc[r] = (acc[r] || 0) + 1; });
@@ -505,22 +498,6 @@ export default function ClanDetailPage() {
 
             {/* 구성 정보 */}
             <div>
-              {/* 티어 분포 */}
-              <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>티어 구성</div>
-              <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "16px 20px", marginBottom: 16 }}>
-                {Object.keys(tierDist).length === 0 ? (
-                  <div style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>티어 정보 없음</div>
-                ) : Object.entries(tierDist).map(([tier, count]) => (
-                  <div key={tier} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: TIER_COLORS[tier] || "#8892a4", fontWeight: 700, minWidth: 80, fontFamily: "'Cinzel', 'Rajdhani', sans-serif" }}>{tier}</span>
-                    <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                      <div style={{ width: `${((count as number) / members.length) * 100}%`, height: "100%", background: TIER_COLORS[tier] || "#ff6b23", borderRadius: 2 }} />
-                    </div>
-                    <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", minWidth: 20 }}>{count as number}명</span>
-                  </div>
-                ))}
-              </div>
-
               {/* 역할군별 티어 분포 */}
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>역할군별 티어</div>
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "16px 20px", marginBottom: 16 }}>
