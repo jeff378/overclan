@@ -15,12 +15,6 @@ const STATUS_LABEL = {
   "완료": { label: "완료", color: "#8892a4" },
 };
 
-const ROLE_CONFIG = {
-  "탱커": { icon: "🛡️", color: "#4fc3f7", max: 1 },
-  "딜러": { icon: "⚔️", color: "#ff6b23", max: 2 },
-  "힐러": { icon: "💊", color: "#4caf50", max: 2 },
-};
-
 const TIER_COLOR = {
   "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7",
   "플래티넘": "#b0bec5", "골드": "#ffd54f", "실버": "#90a4ae", "브론즈": "#a1887f",
@@ -36,10 +30,6 @@ export default function OverClanBattle() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [myClanOnly, setMyClanOnly] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [volunteers, setVolunteers] = useState([]);
-  const [myVolunteer, setMyVolunteer] = useState(null);
-  const [myProfile, setMyProfile] = useState(null);
 
   // 신청 폼
   const [form, setForm] = useState({
@@ -49,18 +39,12 @@ export default function OverClanBattle() {
     description: ""
   });
 
-  // 결과 입력
-  const [resultForm, setResultForm] = useState({ score1: "", score2: "", screenshot: "" });
-  const [submittingResult, setSubmittingResult] = useState(false);
-
   useEffect(() => {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
 
       if (userData.user) {
-        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", userData.user.id).single();
-        setMyProfile(prof);
         const { data: mems } = await supabase.from("clan_members").select("clan_id, clans(id,name,badge,tier)").eq("user_id", userData.user.id).limit(1);
         if (mems && mems.length > 0) setMyClan(mems[0].clans);
       }
@@ -84,23 +68,6 @@ export default function OverClanBattle() {
       .select("*, clan1:clans!clan1_id(id,name,badge,emblem_image,accent_color), clan2:clans!clan2_id(id,name,badge,emblem_image,accent_color), winner:clans!winner_id(name)")
       .eq("status", "완료").order("created_at", { ascending: false }).limit(20);
     setCompletedBattles(done || []);
-  };
-
-  const loadVolunteers = async (battleId) => {
-    const { data } = await supabase.from("battle_volunteers")
-      .select("*").eq("battle_id", battleId);
-    const withProfiles = await Promise.all((data || []).map(async v => {
-      const { data: prof } = await supabase.from("profiles").select("nickname, battletag").eq("id", v.user_id).single();
-      return { ...v, profiles: prof };
-    }));
-    setVolunteers(withProfiles);
-    if (user) setMyVolunteer(withProfiles.find(v => v.user_id === user.id) || null);
-  };
-
-  const handleSelectBattle = async (battle) => {
-    setSelected(battle);
-    setMyVolunteer(null);
-    await loadVolunteers(battle.id);
   };
 
   // 대전 신청 / 모집글
@@ -140,86 +107,7 @@ export default function OverClanBattle() {
     setForm({ mode: form.mode, clan2_id: "", type: "친선전", date1: "", date2: "", date3: "", recruit_date: "", recruit_start: "", recruit_end: "", description: "" });
   };
 
-  // 날짜 수락
-  const handleAcceptDate = async (battle, date) => {
-    await supabase.from("clan_battles").update({
-      status: "멤버모집", confirmed_date: date
-    }).eq("id", battle.id);
-    await loadBattles();
-    setSelected(prev => ({ ...prev, status: "멤버모집", confirmed_date: date }));
-    alert("날짜가 확정됐어요! 멤버 모집을 시작하세요.");
-  };
-
-  // 자원 신청
-  const handleVolunteer = async (roles) => {
-    if (!user || !selected) return;
-    if (myVolunteer) {
-      await supabase.from("battle_volunteers").update({ roles }).eq("id", myVolunteer.id);
-    } else {
-      await supabase.from("battle_volunteers").insert({
-        battle_id: selected.id, clan_id: myClan.id, user_id: user.id, roles
-      });
-    }
-    await loadVolunteers(selected.id);
-  };
-
-  // 멤버 확정
-  const handleConfirmMember = async (volunteerId, role) => {
-    await supabase.from("battle_volunteers").update({ is_confirmed: true, confirmed_role: role }).eq("id", volunteerId);
-    await loadVolunteers(selected.id);
-    // 5명 다 확정됐는지 체크
-    const { data: confirmed } = await supabase.from("battle_volunteers").select("*").eq("battle_id", selected.id).eq("is_confirmed", true);
-    if ((confirmed || []).length >= 10) {
-      await supabase.from("clan_battles").update({ status: "대전준비" }).eq("id", selected.id);
-    }
-  };
-
-  // 결과 입력
-  const handleResult = async () => {
-    if (resultForm.score1 === "" || resultForm.score2 === "") { alert("점수를 입력해주세요."); return; }
-    setSubmittingResult(true);
-    const isClan1 = selected.clan1_id === myClan?.id;
-    const updateData = isClan1
-      ? { clan1_result: `${resultForm.score1}-${resultForm.score2}`, clan1_screenshot: resultForm.screenshot, status: "결과입력" }
-      : { clan2_result: `${resultForm.score1}-${resultForm.score2}`, clan2_screenshot: resultForm.screenshot, status: "결과입력" };
-    await supabase.from("clan_battles").update(updateData).eq("id", selected.id);
-
-    // 양쪽 다 입력했는지 확인
-    const { data: updated } = await supabase.from("clan_battles").select("*").eq("id", selected.id).single();
-    if (updated.clan1_result && updated.clan2_result) {
-      if (updated.clan1_result === updated.clan2_result) {
-        const [s1, s2] = updated.clan1_result.split("-").map(Number);
-        const winnerId = s1 > s2 ? updated.clan1_id : s2 > s1 ? updated.clan2_id : null;
-        await supabase.from("clan_battles").update({ status: "완료", winner_id: winnerId, clan1_score: s1, clan2_score: s2 }).eq("id", selected.id);
-        if (updated.type === "정규전") {
-          if (winnerId) {
-            const loserId = winnerId === updated.clan1_id ? updated.clan2_id : updated.clan1_id;
-            const { data: w } = await supabase.from("clans").select("wins,points").eq("id", winnerId).single();
-            if (w) await supabase.from("clans").update({ wins: (w.wins||0)+1, points: (w.points||0)+3 }).eq("id", winnerId);
-            const { data: l } = await supabase.from("clans").select("losses").eq("id", loserId).single();
-            if (l) await supabase.from("clans").update({ losses: (l.losses||0)+1 }).eq("id", loserId);
-          } else {
-            for (const cid of [updated.clan1_id, updated.clan2_id]) {
-              const { data: c } = await supabase.from("clans").select("points").eq("id", cid).single();
-              if (c) await supabase.from("clans").update({ points: (c.points||0)+1 }).eq("id", cid);
-            }
-          }
-        }
-        alert("결과가 확정됐어요!");
-      } else {
-        await supabase.from("clan_battles").update({ is_disputed: true, status: "결과입력" }).eq("id", selected.id);
-        alert("양쪽 결과가 일치하지 않아요. 분쟁으로 처리됩니다.");
-      }
-    } else {
-      alert("결과를 입력했어요. 상대 클랜의 입력을 기다리세요.");
-    }
-    setResultForm({ score1: "", score2: "", screenshot: "" });
-    setSubmittingResult(false);
-    await loadBattles();
-  };
-
   const isMyBattle = (battle) => myClan && (battle.clan1_id === myClan.id || battle.clan2_id === myClan.id);
-  const isOpponent = (battle) => myClan && battle.clan2_id === myClan.id;
 
   // "우리 vs 상대" 판정 — 내 클랜 기준. 내 클랜이 참가/도전 가능한 대전에서만 표시.
   // placement: 더 센 클랜 쪽(clan1/clan2)에 칩을 붙임. 호각·도전후보는 가운데(center).
@@ -237,15 +125,6 @@ export default function OverClanBattle() {
     const strongerSide = v.diff > 0 ? mySide : (mySide === "clan1" ? "clan2" : "clan1");
     return { placement: strongerSide, label: `▲ ${Math.abs(v.diff)}단계 우위`, color: v.color };
   };
-  const scrimTitle = (battle) => `[오버클랜] ${battle.clan1?.name} vs ${battle.clan2?.name}`;
-
-  const getMyClanVolunteers = () => volunteers.filter(v => v.clan_id === myClan?.id);
-  const getOpponentVolunteers = () => volunteers.filter(v => v.clan_id !== myClan?.id && selected && (v.clan_id === selected.clan1_id || v.clan_id === selected.clan2_id));
-  const getConfirmedByRole = (clanId) => {
-    const confirmed = volunteers.filter(v => v.clan_id === clanId && v.is_confirmed);
-    return { "탱커": confirmed.filter(v => v.confirmed_role === "탱커"), "딜러": confirmed.filter(v => v.confirmed_role === "딜러"), "힐러": confirmed.filter(v => v.confirmed_role === "힐러") };
-  };
-
   // ── 렌더 헬퍼 ──
   const fmtDate = (d) => new Date(d).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
   const battleDate = (b) => {
@@ -418,7 +297,7 @@ export default function OverClanBattle() {
         <div style={{ borderBottom: "1px solid rgba(255,107,35,0.1)", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
           <div style={{ display: "flex" }}>
             {[["진행중", battles.length], ["완료된 대전", completedBattles.length]].map(([t, n]) => (
-              <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => { setActiveTab(t); setSelected(null); }}>
+              <button key={t} className={`tab-btn ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>
                 {t}{!loading && <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.7 }}>{n}</span>}
               </button>
             ))}
@@ -540,23 +419,6 @@ export default function OverClanBattle() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function VolunteerForm({ onSubmit }) {
-  const [selected, setSelected] = useState([]);
-  const toggle = (role) => setSelected(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
-  return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-      {Object.entries(ROLE_CONFIG).map(([role, cfg]) => (
-        <button key={role} className="role-btn" onClick={() => toggle(role)} style={{
-          background: selected.includes(role) ? `${cfg.color}22` : "rgba(13,20,35,0.8)",
-          borderColor: selected.includes(role) ? cfg.color : "rgba(255,255,255,0.1)",
-          color: selected.includes(role) ? cfg.color : "#8892a4",
-        }}>{cfg.icon} {role}</button>
-      ))}
-      <button className="btn-primary" onClick={() => selected.length > 0 && onSubmit(selected)} disabled={selected.length === 0}>자원 신청</button>
     </div>
   );
 }
