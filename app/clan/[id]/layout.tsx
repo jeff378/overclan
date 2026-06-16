@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     if (data) {
       const title = `${data.name} [${data.tag}] | 오버클랜`
       const vibeStr = data.vibe_tags && data.vibe_tags.length > 0 ? data.vibe_tags.map((t: string) => `#${t}`).join(' ') + ' · ' : ''
-      const baseDesc = (data.slogan || data.description || `${data.tier} 클랜`).slice(0, 90)
+      const baseDesc = (data.slogan || data.description || (data.tier ? `${data.tier} 클랜` : '오버워치 클랜')).slice(0, 90)
       const fullDesc = `${vibeStr}${baseDesc}`.slice(0, 100)
       return {
         title, description: fullDesc,
