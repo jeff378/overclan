@@ -48,7 +48,7 @@ export default function EditClanPage() {
     setNewQLabel("");
     setNewQType("text");
   };
-  const TYPE_LABEL: Record<string, string> = { text: "단답", textarea: "장문", yesno: "예·아니오", position: "포지션", tier: "티어" };
+  const TYPE_LABEL: Record<string, string> = { text: "단답", textarea: "장문", yesno: "예·아니오", position: "포지션", tier: "티어", playtime: "시간대" };
 
   const handleImageUpload = async (e: any, type: "banner" | "emblem") => {
     const file = e.target.files?.[0];

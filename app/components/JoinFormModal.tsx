@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import { visibleJoinFields, JOIN_TIERS, JOIN_POSITIONS, JoinField, JoinAnswer } from "../../lib/joinForm";
+import { visibleJoinFields, JOIN_TIERS, JOIN_POSITIONS, JOIN_TIMES, JoinField, JoinAnswer } from "../../lib/joinForm";
+
+const isMulti = (t: string) => t === "position" || t === "playtime";
 
 export default function JoinFormModal({
   clan,
@@ -17,7 +19,7 @@ export default function JoinFormModal({
   const fields = visibleJoinFields(clan);
   const [values, setValues] = useState<Record<string, any>>(() => {
     const init: Record<string, any> = {};
-    fields.forEach((f) => { init[f.key] = f.type === "position" ? [] : ""; });
+    fields.forEach((f) => { init[f.key] = isMulti(f.type) ? [] : ""; });
     return init;
   });
   const [error, setError] = useState("");
@@ -33,13 +35,13 @@ export default function JoinFormModal({
   const handleSubmit = () => {
     for (const f of fields) {
       const v = values[f.key];
-      const empty = f.type === "position" ? !(v && v.length) : !String(v || "").trim();
+      const empty = isMulti(f.type) ? !(v && v.length) : !String(v || "").trim();
       if (f.required && empty) { setError(`'${f.label}'을(를) 입력해주세요.`); return; }
     }
     const answers: JoinAnswer[] = fields
       .map((f) => {
         const v = values[f.key];
-        const value = f.type === "position" ? (v || []).join(", ") : String(v || "").trim();
+        const value = isMulti(f.type) ? (v || []).join(", ") : String(v || "").trim();
         return { key: f.key, label: f.label, value };
       })
       .filter((a) => a.value);
@@ -63,20 +65,21 @@ export default function JoinFormModal({
         </select>
       );
     }
-    if (f.type === "position") {
+    if (f.type === "position" || f.type === "playtime") {
+      const opts = f.type === "position" ? JOIN_POSITIONS : JOIN_TIMES;
       return (
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {JOIN_POSITIONS.map((pos) => {
-            const on = (v || []).includes(pos);
+          {opts.map((opt) => {
+            const on = (v || []).includes(opt);
             return (
-              <button key={pos} type="button" onClick={() => togglePosition(f.key, pos)}
+              <button key={opt} type="button" onClick={() => togglePosition(f.key, opt)}
                 style={{
                   background: on ? `${accent}22` : "rgba(13,20,35,0.8)",
                   border: `1px solid ${on ? accent : "rgba(255,255,255,0.1)"}`,
                   color: on ? accent : "#8892a4", padding: "8px 16px",
                   fontFamily: "'Noto Sans KR', sans-serif", fontSize: 13, fontWeight: 600, cursor: "pointer",
                   clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)",
-                }}>{pos}</button>
+                }}>{opt}</button>
             );
           })}
         </div>
