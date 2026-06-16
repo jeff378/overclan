@@ -18,8 +18,8 @@ export default function PatchPage() {
   const [form, setForm] = useState({ title: "", content: "", patch_version: "" });
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const fetchWithProfiles = async (rows: any[], idField = "user_id") => {
     return Promise.all(rows.map(async (row) => {
@@ -57,33 +57,35 @@ export default function PatchPage() {
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setImageFile(file);
-    setImagePreview(file ? URL.createObjectURL(file) : null);
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setImageFiles(prev => [...prev, ...files]);
+    setImagePreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+    e.target.value = "";
   };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
+  const handleRemoveImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSubmitting(true);
-    let imageUrl: string | null = null;
-    if (imageFile) {
-      const { url, error } = await uploadPostImage(imageFile, user.id);
+    const imageUrls: string[] = [];
+    for (const file of imageFiles) {
+      const { url, error } = await uploadPostImage(file, user.id);
       if (error) { alert(error); setSubmitting(false); return; }
-      imageUrl = url;
+      if (url) imageUrls.push(url);
     }
-    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
+    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id, ...(imageUrls.length ? { image_urls: imageUrls } : {}) }).select().single();
     if (data) {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
       setPosts(prev => [{ ...data, profiles: prof }, ...prev]);
     }
     setForm({ title: "", content: "", patch_version: "" });
-    setImageFile(null);
-    setImagePreview(null);
+    setImageFiles([]);
+    setImagePreviews([]);
     setShowForm(false);
     setSubmitting(false);
   };
@@ -162,18 +164,19 @@ export default function PatchPage() {
                 <textarea className="input" placeholder="패치에 대한 의견을 자유롭게 적어주세요" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
               </div>
               <div>
-                <label className="label">이미지 (선택)</label>
-                {imagePreview ? (
-                  <div style={{ position: "relative", display: "inline-block" }}>
-                    <img src={imagePreview} alt="" style={{ maxWidth: "100%", maxHeight: 240, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
-                    <button type="button" onClick={handleRemoveImage} style={{ position: "absolute", top: 8, right: 8, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 12, padding: "4px 10px", cursor: "pointer", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>제거</button>
+                <label className="label">이미지 (선택, 여러 장 가능)</label>
+                {imagePreviews.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
+                    {imagePreviews.map((src, i) => (
+                      <div key={i} style={{ position: "relative", display: "inline-block" }}>
+                        <img src={src} alt="" style={{ maxWidth: 160, maxHeight: 160, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
+                        <button type="button" onClick={() => handleRemoveImage(i)} style={{ position: "absolute", top: 8, right: 8, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 12, padding: "4px 10px", cursor: "pointer", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>제거</button>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <>
-                    <input id="patch-image-input" type="file" accept="image/*" onChange={handleImageSelect} style={{ display: "none" }} />
-                    <label htmlFor="patch-image-input" style={{ display: "inline-block", background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.25)", color: "#ff6b23", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 13, fontWeight: 600, padding: "10px 18px", cursor: "pointer", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>이미지 첨부</label>
-                  </>
                 )}
+                <input id="patch-image-input" type="file" accept="image/*" multiple onChange={handleImageSelect} style={{ display: "none" }} />
+                <label htmlFor="patch-image-input" style={{ display: "inline-block", background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.25)", color: "#ff6b23", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 13, fontWeight: 600, padding: "10px 18px", cursor: "pointer", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>이미지 첨부</label>
               </div>
               <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "등록하기"}</button>
             </div>

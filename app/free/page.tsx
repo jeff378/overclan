@@ -18,8 +18,8 @@ export default function FreeBoardPage() {
   const [hasMore, setHasMore] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", category: "잡담" });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
@@ -62,13 +62,13 @@ export default function FreeBoardPage() {
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSubmitting(true);
-    let imageUrl: string | null = null;
-    if (imageFile) {
-      const { url, error: upErr } = await uploadPostImage(imageFile, user.id);
+    const imageUrls: string[] = [];
+    for (const file of imageFiles) {
+      const { url, error: upErr } = await uploadPostImage(file, user.id);
       if (upErr) { alert(upErr); setSubmitting(false); return; }
-      imageUrl = url;
+      if (url) imageUrls.push(url);
     }
-    const { data, error } = await supabase.from("free_posts").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
+    const { data, error } = await supabase.from("free_posts").insert({ ...form, user_id: user.id, ...(imageUrls.length ? { image_urls: imageUrls } : {}) }).select().single();
     if (error) { alert("등록에 실패했어요. 잠시 후 다시 시도해주세요."); setSubmitting(false); return; }
     if (data) {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
@@ -76,22 +76,31 @@ export default function FreeBoardPage() {
       setPosts(prev => [{ ...data, profiles: prof, authorClan: (mem && (mem[0] as any)?.clans) || null }, ...prev]);
     }
     setForm({ title: "", content: "", category: "잡담" });
-    removeImage();
+    clearImages();
     setShowForm(false);
     setSubmitting(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setImageFiles(prev => [...prev, ...files]);
+    setImagePreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const removeImage = () => {
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
-    setImageFile(null);
-    setImagePreview(null);
+  const removeImageAt = (idx: number) => {
+    setImagePreviews(prev => {
+      if (prev[idx]) URL.revokeObjectURL(prev[idx]);
+      return prev.filter((_, i) => i !== idx);
+    });
+    setImageFiles(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const clearImages = () => {
+    imagePreviews.forEach(p => URL.revokeObjectURL(p));
+    setImageFiles([]);
+    setImagePreviews([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -163,15 +172,16 @@ export default function FreeBoardPage() {
               </div>
               <div>
                 <label className="label">이미지</label>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
-                {imagePreview ? (
-                  <div style={{ position: "relative", display: "inline-block" }}>
-                    <img src={imagePreview} alt="" style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
-                    <button type="button" onClick={removeImage} style={{ position: "absolute", top: 6, right: 6, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", width: 26, height: 26, cursor: "pointer", fontSize: 14, lineHeight: 1, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>✕</button>
-                  </div>
-                ) : (
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageChange} style={{ display: "none" }} />
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" }}>
+                  {imagePreviews.map((src, idx) => (
+                    <div key={idx} style={{ position: "relative", display: "inline-block" }}>
+                      <img src={src} alt="" style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
+                      <button type="button" onClick={() => removeImageAt(idx)} style={{ position: "absolute", top: 6, right: 6, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", width: 26, height: 26, cursor: "pointer", fontSize: 14, lineHeight: 1, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>✕</button>
+                    </div>
+                  ))}
                   <button type="button" className="cat-btn" onClick={() => fileInputRef.current?.click()}>＋ 이미지 첨부</button>
-                )}
+                </div>
               </div>
               <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "등록하기"}</button>
             </div>
