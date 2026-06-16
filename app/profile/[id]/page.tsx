@@ -26,6 +26,8 @@ export default function PublicProfilePage() {
         if (mem && mem.length > 0) setClan((mem[0] as any).clans);
         const { data: ps } = await supabase.from("free_posts").select("id, title, created_at").eq("user_id", id).order("created_at", { ascending: false }).limit(8);
         setPosts(ps || []);
+      } catch {
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
