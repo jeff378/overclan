@@ -18,6 +18,7 @@ export default function EditClanPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState("");
   const [error, setError] = useState("");
+  const [descFocused, setDescFocused] = useState(false);
   const [form, setForm] = useState({
     name: "", tag: "", description: "", badge: "🔥",
     play_time: "저녁", style: "캐주얼", max_members: 50,
@@ -171,6 +172,7 @@ export default function EditClanPage() {
                   { label: "📌", title: "구분선", wrap: null, insert: "\n───────────\n" },
                 ].map(btn => (
                   <button key={btn.label} title={btn.title} type="button"
+                    onMouseDown={e => e.preventDefault()}
                     onClick={() => {
                       const ta = document.getElementById("desc-editor") as HTMLTextAreaElement;
                       const start = ta.selectionStart, end = ta.selectionEnd;
@@ -191,7 +193,8 @@ export default function EditClanPage() {
                 <span style={{ fontSize: 10, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", alignSelf: "center", marginLeft: 4 }}>**텍스트** → 굵게</span>
               </div>
               <textarea id="desc-editor" className="input" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-                style={{ border: "none", minHeight: 140, resize: "vertical" }} placeholder="클랜을 소개하는 글을 작성해주세요." />
+                onFocus={() => setDescFocused(true)} onBlur={() => setDescFocused(false)}
+                style={{ border: "none", minHeight: descFocused ? 340 : 140, resize: "vertical", transition: "min-height 0.2s" }} placeholder="클랜을 소개하는 글을 작성해주세요." />
             </div>
           </div>
           <div>

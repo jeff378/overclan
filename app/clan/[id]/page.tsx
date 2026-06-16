@@ -427,7 +427,7 @@ export default function ClanDetailPage() {
             <div>
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>클랜 소개</div>
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "18px 20px", marginBottom: 16 }}>
-                <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8 }}>{clan.description ? renderText(clan.description) : "클랜 소개가 없어요."}</p>
+                <p style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, wordBreak: "keep-all", overflowWrap: "anywhere" }}>{clan.description ? renderText(clan.description) : "클랜 소개가 없어요."}</p>
               </div>
 
               {/* 가입 조건 */}
@@ -435,7 +435,7 @@ export default function ClanDetailPage() {
                 <>
                   <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>가입 조건</div>
                   <div style={{ background: "rgba(255,107,35,0.05)", border: "1px solid rgba(255,107,35,0.15)", padding: "16px 20px", marginBottom: 16 }}>
-                    <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8 }}>{renderText(clan.join_condition)}</p>
+                    <p style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, wordBreak: "keep-all", overflowWrap: "anywhere" }}>{renderText(clan.join_condition)}</p>
                   </div>
                 </>
               )}
