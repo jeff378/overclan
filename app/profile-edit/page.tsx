@@ -4,19 +4,10 @@ import { supabase } from "../../lib/supabase";
 import { isValueTaken } from "../../lib/validate";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+import { ROLES } from "../../lib/roles";
+import { TIER_COLORS } from "../../lib/clanTier";
 
 const TIERS = ["", "브론즈", "실버", "골드", "플래티넘", "다이아", "마스터", "그랜드마스터", "챔피언"];
-const ROLES = [
-  { key: "탱커", tierKey: "tier_tank", icon: "🛡️", color: "#4fc3f7" },
-  { key: "딜러", tierKey: "tier_dps", icon: "⚔️", color: "#ff6b23" },
-  { key: "힐러", tierKey: "tier_support", icon: "💊", color: "#4caf50" },
-];
-
-const TIER_COLORS: Record<string, string> = {
-  "챔피언": "#ffd700", "그랜드마스터": "#ff9800", "마스터": "#ff6b23",
-  "다이아": "#4fc3f7", "플래티넘": "#b0bec5", "골드": "#ffd54f",
-  "실버": "#90a4ae", "브론즈": "#a1887f",
-};
 
 export default function ProfileEditPage() {
   const router = useRouter();

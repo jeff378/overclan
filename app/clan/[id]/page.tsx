@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { createNotification } from "../../../lib/notifications";
+import { TIER_COLORS } from "../../../lib/clanTier";
 
 // 간단한 마크다운 렌더러
 function renderText(text: string) {
@@ -26,12 +27,6 @@ function renderText(text: string) {
     );
   });
 }
-
-const TIER_COLORS: Record<string, string> = {
-  "챔피언": "#ffd700", "그랜드마스터": "#ff9800", "마스터": "#ff6b23",
-  "다이아": "#4fc3f7", "플래티넘": "#b0bec5", "골드": "#ffd54f",
-  "실버": "#90a4ae", "브론즈": "#a1887f",
-};
 
 const ROLE_CONFIG: Record<string, { icon: string; color: string }> = {
   "탱커": { icon: "🛡️", color: "#4fc3f7" },

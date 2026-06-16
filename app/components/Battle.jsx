@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "./Navbar";
 import { createNotification } from "../../lib/notifications";
-import { matchupVerdict } from "../../lib/clanTier";
+import { matchupVerdict, tierColor } from "../../lib/clanTier";
 
 const STATUS_LABEL = {
   "모집중": { label: "상대 모집중", color: "#ba68c8" },
@@ -13,11 +13,6 @@ const STATUS_LABEL = {
   "대전준비": { label: "대전 준비", color: "#4caf50" },
   "결과입력": { label: "결과 입력중", color: "#ff6b23" },
   "완료": { label: "완료", color: "#8892a4" },
-};
-
-const TIER_COLOR = {
-  "마스터": "#ff6b23", "그랜드마스터": "#ff9800", "챔피언": "#ffd700", "다이아": "#4fc3f7",
-  "플래티넘": "#b0bec5", "골드": "#ffd54f", "실버": "#90a4ae", "브론즈": "#a1887f",
 };
 
 export default function OverClanBattle() {
@@ -143,7 +138,7 @@ export default function OverClanBattle() {
       : <div className="m-em" style={{ width: size, height: size, borderColor: accent, background: "rgba(255,107,35,0.06)" }}><span style={{ fontSize: Math.round(size * 0.5) }}>{clan?.badge || "⚔"}</span></div>;
   };
   const tierTag = (tier) => (
-    <span className="status-tag" style={{ color: TIER_COLOR[tier] || "#ff6b23", border: `1px solid ${(TIER_COLOR[tier] || "#ff6b23")}55`, background: "transparent" }}>{tier}</span>
+    <span className="status-tag" style={{ color: tierColor(tier), border: `1px solid ${tierColor(tier)}55`, background: "transparent" }}>{tier}</span>
   );
   const verdictChip = (v) => (
     <span style={{
