@@ -44,6 +44,7 @@ export default function ClanDetailPage() {
   const [recentBattles, setRecentBattles] = useState<any[]>([]);
   const [activeBattles, setActiveBattles] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
+  const [roster, setRoster] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isMember, setIsMember] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -129,6 +130,9 @@ export default function ClanDetailPage() {
         if (reqErr) console.error("신청 상태 조회 오류:", reqErr);
         setHasRequested(!!req);
       }
+
+      const { data: rosterData } = await supabase.from("clan_roster").select("*").eq("clan_id", id).order("created_at");
+      setRoster(rosterData || []);
       setLoading(false);
     };
     load();
@@ -611,6 +615,21 @@ export default function ClanDetailPage() {
 
               </div>
             ))}
+            {roster.length > 0 && (
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "20px 0 8px", padding: "0 18px", flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, color: "#8892a4", letterSpacing: 1, fontWeight: 600 }}>🔒 인증 대기 {roster.length}</span>
+                  <span style={{ fontSize: 11, color: "#5a6478", fontFamily: "Noto Sans KR, sans-serif" }}>본인이 이 배틀태그로 가입하면 자동으로 합류해요</span>
+                </div>
+                {roster.map((r: any) => (
+                  <div key={r.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, alignItems: "center", opacity: 0.55 }}>
+                    <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, color: "#c8cad0" }}>{r.battletag}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: "rgba(255,255,255,0.05)", color: "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>🔒 인증 대기</span>
+                    <span style={{ fontSize: 11, color: "#5a6478", fontFamily: "Noto Sans KR, sans-serif" }}>{r.note || "—"}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
 

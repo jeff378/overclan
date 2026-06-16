@@ -11,6 +11,8 @@ export default function ClanManagePage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
   const [bans, setBans] = useState<any[]>([]);
+  const [roster, setRoster] = useState<any[]>([]);
+  const [newBattletag, setNewBattletag] = useState("");
   const [clanName, setClanName] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -55,6 +57,9 @@ export default function ClanManagePage() {
         return { ...b, profiles: profile };
       }));
       setBans(bansWithProfiles);
+
+      const { data: rosterData } = await supabase.from("clan_roster").select("*").eq("clan_id", id).order("created_at");
+      setRoster(rosterData || []);
       setLoading(false);
     };
     load();
@@ -152,6 +157,26 @@ export default function ClanManagePage() {
     setBans(prev => prev.filter(b => b.user_id !== ban.user_id));
   };
 
+  const handleAddRoster = async () => {
+    const bt = newBattletag.trim();
+    if (!bt) return;
+    const btRegex = /^[a-zA-Z가-힣0-9]{2,12}#[0-9]{4,7}$/;
+    if (!btRegex.test(bt)) { alert("배틀태그 형식이 올바르지 않아요. 예) 닉네임#1234"); return; }
+    const { data, error } = await supabase.from("clan_roster").insert({ clan_id: id, battletag: bt }).select().single();
+    if (error) {
+      if (error.code === "23505") alert("이미 등록된 배틀태그예요.");
+      else { console.error("명단 등록 오류:", error); alert("등록 중 오류가 발생했어요."); }
+      return;
+    }
+    setRoster(prev => [...prev, data]);
+    setNewBattletag("");
+  };
+
+  const handleRemoveRoster = async (rid: string) => {
+    await supabase.from("clan_roster").delete().eq("id", rid);
+    setRoster(prev => prev.filter(r => r.id !== rid));
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
       <style>{`
@@ -244,6 +269,32 @@ export default function ClanManagePage() {
                       <button className="btn-kick" onClick={() => handleKick(m, true)} style={{ borderColor: "rgba(239,83,80,0.45)" }}>차단</button>
                     </div>
                   )}
+                </div>
+              ))}
+            </div>
+
+            {/* 멤버 명단 등록 (미검증) */}
+            <div style={{ marginTop: 40 }}>
+              <div className="section-title">
+                <div style={{ width: 3, height: 16, background: "#ff6b23" }} />
+                <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, letterSpacing: 2 }}>멤버 명단 등록</h2>
+                <span style={{ background: "rgba(255,107,35,0.2)", color: "#ff6b23", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>{roster.length}</span>
+              </div>
+              <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 12, marginLeft: 13, lineHeight: 1.6 }}>
+                기존 멤버의 배틀태그를 미리 등록해 두면, 그 멤버가 본인 배틀태그로 가입할 때 자동으로 클랜원이 돼요. 인증 전(미가입)에는 클랜 티어·랭킹에 반영되지 않아요.
+              </p>
+              <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+                <input value={newBattletag} onChange={e => setNewBattletag(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAddRoster()} placeholder="배틀태그 (예: 닉네임#1234)"
+                  style={{ flex: 1, minWidth: 180, background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, outline: "none" }} />
+                <button onClick={handleAddRoster} className="btn-accept">+ 등록</button>
+              </div>
+              {roster.map((r: any) => (
+                <div key={r.id} className="row" style={{ marginBottom: 6, opacity: 0.9 }}>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, color: "#c8cad0", marginRight: 10 }}>{r.battletag}</span>
+                    <span style={{ fontSize: 11, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>🔒 인증 대기</span>
+                  </div>
+                  <button className="btn-kick" onClick={() => handleRemoveRoster(r.id)}>삭제</button>
                 </div>
               ))}
             </div>
