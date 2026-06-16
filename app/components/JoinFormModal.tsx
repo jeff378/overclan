@@ -109,7 +109,7 @@ export default function JoinFormModal({
   };
 
   return (
-    <div onClick={onClose} style={{
+    <div style={{
       position: "fixed", inset: 0, background: "rgba(4,7,12,0.78)", zIndex: 1000,
       display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
     }}>
@@ -118,7 +118,7 @@ export default function JoinFormModal({
         .jf-input:focus { border-color: ${accent}; }
         .jf-input::placeholder { color: #5a6478; }
       `}</style>
-      <div onClick={(e) => e.stopPropagation()} style={{
+      <div style={{
         width: "100%", maxWidth: 460, maxHeight: "88vh", overflowY: "auto",
         background: "rgba(13,20,35,0.98)", border: `1px solid ${accent}55`, padding: "28px 26px",
         clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
