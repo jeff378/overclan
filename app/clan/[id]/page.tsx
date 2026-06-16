@@ -210,6 +210,15 @@ export default function ClanDetailPage() {
     setHasRequested(false);
   };
 
+  const handleLeave = async () => {
+    if (!user) return;
+    if (!confirm(`"${clan?.name}" 클랜에서 탈퇴할까요?`)) return;
+    const { error } = await supabase.from("clan_members").delete().eq("clan_id", id).eq("user_id", user.id);
+    if (error) { alert("탈퇴 중 오류가 발생했어요. 다시 시도해주세요."); return; }
+    setIsMember(false);
+    setMembers(prev => prev.filter(m => m.user_id !== user.id));
+  };
+
   // 역할군 분포
   const roleDist = members.reduce((acc: Record<string, number>, m) => {
     (m.profiles?.roles || []).forEach((r: string) => { acc[r] = (acc[r] || 0) + 1; });
@@ -369,6 +378,9 @@ export default function ClanDetailPage() {
                 <div style={{ display: "flex", gap: 8 }}>
                   <a href={`/clan/${id}/manage`} className="btn-sm">클랜 관리</a>
                 </div>
+              )}
+              {isMember && !isOwner && (
+                <button onClick={handleLeave} style={{ background: "rgba(239,83,80,0.08)", border: "1px solid rgba(239,83,80,0.35)", color: "#ef5350", padding: "8px 18px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>클랜 나가기</button>
               )}
               <ShareButton title={`${clan.name} [${clan.tag}] | 오버클랜`} accent={accent} />
 
