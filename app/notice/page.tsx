@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../components/Navbar";
 import { createEventNotificationForAll } from "../../lib/notifications";
+import { uploadPostImage } from "../../lib/uploadImage";
 
 const CATEGORIES = ["전체", "공지", "업데이트", "이벤트"];
 const ADMIN_EMAIL = "jujin2271@gmail.com";
@@ -19,7 +20,21 @@ export default function NoticePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", category: "공지" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -48,7 +63,17 @@ export default function NoticePage() {
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSaving(true);
-    const { data } = await supabase.from("site_notices").insert({ ...form, user_id: user.id }).select().single();
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const { url, error } = await uploadPostImage(imageFile, user.id);
+      if (error) {
+        alert(error);
+        setSaving(false);
+        return;
+      }
+      imageUrl = url;
+    }
+    const { data } = await supabase.from("site_notices").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
     if (data) {
       setNotices(prev => [data, ...prev]);
       // 이벤트/공지 알림을 전체 유저에게 발송
@@ -59,6 +84,8 @@ export default function NoticePage() {
       );
     }
     setForm({ title: "", content: "", category: "공지" });
+    setImageFile(null);
+    setImagePreview(null);
     setShowForm(false);
     setSaving(false);
   };
@@ -125,6 +152,16 @@ export default function NoticePage() {
               </select>
             </div>
             <textarea className="input" placeholder="공지 내용" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} style={{ marginBottom: 10 }} />
+            <div style={{ marginBottom: 10 }}>
+              <input id="notice-image-input" type="file" accept="image/*" onChange={handleImageSelect} style={{ display: "none" }} />
+              <label htmlFor="notice-image-input" style={{ display: "inline-block", background: "rgba(13,20,35,0.8)", border: "1px solid rgba(255,107,35,0.2)", color: "#ff6b23", padding: "8px 16px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>이미지 첨부</label>
+              {imagePreview && (
+                <div style={{ position: "relative", display: "inline-block", marginTop: 10 }}>
+                  <img src={imagePreview} alt="" style={{ maxWidth: 200, maxHeight: 140, display: "block", borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)" }} />
+                  <button type="button" onClick={removeImage} style={{ position: "absolute", top: 6, right: 6, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", width: 24, height: 24, borderRadius: "50%", cursor: "pointer", fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                </div>
+              )}
+            </div>
             <div style={{ display: "flex", gap: 8 }}>
               <button className="btn-primary" onClick={handlePost} disabled={saving}>{saving ? "등록 중..." : "등록"}</button>
               <button onClick={() => setShowForm(false)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#8892a4", padding: "10px 20px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, cursor: "pointer", clipPath: "polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)" }}>취소</button>

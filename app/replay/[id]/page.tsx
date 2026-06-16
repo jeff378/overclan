@@ -153,6 +153,7 @@ export default function ReplayDetailPage() {
             )}
           </div>
           {post.description && <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.description}</p>}
+          {post.image_url && <img src={post.image_url} loading="lazy" style={{ maxWidth: "100%", borderRadius: 8, marginTop: 16, border: "1px solid rgba(255,107,35,0.15)" }} alt="" />}
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
             <LikeButton postType="replay" postId={id as string} />
           </div>

@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
+import { uploadPostImage } from "../../lib/uploadImage";
 import Navbar from "../components/Navbar";
 import CommunityLayout from "../components/CommunityLayout";
 import { ClanSuffix } from "../components/ClanBadge";
@@ -17,6 +18,9 @@ export default function FreeBoardPage() {
   const [hasMore, setHasMore] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", category: "잡담" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("전체");
@@ -58,7 +62,13 @@ export default function FreeBoardPage() {
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSubmitting(true);
-    const { data, error } = await supabase.from("free_posts").insert({ ...form, user_id: user.id }).select().single();
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const { url, error: upErr } = await uploadPostImage(imageFile, user.id);
+      if (upErr) { alert(upErr); setSubmitting(false); return; }
+      imageUrl = url;
+    }
+    const { data, error } = await supabase.from("free_posts").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
     if (error) { alert("등록에 실패했어요. 잠시 후 다시 시도해주세요."); setSubmitting(false); return; }
     if (data) {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
@@ -66,8 +76,23 @@ export default function FreeBoardPage() {
       setPosts(prev => [{ ...data, profiles: prof, authorClan: (mem && (mem[0] as any)?.clans) || null }, ...prev]);
     }
     setForm({ title: "", content: "", category: "잡담" });
+    removeImage();
     setShowForm(false);
     setSubmitting(false);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleDelete = async (postId: string) => {
@@ -135,6 +160,18 @@ export default function FreeBoardPage() {
               <div>
                 <label className="label">내용</label>
                 <textarea className="input" placeholder="자유롭게 이야기해보세요" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+              </div>
+              <div>
+                <label className="label">이미지</label>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
+                {imagePreview ? (
+                  <div style={{ position: "relative", display: "inline-block" }}>
+                    <img src={imagePreview} alt="" style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
+                    <button type="button" onClick={removeImage} style={{ position: "absolute", top: 6, right: 6, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", width: 26, height: 26, cursor: "pointer", fontSize: 14, lineHeight: 1, clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)" }}>✕</button>
+                  </div>
+                ) : (
+                  <button type="button" className="cat-btn" onClick={() => fileInputRef.current?.click()}>＋ 이미지 첨부</button>
+                )}
               </div>
               <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "등록하기"}</button>
             </div>

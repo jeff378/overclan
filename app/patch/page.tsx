@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { uploadPostImage } from "../../lib/uploadImage";
 import Navbar from "../components/Navbar";
 import { ClanSuffix } from "../components/ClanBadge";
 import CommunityLayout from "../components/CommunityLayout";
@@ -17,6 +18,8 @@ export default function PatchPage() {
   const [form, setForm] = useState({ title: "", content: "", patch_version: "" });
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const fetchWithProfiles = async (rows: any[], idField = "user_id") => {
     return Promise.all(rows.map(async (row) => {
@@ -53,15 +56,34 @@ export default function PatchPage() {
     setLoadingMore(false);
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    setImagePreview(file ? URL.createObjectURL(file) : null);
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handlePost = async () => {
     if (!form.title || !form.content) return;
     setSubmitting(true);
-    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id }).select().single();
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const { url, error } = await uploadPostImage(imageFile, user.id);
+      if (error) { alert(error); setSubmitting(false); return; }
+      imageUrl = url;
+    }
+    const { data } = await supabase.from("patch_posts").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
     if (data) {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
       setPosts(prev => [{ ...data, profiles: prof }, ...prev]);
     }
     setForm({ title: "", content: "", patch_version: "" });
+    setImageFile(null);
+    setImagePreview(null);
     setShowForm(false);
     setSubmitting(false);
   };
@@ -138,6 +160,20 @@ export default function PatchPage() {
               <div>
                 <label className="label">내용</label>
                 <textarea className="input" placeholder="패치에 대한 의견을 자유롭게 적어주세요" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+              </div>
+              <div>
+                <label className="label">이미지 (선택)</label>
+                {imagePreview ? (
+                  <div style={{ position: "relative", display: "inline-block" }}>
+                    <img src={imagePreview} alt="" style={{ maxWidth: "100%", maxHeight: 240, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
+                    <button type="button" onClick={handleRemoveImage} style={{ position: "absolute", top: 8, right: 8, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 12, padding: "4px 10px", cursor: "pointer", clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)" }}>제거</button>
+                  </div>
+                ) : (
+                  <>
+                    <input id="patch-image-input" type="file" accept="image/*" onChange={handleImageSelect} style={{ display: "none" }} />
+                    <label htmlFor="patch-image-input" style={{ display: "inline-block", background: "rgba(255,107,35,0.08)", border: "1px solid rgba(255,107,35,0.25)", color: "#ff6b23", fontFamily: "'Noto Sans KR', sans-serif", fontSize: 13, fontWeight: 600, padding: "10px 18px", cursor: "pointer", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>이미지 첨부</label>
+                  </>
+                )}
               </div>
               <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "등록하기"}</button>
             </div>

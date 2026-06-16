@@ -84,6 +84,7 @@ export default function NoticeDetailPage() {
             </div>
           </div>
           <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.9, paddingTop: 20, borderTop: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{notice.content}</p>
+          {notice.image_url && <img src={notice.image_url} loading="lazy" style={{ maxWidth: '100%', borderRadius: 8, marginTop: 16, border: '1px solid rgba(255,107,35,0.15)' }} alt="" />}
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,107,35,0.1)", display: "flex", justifyContent: "center" }}>
             <LikeButton postType="notice" postId={id as string} />
           </div>

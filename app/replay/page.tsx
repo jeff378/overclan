@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { uploadPostImage } from "../../lib/uploadImage";
 import Navbar from "../components/Navbar";
 import { ClanSuffix } from "../components/ClanBadge";
 import CommunityLayout from "../components/CommunityLayout";
@@ -15,8 +16,23 @@ export default function ReplayPage() {
   const [hasMore, setHasMore] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ replay_code: "", description: "" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const clearImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImageFile(null);
+    setImagePreview(null);
+  };
 
   const fetchWithProfiles = async (rows: any[]) => {
     return Promise.all(rows.map(async (row) => {
@@ -56,12 +72,23 @@ export default function ReplayPage() {
   const handlePost = async () => {
     if (!form.replay_code) return;
     setSubmitting(true);
-    const { data } = await supabase.from("replay_posts").insert({ ...form, user_id: user.id }).select().single();
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const { url, error } = await uploadPostImage(imageFile, user.id);
+      if (error) {
+        alert(error);
+        setSubmitting(false);
+        return;
+      }
+      imageUrl = url;
+    }
+    const { data } = await supabase.from("replay_posts").insert({ ...form, user_id: user.id, ...(imageUrl ? { image_url: imageUrl } : {}) }).select().single();
     if (data) {
       const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
       setPosts(prev => [{ ...data, profiles: prof }, ...prev]);
     }
     setForm({ replay_code: "", description: "" });
+    clearImage();
     setShowForm(false);
     setSubmitting(false);
   };
@@ -123,6 +150,20 @@ export default function ReplayPage() {
               <div>
                 <label className="label">설명</label>
                 <textarea className="input" placeholder="어떤 점이 의심스러운지 설명해주세요" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div>
+                <label className="label">스크린샷 증거</label>
+                {imagePreview ? (
+                  <div style={{ position: "relative", display: "inline-block" }}>
+                    <img src={imagePreview} alt="" style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, border: "1px solid rgba(255,107,35,0.2)", display: "block" }} />
+                    <button type="button" onClick={clearImage} style={{ position: "absolute", top: 6, right: 6, background: "rgba(8,12,20,0.85)", border: "1px solid rgba(255,107,35,0.3)", color: "#e8eaf0", cursor: "pointer", fontSize: 12, padding: "2px 8px", borderRadius: 4, fontFamily: "Noto Sans KR, sans-serif" }}>제거</button>
+                  </div>
+                ) : (
+                  <label style={{ display: "inline-block", background: "rgba(255,107,35,0.1)", border: "1px solid rgba(255,107,35,0.3)", color: "#ff6b23", padding: "10px 20px", fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: "pointer", clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)" }}>
+                    이미지 첨부
+                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
+                  </label>
+                )}
               </div>
               <button className="btn-primary" onClick={handlePost} disabled={submitting} style={{ alignSelf: "flex-start" }}>{submitting ? "등록 중..." : "제보하기"}</button>
             </div>
