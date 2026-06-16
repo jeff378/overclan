@@ -69,10 +69,12 @@ export default function ClanDetailPage() {
       setClan(clanData);
 
       const { data: membersData } = await supabase.from("clan_members").select("*").eq("clan_id", id);
-      const membersWithProfiles = await Promise.all((membersData || []).map(async (m) => {
-        const { data: profile } = await supabase.from("profiles").select("nickname, battletag, tier, roles, tier_tank, tier_dps, tier_support").eq("id", m.user_id).single();
-        return { ...m, profiles: profile };
-      }));
+      const memberIds = (membersData || []).map((m) => m.user_id);
+      const { data: memberProfiles } = memberIds.length
+        ? await supabase.from("profiles").select("id, nickname, battletag, tier, roles, tier_tank, tier_dps, tier_support, main_hero").in("id", memberIds)
+        : { data: [] as any[] };
+      const pmap = Object.fromEntries((memberProfiles || []).map((p: any) => [p.id, p]));
+      const membersWithProfiles = (membersData || []).map((m) => ({ ...m, profiles: pmap[m.user_id] || null }));
       setMembers(membersWithProfiles);
       // 티어 업 이펙트 체크 (sessionStorage 기반 — 페이지 재진입 시에도 발동)
       const newTier = getTierByCount(membersWithProfiles.length);
@@ -107,10 +109,12 @@ export default function ClanDetailPage() {
         .select("*").eq("clan_id", id).order("created_at", { ascending: false });
       if (noticeErr) console.error("공지 로드 오류:", noticeErr);
       // 작성자 닉네임 개별 조회
-      const noticesWithProfiles = await Promise.all((noticeData || []).map(async (n: any) => {
-        const { data: prof } = await supabase.from("profiles").select("nickname").eq("id", n.user_id).single();
-        return { ...n, profiles: prof };
-      }));
+      const noticeUserIds = (noticeData || []).map((n: any) => n.user_id);
+      const { data: noticeProfs } = noticeUserIds.length
+        ? await supabase.from("profiles").select("id, nickname").in("id", noticeUserIds)
+        : { data: [] as any[] };
+      const npmap = Object.fromEntries((noticeProfs || []).map((p: any) => [p.id, p]));
+      const noticesWithProfiles = (noticeData || []).map((n: any) => ({ ...n, profiles: npmap[n.user_id] || null }));
       setNotices(noticesWithProfiles);
 
       if (userData.user) {
@@ -131,10 +135,12 @@ export default function ClanDetailPage() {
       .on("postgres_changes", { event: "*", schema: "public", table: "clan_members", filter: `clan_id=eq.${id}` },
         async () => {
           const { data: membersData } = await supabase.from("clan_members").select("*").eq("clan_id", id);
-          const updated = await Promise.all((membersData || []).map(async (m) => {
-            const { data: profile } = await supabase.from("profiles").select("nickname, battletag, roles, tier_tank, tier_dps, tier_support, main_hero").eq("id", m.user_id).single();
-            return { ...m, profiles: profile };
-          }));
+          const ids = (membersData || []).map((m) => m.user_id);
+          const { data: profs } = ids.length
+            ? await supabase.from("profiles").select("id, nickname, battletag, roles, tier_tank, tier_dps, tier_support, main_hero").in("id", ids)
+            : { data: [] as any[] };
+          const pm = Object.fromEntries((profs || []).map((p: any) => [p.id, p]));
+          const updated = (membersData || []).map((m) => ({ ...m, profiles: pm[m.user_id] || null }));
           // 티어 업 이펙트 체크
           const newTier = getTierByCount(updated.length);
           if (prevTierRef.current !== null && newTier > prevTierRef.current) {
