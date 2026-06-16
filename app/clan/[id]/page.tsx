@@ -439,7 +439,10 @@ export default function ClanDetailPage() {
                   </div>
                 </>
               )}
+            </div>
 
+            {/* 구성 정보 (성장 단계 · 티어 · 모집) */}
+            <div>
               {/* 클랜 성장 단계 */}
               {(() => {
                 const GROWTH_TIERS = [
@@ -527,11 +530,6 @@ export default function ClanDetailPage() {
                 );
               })()}
 
-
-            </div>
-
-            {/* 구성 정보 */}
-            <div>
               {/* 역할군별 티어 분포 */}
               <div style={{ fontSize: 11, color: "#8892a4", letterSpacing: 2, marginBottom: 12, fontWeight: 600 }}>역할군별 티어</div>
               <div style={{ background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.1)", padding: "16px 20px", marginBottom: 16 }}>
