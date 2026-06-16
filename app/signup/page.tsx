@@ -20,6 +20,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [otp, setOtp] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [resendMsg, setResendMsg] = useState("");
@@ -69,6 +70,10 @@ export default function SignupPage() {
   const handleSignup = async () => {
     if (!email || !password || !nickname || !battletag) {
       setError("모든 항목을 입력해주세요.");
+      return;
+    }
+    if (!agreed) {
+      setError("이용약관 및 개인정보처리방침에 동의해주세요.");
       return;
     }
     if (nickname.length > 10) {
@@ -252,9 +257,18 @@ export default function SignupPage() {
             </div>
           </div>
 
+          <label style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 16, cursor: "pointer", fontFamily: "Noto Sans KR, sans-serif", fontSize: 12.5, color: "#c8cad0", lineHeight: 1.5 }}>
+            <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ accentColor: "#ff6b23", marginTop: 2, flexShrink: 0 }} />
+            <span>
+              <span style={{ color: "#ff6b23" }}>[필수]</span>{" "}
+              <a href="/terms" target="_blank" style={{ color: "#ff8c42", textDecoration: "underline" }}>이용약관</a> 및{" "}
+              <a href="/privacy" target="_blank" style={{ color: "#ff8c42", textDecoration: "underline" }}>개인정보처리방침</a>(국외 이전 포함)에 동의합니다.
+            </span>
+          </label>
+
           {error && <div style={{ fontSize: 13, color: "#ef5350", marginBottom: 16, fontFamily: "Noto Sans KR, sans-serif" }}>{error}</div>}
 
-          <button className="btn" onClick={handleSignup} disabled={loading}>
+          <button className="btn" onClick={handleSignup} disabled={loading || !agreed} style={!agreed ? { opacity: 0.6 } : undefined}>
             {loading ? "가입 중..." : "회원가입"}
           </button>
 
