@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { ClanSuffix } from "../../components/ClanBadge";
 import LikeButton from "../../components/LikeButton";
+import ReportButton from "../../components/ReportButton";
 
 export default function PatchDetailPage() {
   const { id } = useParams();
@@ -116,7 +117,10 @@ export default function PatchDetailPage() {
                 <button className="btn-del" onClick={handleDeletePost}>🗑 삭제</button>
               </div>
             ) : (
-              <div style={{ flexShrink: 0 }}><ShareButton title={`${post.title} | 오버클랜`} /></div>
+              <div style={{ flexShrink: 0, display: "flex", gap: 10, alignItems: "center" }}>
+                <ShareButton title={`${post.title} | 오버클랜`} />
+                <ReportButton targetType="post" targetId={id as string} targetBoard="patch" />
+              </div>
             )}
           </div>
           <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.9, paddingTop: 20, borderTop: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.content}</p>

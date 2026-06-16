@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { ClanSuffix } from "../../components/ClanBadge";
 import LikeButton from "../../components/LikeButton";
+import ReportButton from "../../components/ReportButton";
 
 export default function ReplayDetailPage() {
   const { id } = useParams();
@@ -145,7 +146,10 @@ export default function ReplayDetailPage() {
                 <button className="btn-del" onClick={handleDeletePost}>🗑 삭제</button>
               </div>
             ) : (
-              <div style={{ flexShrink: 0 }}><ShareButton title={`핵 의심 리플레이 ${post.replay_code} | 오버클랜`} /></div>
+              <div style={{ flexShrink: 0, display: "flex", gap: 10, alignItems: "center" }}>
+                <ShareButton title={`핵 의심 리플레이 ${post.replay_code} | 오버클랜`} />
+                <ReportButton targetType="post" targetId={id as string} targetBoard="replay" />
+              </div>
             )}
           </div>
           {post.description && <p style={{ fontSize: 15, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.8, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid rgba(255,107,35,0.1)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.description}</p>}

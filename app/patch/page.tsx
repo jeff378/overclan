@@ -5,10 +5,14 @@ import Navbar from "../components/Navbar";
 import { ClanSuffix } from "../components/ClanBadge";
 import CommunityLayout from "../components/CommunityLayout";
 
+const PAGE_SIZE = 20;
+
 export default function PatchPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", patch_version: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -26,15 +30,28 @@ export default function PatchPage() {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
-      const { data } = await supabase.from("patch_posts").select("*").order("created_at", { ascending: false });
+      const { data } = await supabase.from("patch_posts").select("*").order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1);
       if (data) {
         const withProfiles = await fetchWithProfiles(data);
         setPosts(withProfiles);
+        setHasMore(data.length === PAGE_SIZE);
       }
       setLoading(false);
     };
     load();
   }, []);
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    const from = posts.length;
+    const { data } = await supabase.from("patch_posts").select("*").order("created_at", { ascending: false }).range(from, from + PAGE_SIZE - 1);
+    if (data) {
+      const withProfiles = await fetchWithProfiles(data);
+      setPosts(prev => [...prev, ...withProfiles]);
+      setHasMore(data.length === PAGE_SIZE);
+    }
+    setLoadingMore(false);
+  };
 
   const handlePost = async () => {
     if (!form.title || !form.content) return;
@@ -147,6 +164,11 @@ export default function PatchPage() {
               </div>
             </a>
           ))}
+          {!loading && hasMore && (
+            <div style={{ textAlign: "center", marginTop: 16 }}>
+              <button className="btn-primary" onClick={loadMore} disabled={loadingMore}>{loadingMore ? "불러오는 중..." : "더보기"}</button>
+            </div>
+          )}
         </div>
       </CommunityLayout>
     </div>

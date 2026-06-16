@@ -7,11 +7,14 @@ import { ClanSuffix } from "../components/ClanBadge";
 
 const CATEGORIES = ["전체", "잡담", "질문", "정보", "기타"];
 const CAT_COLOR: Record<string, string> = { "잡담": "#ff6b23", "질문": "#4fc3f7", "정보": "#4caf50", "기타": "#8892a4" };
+const PAGE_SIZE = 20;
 
 export default function FreeBoardPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", category: "잡담" });
   const [submitting, setSubmitting] = useState(false);
@@ -30,12 +33,27 @@ export default function FreeBoardPage() {
     const load = async () => {
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
-      const { data } = await supabase.from("free_posts").select("*").order("created_at", { ascending: false });
-      if (data) setPosts(await fetchWithProfiles(data));
+      const { data } = await supabase.from("free_posts").select("*").order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1);
+      if (data) {
+        setPosts(await fetchWithProfiles(data));
+        setHasMore(data.length === PAGE_SIZE);
+      }
       setLoading(false);
     };
     load();
   }, []);
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    const from = posts.length;
+    const { data } = await supabase.from("free_posts").select("*").order("created_at", { ascending: false }).range(from, from + PAGE_SIZE - 1);
+    if (data) {
+      const withProfiles = await fetchWithProfiles(data);
+      setPosts(prev => [...prev, ...withProfiles]);
+      setHasMore(data.length === PAGE_SIZE);
+    }
+    setLoadingMore(false);
+  };
 
   const handlePost = async () => {
     if (!form.title || !form.content) return;
@@ -142,6 +160,11 @@ export default function FreeBoardPage() {
               </div>
             </a>
           ))}
+          {!loading && hasMore && (
+            <div style={{ textAlign: "center", marginTop: 16 }}>
+              <button className="btn-primary" onClick={loadMore} disabled={loadingMore}>{loadingMore ? "불러오는 중..." : "더보기"}</button>
+            </div>
+          )}
         </div>
       </CommunityLayout>
     </div>

@@ -6,10 +6,13 @@ import { createEventNotificationForAll } from "../../lib/notifications";
 
 const CATEGORIES = ["전체", "공지", "업데이트", "이벤트"];
 const ADMIN_EMAIL = "jujin2271@gmail.com";
+const PAGE_SIZE = 20;
 
 export default function NoticePage() {
   const [notices, setNotices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [filter, setFilter] = useState("전체");
   const [search, setSearch] = useState("");
   const [user, setUser] = useState<any>(null);
@@ -23,12 +26,24 @@ export default function NoticePage() {
       const { data: userData } = await supabase.auth.getUser();
       setUser(userData.user);
       if (userData.user?.email === ADMIN_EMAIL) setIsAdmin(true);
-      const { data } = await supabase.from("site_notices").select("*").order("created_at", { ascending: false });
+      const { data } = await supabase.from("site_notices").select("*").order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1);
       setNotices(data || []);
+      setHasMore((data?.length || 0) === PAGE_SIZE);
       setLoading(false);
     };
     load();
   }, []);
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    const from = notices.length;
+    const { data } = await supabase.from("site_notices").select("*").order("created_at", { ascending: false }).range(from, from + PAGE_SIZE - 1);
+    if (data) {
+      setNotices(prev => [...prev, ...data]);
+      setHasMore(data.length === PAGE_SIZE);
+    }
+    setLoadingMore(false);
+  };
 
   const handlePost = async () => {
     if (!form.title || !form.content) return;
@@ -130,6 +145,11 @@ export default function NoticePage() {
               {isAdmin && <button onClick={e => { e.preventDefault(); e.stopPropagation(); handleDelete(n.id); }} style={{ background: "none", border: "none", color: "#8892a4", cursor: "pointer", fontSize: 13, opacity: 0.5, flexShrink: 0 }}>🗑</button>}
             </a>
           ))}
+          {!loading && hasMore && (
+            <div style={{ textAlign: "center", marginTop: 16 }}>
+              <button className="btn-primary" onClick={loadMore} disabled={loadingMore}>{loadingMore ? "불러오는 중..." : "더보기"}</button>
+            </div>
+          )}
         </div>
       </div>
     </div>

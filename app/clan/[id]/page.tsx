@@ -580,7 +580,7 @@ export default function ClanDetailPage() {
             </div>
             {members.map(m => (
               <div key={m.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, alignItems: "center" }}>
-                <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700 }}>{m.profiles?.nickname || "유저"}</span>
+                <a href={`/profile/${m.user_id}`} style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, color: "#e8eaf0", textDecoration: "none" }}>{m.profiles?.nickname || "유저"}</a>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: m.role === "클랜장" ? "rgba(255,107,35,0.2)" : "rgba(255,255,255,0.05)", color: m.role === "클랜장" ? "#ff6b23" : "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>{m.role}</span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {[
