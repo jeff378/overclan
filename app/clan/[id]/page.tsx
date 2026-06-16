@@ -9,6 +9,8 @@ import Navbar from "../../components/Navbar";
 import ShareButton from "../../components/ShareButton";
 import { createNotification } from "../../../lib/notifications";
 import { TIER_COLORS } from "../../../lib/clanTier";
+import JoinFormModal from "../../components/JoinFormModal";
+import { JoinAnswer } from "../../../lib/joinForm";
 
 // 간단한 마크다운 렌더러
 function renderText(text: string) {
@@ -48,6 +50,7 @@ export default function ClanDetailPage() {
   const [hasRequested, setHasRequested] = useState(false);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [activeTab, setActiveTab] = useState("소개");
   const [tierUpAnim, setTierUpAnim] = useState(false);
   const [bannerRatio, setBannerRatio] = useState(4.6); // 배너 이미지 실제 가로/세로 비율
@@ -161,8 +164,6 @@ export default function ClanDetailPage() {
     // 차단 여부 체크
     const { data: banned } = await supabase.from("clan_bans").select("id").eq("clan_id", id).eq("user_id", user.id).maybeSingle();
     if (banned) { alert("이 클랜에서 차단되어 가입 신청할 수 없어요."); return; }
-    // 가입 신청 확인 다이얼로그
-    if (!confirm(`"${clan?.name}" 클랜에 가입 신청할까요?`)) return;
     // 정원 체크 (클랜이 설정한 최대 인원 기준)
     const cap = clan?.max_members || 50;
     const { count: currentCount } = await supabase.from("clan_members").select("*", { count: "exact", head: true }).eq("clan_id", id);
@@ -171,10 +172,16 @@ export default function ClanDetailPage() {
     if (existingMembers && existingMembers.length > 0) { alert("이미 클랜에 가입되어 있어요. 마이페이지에서 탈퇴 후 가입할 수 있어요."); return; }
     const { data: existingRequest } = await supabase.from("clan_requests").select("id").eq("user_id", user.id).eq("status", "대기중").single();
     if (existingRequest) { alert("이미 다른 클랜에 가입 신청 중이에요."); return; }
+    // 통과하면 가입 신청 양식 모달 열기 (실제 신청은 submitJoin)
+    setShowJoinModal(true);
+  };
+
+  const submitJoin = async (answers: JoinAnswer[]) => {
+    if (!user) return;
     setJoining(true);
     // 기존 신청 row 제거 후 새로 insert (중복 방지)
     await supabase.from("clan_requests").delete().eq("clan_id", id).eq("user_id", user.id);
-    const { error: insertError } = await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중" });
+    const { error: insertError } = await supabase.from("clan_requests").insert({ clan_id: id, user_id: user.id, status: "대기중", answers });
     if (insertError) {
       console.error("가입신청 오류:", insertError);
       alert(`가입 신청 중 오류가 발생했어요.\n${insertError.message}`);
@@ -193,6 +200,7 @@ export default function ClanDetailPage() {
       );
     }
     setHasRequested(true);
+    setShowJoinModal(false);
     setJoining(false);
   };
 
@@ -261,6 +269,15 @@ export default function ClanDetailPage() {
       `}</style>
 
       <Navbar />
+
+      {showJoinModal && (
+        <JoinFormModal
+          clan={clan}
+          submitting={joining}
+          onClose={() => setShowJoinModal(false)}
+          onSubmit={submitJoin}
+        />
+      )}
 
       {/* YouTube 스타일 배너 - 이미지가 영역을 꽉 채움(cover) */}
       {clan.banner_image && (

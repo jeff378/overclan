@@ -198,16 +198,28 @@ export default function ClanManagePage() {
                   대기 중인 가입 신청이 없어요.
                 </div>
               ) : requests.map(req => (
-                <div key={req.id} className="row" style={{ marginBottom: 6 }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, marginRight: 10 }}>{req.profiles?.nickname || "유저"}</span>
-                    <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{req.profiles?.battletag}</span>
+                <div key={req.id} style={{ marginBottom: 6 }}>
+                  <div className="row">
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700, marginRight: 10 }}>{req.profiles?.nickname || "유저"}</span>
+                      <span style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif" }}>{req.profiles?.battletag}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <button className="btn-accept" onClick={() => handleAccept(req)}>수락</button>
+                      <button className="btn-reject" onClick={() => handleReject(req)}>거절</button>
+                      <button className="btn-ban" onClick={() => handleReject(req, true)}>차단</button>
+                    </div>
                   </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <button className="btn-accept" onClick={() => handleAccept(req)}>수락</button>
-                    <button className="btn-reject" onClick={() => handleReject(req)}>거절</button>
-                    <button className="btn-ban" onClick={() => handleReject(req, true)}>차단</button>
-                  </div>
+                  {Array.isArray(req.answers) && req.answers.length > 0 && (
+                    <div style={{ background: "rgba(8,12,20,0.5)", border: "1px solid rgba(255,107,35,0.06)", borderTop: "none", padding: "12px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
+                      {req.answers.map((a: any, i: number) => (
+                        <div key={i} style={{ display: "flex", gap: 10, fontSize: 13, fontFamily: "Noto Sans KR, sans-serif" }}>
+                          <span style={{ color: "#8892a4", minWidth: 110, flexShrink: 0 }}>{a.label}</span>
+                          <span style={{ color: "#c8cad0", wordBreak: "break-word" }}>{a.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

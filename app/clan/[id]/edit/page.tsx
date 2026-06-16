@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
 import { VIBE_TAGS, ACCENT_COLORS, BANNER_COLORS, uploadClanImage } from "../../../../lib/clanCustomization";
 import { isValueTaken } from "../../../../lib/validate";
+import { resolveJoinFields, DEFAULT_JOIN_FIELDS, JoinField, JoinFieldType } from "../../../../lib/joinForm";
 
 const BADGES = ["🔥", "🐺", "⚡", "🗡️", "✨", "🌑", "🌅", "🔴", "🦅", "🐉", "⚔️", "🛡️"];
 const TIMES = ["아침", "저녁", "밤", "새벽", "주말"];
@@ -23,6 +24,9 @@ export default function EditClanPage() {
     discord_link: "", slogan: "", join_condition: "", banner_color: "#1a1f35",
     accent_color: "#ff6b23", vibe_tags: [] as string[], banner_image: "", emblem_image: "",
   });
+  const [joinFields, setJoinFields] = useState<JoinField[]>(DEFAULT_JOIN_FIELDS);
+  const [newQLabel, setNewQLabel] = useState("");
+  const [newQType, setNewQType] = useState<JoinFieldType>("text");
 
   const toggleVibe = (tag: string) => {
     setForm(f => ({
@@ -32,6 +36,19 @@ export default function EditClanPage() {
         : f.vibe_tags.length >= 5 ? f.vibe_tags : [...f.vibe_tags, tag]
     }));
   };
+
+  const updateJoinField = (key: string, patch: Partial<JoinField>) =>
+    setJoinFields(prev => prev.map(f => f.key === key ? { ...f, ...patch } : f));
+  const removeJoinField = (key: string) =>
+    setJoinFields(prev => prev.filter(f => f.key !== key));
+  const addCustomField = () => {
+    const label = newQLabel.trim();
+    if (!label) return;
+    setJoinFields(prev => [...prev, { key: `custom_${Date.now()}`, label, type: newQType, required: false, enabled: true }]);
+    setNewQLabel("");
+    setNewQType("text");
+  };
+  const TYPE_LABEL: Record<string, string> = { text: "단답", textarea: "장문", yesno: "예·아니오", position: "포지션", tier: "티어" };
 
   const handleImageUpload = async (e: any, type: "banner" | "emblem") => {
     const file = e.target.files?.[0];
@@ -63,6 +80,7 @@ export default function EditClanPage() {
         banner_image: clan.banner_image || "",
         emblem_image: clan.emblem_image || "",
       });
+      setJoinFields(resolveJoinFields(clan));
       setLoading(false);
     };
     load();
@@ -83,6 +101,7 @@ export default function EditClanPage() {
       join_condition: form.join_condition, banner_color: form.banner_color,
       accent_color: form.accent_color, vibe_tags: form.vibe_tags,
       banner_image: form.banner_image || null, emblem_image: form.emblem_image || null,
+      join_form: joinFields,
     }).eq("id", id);
     if (updateError) { setError(updateError.message.includes("unique") ? "이미 사용 중인 클랜명 또는 태그예요." : "저장에 실패했어요. 다시 시도해주세요."); setSaving(false); return; }
     router.push(`/clan/${id}`);
@@ -205,6 +224,53 @@ export default function EditClanPage() {
           <div>
             <label className="label">가입 조건</label>
             <textarea className="input" style={{minHeight: "80px", resize: "vertical"}} placeholder="나이, 티어, 마이크 필수 여부 등 가입 조건을 적어주세요" value={form.join_condition} onChange={e => setForm({ ...form, join_condition: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">가입 신청 양식 — 신청자가 작성하는 항목 ('가입 신청' 버튼 → 이 양식)</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, background: "rgba(13,20,35,0.6)", border: "1px solid rgba(255,107,35,0.15)", padding: 14 }}>
+              {joinFields.map(f => {
+                const custom = f.key.startsWith("custom_");
+                const shown = f.enabled !== false;
+                return (
+                  <div key={f.key} style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "8px 10px", background: "rgba(8,12,20,0.5)", border: "1px solid rgba(255,107,35,0.08)" }}>
+                    <span style={{ flex: 1, minWidth: 120, fontSize: 13, fontFamily: "Noto Sans KR, sans-serif", color: "#e8eaf0" }}>
+                      {f.label}
+                      <span style={{ fontSize: 10, color: "#8892a4", marginLeft: 6 }}>{TYPE_LABEL[f.type] || f.type}</span>
+                    </span>
+                    {f.locked ? (
+                      <span style={{ fontSize: 11, color: "#ff6b23", fontWeight: 700, fontFamily: "Noto Sans KR, sans-serif" }}>항상 필수</span>
+                    ) : (
+                      <>
+                        <button type="button" onClick={() => updateJoinField(f.key, { enabled: !shown })}
+                          className={`select-btn ${shown ? "active" : ""}`} style={{ fontSize: 11, padding: "5px 12px", fontFamily: "Noto Sans KR, sans-serif" }}>
+                          {shown ? "표시" : "숨김"}
+                        </button>
+                        <button type="button" onClick={() => updateJoinField(f.key, { required: !f.required })}
+                          className={`select-btn ${f.required ? "active" : ""}`} style={{ fontSize: 11, padding: "5px 12px", fontFamily: "Noto Sans KR, sans-serif" }}>
+                          {f.required ? "필수" : "선택"}
+                        </button>
+                        {custom && (
+                          <button type="button" onClick={() => removeJoinField(f.key)}
+                            style={{ background: "none", border: "1px solid rgba(239,83,80,0.4)", color: "#ef5350", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Noto Sans KR, sans-serif" }}>삭제</button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4, alignItems: "center" }}>
+                <input value={newQLabel} onChange={e => setNewQLabel(e.target.value)} placeholder="질문 추가 (예: 마이크 가능?)" maxLength={30}
+                  style={{ flex: 1, minWidth: 140, background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "9px 12px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none" }} />
+                <select value={newQType} onChange={e => setNewQType(e.target.value as JoinFieldType)}
+                  style={{ background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#8892a4", padding: "9px 10px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13, outline: "none" }}>
+                  <option value="text">단답</option>
+                  <option value="textarea">장문</option>
+                  <option value="yesno">예·아니오</option>
+                </select>
+                <button type="button" onClick={addCustomField} className="select-btn" style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>+ 추가</button>
+              </div>
+            </div>
+            <div style={{ fontSize: 11, color: "#8892a4", marginTop: 8, fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6 }}>배틀태그는 본인 확인에 쓰여 항상 받아요. 나머지는 표시/숨김·필수/선택을 정하거나 질문을 추가할 수 있어요.</div>
           </div>
           <div>
             <label className="label">디스코드 초대 링크</label>
