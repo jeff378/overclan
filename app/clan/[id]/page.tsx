@@ -245,6 +245,7 @@ export default function ClanDetailPage() {
   );
 
   const accent = clan.accent_color || "#ff6b23";
+  const pendingRoster = roster.filter((r: any) => !members.some((m: any) => m.profiles?.battletag === r.battletag));
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif", ["--accent" as any]: accent }}>
@@ -615,13 +616,13 @@ export default function ClanDetailPage() {
 
               </div>
             ))}
-            {roster.length > 0 && (
+            {pendingRoster.length > 0 && (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "20px 0 8px", padding: "0 18px", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 12, color: "#8892a4", letterSpacing: 1, fontWeight: 600 }}>🔒 인증 대기 {roster.length}</span>
+                  <span style={{ fontSize: 12, color: "#8892a4", letterSpacing: 1, fontWeight: 600 }}>🔒 인증 대기 {pendingRoster.length}</span>
                   <span style={{ fontSize: 11, color: "#5a6478", fontFamily: "Noto Sans KR, sans-serif" }}>본인이 이 배틀태그로 가입하면 자동으로 합류해요</span>
                 </div>
-                {roster.map((r: any) => (
+                {pendingRoster.map((r: any) => (
                   <div key={r.id} className="member-row" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: 12, alignItems: "center", opacity: 0.55 }}>
                     <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, color: "#c8cad0" }}>{r.battletag}</span>
                     <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", background: "rgba(255,255,255,0.05)", color: "#8892a4", clipPath: "polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)", width: "fit-content" }}>🔒 인증 대기</span>

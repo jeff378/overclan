@@ -162,6 +162,7 @@ export default function ClanManagePage() {
     if (!bt) return;
     const btRegex = /^[a-zA-Z가-힣0-9]{2,12}#[0-9]{4,7}$/;
     if (!btRegex.test(bt)) { alert("배틀태그 형식이 올바르지 않아요. 예) 닉네임#1234"); return; }
+    if (members.some(m => m.profiles?.battletag === bt)) { alert("이미 이 클랜의 클랜원이에요."); return; }
     const { data, error } = await supabase.from("clan_roster").insert({ clan_id: id, battletag: bt }).select().single();
     if (error) {
       if (error.code === "23505") alert("이미 등록된 배틀태그예요.");
@@ -176,6 +177,9 @@ export default function ClanManagePage() {
     await supabase.from("clan_roster").delete().eq("id", rid);
     setRoster(prev => prev.filter(r => r.id !== rid));
   };
+
+  // 이미 검증된 클랜원이 된 배틀태그는 명단에서 숨김 (claim 트리거가 못 잡는 역순 케이스 방어)
+  const pendingRoster = roster.filter(r => !members.some(m => m.profiles?.battletag === r.battletag));
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent", color: "#e8eaf0", fontFamily: "'Rajdhani', 'Noto Sans KR', sans-serif" }}>
@@ -278,7 +282,7 @@ export default function ClanManagePage() {
               <div className="section-title">
                 <div style={{ width: 3, height: 16, background: "#ff6b23" }} />
                 <h2 style={{ fontFamily: "'Cinzel', 'Rajdhani', sans-serif", fontSize: 16, letterSpacing: 2 }}>멤버 명단 등록</h2>
-                <span style={{ background: "rgba(255,107,35,0.2)", color: "#ff6b23", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>{roster.length}</span>
+                <span style={{ background: "rgba(255,107,35,0.2)", color: "#ff6b23", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>{pendingRoster.length}</span>
               </div>
               <p style={{ fontSize: 12, color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", marginBottom: 12, marginLeft: 13, lineHeight: 1.6 }}>
                 기존 멤버의 배틀태그를 미리 등록해 두면, 그 멤버가 본인 배틀태그로 가입할 때 자동으로 클랜원이 돼요. 인증 전(미가입)에는 클랜 티어·랭킹에 반영되지 않아요.
@@ -288,7 +292,7 @@ export default function ClanManagePage() {
                   style={{ flex: 1, minWidth: 180, background: "rgba(13,20,35,0.9)", border: "1px solid rgba(255,107,35,0.2)", color: "#e8eaf0", padding: "10px 14px", fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, outline: "none" }} />
                 <button onClick={handleAddRoster} className="btn-accept">+ 등록</button>
               </div>
-              {roster.map((r: any) => (
+              {pendingRoster.map((r: any) => (
                 <div key={r.id} className="row" style={{ marginBottom: 6, opacity: 0.9 }}>
                   <div style={{ flex: 1 }}>
                     <span style={{ fontFamily: "Noto Sans KR, sans-serif", fontSize: 14, color: "#c8cad0", marginRight: 10 }}>{r.battletag}</span>
