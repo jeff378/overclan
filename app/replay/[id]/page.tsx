@@ -16,6 +16,8 @@ export default function ReplayDetailPage() {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<any[]>([]);
   const [comment, setComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
   const [myVote, setMyVote] = useState<string | null>(null);
 
   const fetchProfile = async (uid: string) => {
@@ -72,6 +74,18 @@ export default function ReplayDetailPage() {
     setComment("");
   };
 
+  const handleReply = async (parentId: string) => {
+    if (!replyText.trim()) return;
+    const { data } = await supabase.from("replay_comments").insert({ post_id: id, user_id: user.id, content: replyText, ...(parentId ? { parent_comment_id: parentId } : {}) }).select().single();
+    if (data) {
+      const prof = await fetchProfile(user.id);
+      const myClan = await fetchClan(user.id);
+      setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
+    }
+    setReplyText("");
+    setReplyingTo(null);
+  };
+
   const handleDeleteComment = async (commentId: string) => {
     await supabase.from("replay_comments").delete().eq("id", commentId);
     setComments(prev => prev.filter(c => c.id !== commentId));
@@ -125,6 +139,9 @@ export default function ReplayDetailPage() {
         .replay-code { background: rgba(255,107,35,0.1); border: 1px solid rgba(255,107,35,0.3); color: #ff6b23; font-family: 'Cinzel', 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%); display: inline-block; }
         .btn-del { background: none; border: none; color: #8892a4; cursor: pointer; font-size: 13px; opacity: 0.5; padding: 2px 6px; }
         .btn-del:hover { opacity: 1; color: #ef5350; }
+        .btn-reply { background: none; border: none; color: #8892a4; cursor: pointer; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; padding: 2px 6px; }
+        .btn-reply:hover { color: #ff6b23; }
+        .reply-row { padding: 10px 16px 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-left: 28px; border-left: 2px solid rgba(255,107,35,0.18); padding-left: 14px; }
         .back-link { color: #8892a4; text-decoration: none; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; transition: color 0.2s; }
         .back-link:hover { color: #ff6b23; }
       `}</style>
@@ -190,13 +207,31 @@ export default function ReplayDetailPage() {
           <div style={{ background: "rgba(13,20,35,0.5)", border: "1px solid rgba(255,107,35,0.08)", marginBottom: 16 }}>
             {comments.length === 0 ? (
               <div style={{ padding: "24px", textAlign: "center", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>첫 댓글을 남겨보세요.</div>
-            ) : comments.map(c => (
-              <div key={c.id} className="comment-row">
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
-                  <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{c.content}</div>
+            ) : comments.filter(c => !c.parent_comment_id).map(c => (
+              <div key={c.id}>
+                <div className="comment-row">
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
+                    <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{c.content}</div>
+                    {user && <button className="btn-reply" onClick={() => { setReplyingTo(replyingTo === c.id ? null : c.id); setReplyText(""); }} style={{ marginTop: 4, marginLeft: -6 }}>답글</button>}
+                  </div>
+                  {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>🗑</button>}
                 </div>
-                {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>🗑</button>}
+                {comments.filter(r => r.parent_comment_id === c.id).map(r => (
+                  <div key={r.id} className="reply-row">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{r.profiles?.nickname}<ClanSuffix clan={r.authorClan} /></div>
+                      <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{r.content}</div>
+                    </div>
+                    {user?.id === r.user_id && <button className="btn-del" onClick={() => handleDeleteComment(r.id)}>🗑</button>}
+                  </div>
+                ))}
+                {replyingTo === c.id && (
+                  <div style={{ display: "flex", gap: 8, margin: "8px 16px 12px 42px" }}>
+                    <input className="input" placeholder="답글을 입력하세요" value={replyText} onChange={e => setReplyText(e.target.value)} onKeyDown={e => e.key === "Enter" && handleReply(c.id)} style={{ flex: 1 }} autoFocus />
+                    <button className="btn-primary" onClick={() => handleReply(c.id)}>등록</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

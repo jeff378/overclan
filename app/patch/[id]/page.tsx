@@ -16,6 +16,8 @@ export default function PatchDetailPage() {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<any[]>([]);
   const [comment, setComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   const fetchProfile = async (uid: string) => {
     const { data } = await supabase.from("profiles").select("nickname").eq("id", uid).single();
@@ -55,6 +57,18 @@ export default function PatchDetailPage() {
       setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
     }
     setComment("");
+  };
+
+  const handleReply = async (parentId: string) => {
+    if (!replyText.trim()) return;
+    const { data } = await supabase.from("patch_comments").insert({ post_id: id, user_id: user.id, content: replyText, parent_comment_id: parentId }).select().single();
+    if (data) {
+      const prof = await fetchProfile(user.id);
+      const myClan = await fetchClan(user.id);
+      setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
+    }
+    setReplyText("");
+    setReplyingTo(null);
   };
 
   const handleDeleteComment = async (commentId: string) => {
@@ -140,15 +154,36 @@ export default function PatchDetailPage() {
           <div style={{ background: "rgba(13,20,35,0.5)", border: "1px solid rgba(255,107,35,0.08)", marginBottom: 16 }}>
             {comments.length === 0 ? (
               <div style={{ padding: "24px", textAlign: "center", color: "#8892a4", fontFamily: "Noto Sans KR, sans-serif", fontSize: 13 }}>첫 댓글을 남겨보세요.</div>
-            ) : comments.map(c => (
-              <div key={c.id} className="comment-row">
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
-                  <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{c.content}</div>
+            ) : comments.filter(c => !c.parent_comment_id).map(c => {
+              const replies = comments.filter(r => r.parent_comment_id === c.id);
+              return (
+                <div key={c.id}>
+                  <div className="comment-row">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
+                      <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{c.content}</div>
+                      {user && <button className="btn-del" onClick={() => { setReplyingTo(replyingTo === c.id ? null : c.id); setReplyText(""); }} style={{ marginTop: 6, padding: "2px 0", fontFamily: "Noto Sans KR, sans-serif" }}>답글</button>}
+                    </div>
+                    {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>🗑</button>}
+                  </div>
+                  {replies.map(r => (
+                    <div key={r.id} className="comment-row" style={{ marginLeft: 28, borderLeft: "2px solid rgba(255,107,35,0.15)", paddingLeft: 14 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{r.profiles?.nickname}<ClanSuffix clan={r.authorClan} /></div>
+                        <div style={{ fontSize: 12, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, wordBreak: "break-word" }}>{r.content}</div>
+                      </div>
+                      {user?.id === r.user_id && <button className="btn-del" onClick={() => handleDeleteComment(r.id)}>🗑</button>}
+                    </div>
+                  ))}
+                  {replyingTo === c.id && user && (
+                    <div style={{ marginLeft: 28, paddingLeft: 14, paddingBottom: 12, display: "flex", gap: 8 }}>
+                      <textarea className="input" placeholder="답글을 입력하세요" value={replyText} onChange={e => setReplyText(e.target.value)} rows={2} style={{ flex: 1, resize: "vertical", fontFamily: "'Noto Sans KR', sans-serif" }} />
+                      <button className="btn-primary" onClick={() => handleReply(c.id)}>등록</button>
+                    </div>
+                  )}
                 </div>
-                {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>🗑</button>}
-              </div>
-            ))}
+              );
+            })}
           </div>
           {user ? (
             <div style={{ display: "flex", gap: 8 }}>

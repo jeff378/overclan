@@ -17,6 +17,8 @@ export default function FreePostPage() {
   const [user, setUser] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
   const [comment, setComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (uid: string) => {
@@ -56,6 +58,18 @@ export default function FreePostPage() {
       setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
     }
     setComment("");
+  };
+
+  const handleReply = async (parentId: string) => {
+    if (!replyContent.trim()) return;
+    const { data } = await supabase.from("free_comments").insert({ post_id: id, user_id: user.id, content: replyContent, ...(parentId ? { parent_comment_id: parentId } : {}) }).select().single();
+    if (data) {
+      const prof = await fetchProfile(user.id);
+      const myClan = await fetchClan(user.id);
+      setComments(prev => [...prev, { ...data, profiles: prof, authorClan: myClan }]);
+    }
+    setReplyContent("");
+    setReplyingTo(null);
   };
 
   const handleDeleteComment = async (commentId: string) => {
@@ -128,13 +142,33 @@ export default function FreePostPage() {
               <div style={{ background: "rgba(13,20,35,0.5)", border: "1px solid rgba(255,107,35,0.08)", marginBottom: 16 }}>
                 {comments.length === 0 ? (
                   <div style={{ padding: "24px", textAlign: "center", color: "#8892a4", fontSize: 13, fontFamily: "Noto Sans KR, sans-serif" }}>첫 댓글을 남겨보세요.</div>
-                ) : comments.map(c => (
-                  <div key={c.id} style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,107,35,0.06)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                      <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
-                      {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>삭제</button>}
+                ) : comments.filter(c => !c.parent_comment_id).map(c => (
+                  <div key={c.id} style={{ borderBottom: "1px solid rgba(255,107,35,0.06)" }}>
+                    <div style={{ padding: "14px 18px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                        <div style={{ fontSize: 12, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>{c.profiles?.nickname}<ClanSuffix clan={c.authorClan} /></div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                          {user && <button className="btn-del" onClick={() => { setReplyingTo(replyingTo === c.id ? null : c.id); setReplyContent(""); }}>답글</button>}
+                          {user?.id === c.user_id && <button className="btn-del" onClick={() => handleDeleteComment(c.id)}>삭제</button>}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{c.content}</div>
                     </div>
-                    <div style={{ fontSize: 14, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{c.content}</div>
+                    {comments.filter(r => r.parent_comment_id === c.id).map(r => (
+                      <div key={r.id} style={{ padding: "12px 18px 12px 28px", marginLeft: 24, borderLeft: "2px solid rgba(255,107,35,0.15)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                          <div style={{ fontSize: 11, color: "#ff6b23", fontWeight: 600, marginBottom: 4, fontFamily: "'Cinzel', 'Rajdhani', sans-serif", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}><span style={{ color: "#8892a4", marginRight: 2 }}>↳</span>{r.profiles?.nickname}<ClanSuffix clan={r.authorClan} /></div>
+                          {user?.id === r.user_id && <button className="btn-del" onClick={() => handleDeleteComment(r.id)}>삭제</button>}
+                        </div>
+                        <div style={{ fontSize: 13, color: "#c8cad0", fontFamily: "Noto Sans KR, sans-serif", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{r.content}</div>
+                      </div>
+                    ))}
+                    {user && replyingTo === c.id && (
+                      <div style={{ padding: "0 18px 14px 28px", marginLeft: 24, display: "flex", gap: 8 }}>
+                        <textarea className="input" placeholder="답글을 입력하세요" value={replyContent} onChange={e => setReplyContent(e.target.value)} rows={2} style={{ resize: "vertical", fontFamily: "'Noto Sans KR', sans-serif" }} />
+                        <button className="btn-primary" onClick={() => handleReply(c.id)} style={{ whiteSpace: "nowrap" }}>등록</button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
